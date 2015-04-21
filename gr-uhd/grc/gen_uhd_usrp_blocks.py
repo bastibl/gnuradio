@@ -21,8 +21,16 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
 MAIN_TMPL = """\
 <?xml version="1.0"?>
 <block>
+#if $csma
+	<name>UHD: USRP $sourk.title() CSMA</name>
+	<key>uhd_usrp_$(sourk)_csma</key>
+#else if $agc
+	<name>UHD: USRP $sourk.title() AGC</name>
+	<key>uhd_usrp_$(sourk)_agc</key>
+#else
 	<name>UHD: USRP $sourk.title()</name>
 	<key>uhd_usrp_$(sourk)</key>
+#end if
 	<throttle>1</throttle>
 	<import>from gnuradio import uhd</import>
 	<import>import time</import>
@@ -75,6 +83,14 @@ self.\$(id).set_normalized_gain(\$gain$(n), $n)
 \#else
 self.\$(id).set_gain(\$gain$(n), $n)
 \#end if
+#if $sourk == "source" and $agc
+self.\$(id).set_agc(\$agc$(n), $n)
+#end if
+#if $sourk == "sink" and $csma
+self.\$(id).set_csma_enable(\$csma_enable$(n), $n)
+self.\$(id).set_csma_slottime(\$csma_slottime$(n), $n)
+self.\$(id).set_csma_threshold(\$csma_threshold$(n), $n)
+#end if
 	\#if \$ant$(n)()
 self.\$(id).set_antenna(\$ant$(n), $n)
 	\#end if
@@ -93,6 +109,15 @@ self.\$(id).set_normalized_gain(\$gain$(n), $n)
 self.\$(id).set_gain(\$gain$(n), $n)
 \#end if
 </callback>
+
+	#if $sourk == "source" and $agc
+	<callback>set_agc(\$agc$(n), $n)</callback>
+	#end if
+	#if $sourk == "sink" and $csma
+	<callback>set_csma_enable(\$csma_enable$(n), $n)</callback>
+	<callback>set_csma_slottime(\$csma_slottime$(n), $n)</callback>
+	<callback>set_csma_threshold(\$csma_threshold$(n), $n)</callback>
+	#end if
 	<callback>set_antenna(\$ant$(n), $n)</callback>
 	<callback>set_bandwidth(\$bw$(n), $n)</callback>
 	#end for
@@ -324,6 +349,12 @@ self.\$(id).set_gain(\$gain$(n), $n)
 	#for $n in range($max_nchan)
 	<check>(\$norm_gain${n} and \$gain${n} &gt;= 0 and \$gain${n} &lt;= 1) or not \$norm_gain${n}</check>
 	#end for
+	#if $sourk == "sink" and $csma
+	#for $n in range($max_nchan)
+	<check>\$csma_slottime$(n) >= 0</check>
+	<check>\$csma_threshold$(n) >= 0</check>
+	#end for
+	#end if
 	<sink>
 		<name>command</name>
 		<type>message</type>
@@ -428,6 +459,54 @@ PARAMS_TMPL = """
 		<type>float</type>
 		<hide>\#if \$nchan() > $n then 'none' else 'all'#</hide>
 	</param>
+#if $sourk == "source" and $agc
+	<param>
+		<name>Ch$(n): AGC</name>
+		<key>agc$(n)</key>
+		<value>False</value>
+		<type>bool</type>
+		<hide>\#if \$nchan() > $n then 'none' else 'all'#</hide>
+		<option>
+			<name>Enable</name>
+			<key>True</key>
+		</option>
+		<option>
+			<name>Disable</name>
+			<key>False</key>
+		</option>
+	</param>
+#end if
+#if $sourk == "sink" and $csma
+	<param>
+		<name>Ch$(n): CSMA enable</name>
+		<key>csma_enable$(n)</key>
+		<value>False</value>
+		<type>bool</type>
+		<hide>\#if \$nchan() > $n then 'none' else 'all'#</hide>
+		<option>
+			<name>Enable</name>
+			<key>True</key>
+		</option>
+		<option>
+			<name>Disable</name>
+			<key>False</key>
+		</option>
+	</param>
+	<param>
+		<name>Ch$(n): CSMA Slot Time</name>
+		<key>csma_slottime$(n)</key>
+		<value>0</value>
+		<type>int</type>
+		<hide>\#if \$nchan() > $n then 'none' else 'all'#</hide>
+	</param>
+	<param>
+		<name>Ch$(n): CSMA Threshold</name>
+		<key>csma_threshold$(n)</key>
+		<value>0</value>
+		<type>int</type>
+		<hide>\#if \$nchan() > $n then 'none' else 'all'#</hide>
+	</param>
+#end if
 	<param>
 		<name>Ch$(n): Gain Type</name>
 		<key>norm_gain$(n)</key>
@@ -507,12 +586,26 @@ if __name__ == '__main__':
 		if file.endswith ('source.xml'):
 			sourk = 'source'
 			direction = 'out'
+			csma = False
+			agc = False
 		elif file.endswith ('sink.xml'):
 			sourk = 'sink'
 			direction = 'in'
+			agc = False
+			csma = False
+		elif file.endswith ('source_agc.xml'):
+			sourk = 'source'
+			direction = 'out'
+			agc = True
+			csma = False
+		elif file.endswith ('sink_csma.xml'):
+			sourk = 'sink'
+			direction = 'in'
+			agc = False
+			csma = True
 		else: raise Exception, 'is %s a source or sink?'%file
 
-		params = ''.join([parse_tmpl(PARAMS_TMPL, n=n) for n in range(max_num_channels)])
+		params = ''.join([parse_tmpl(PARAMS_TMPL, n=n, sourk=sourk, csma=csma, agc=agc) for n in range(max_num_channels)])
 		if sourk == 'sink':
 			params += LENTAG_PARAM
 			lentag_arg = LENTAG_ARG
@@ -524,4 +617,6 @@ if __name__ == '__main__':
 			params=params,
 			sourk=sourk,
 			direction=direction,
+			csma=csma,
+			agc=agc,
 		))

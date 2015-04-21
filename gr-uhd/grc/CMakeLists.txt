@@ -34,6 +34,8 @@ endmacro(GEN_BLOCK_XML)
 
 GEN_BLOCK_XML(gen_uhd_usrp_blocks.py    uhd_usrp_source.xml)
 GEN_BLOCK_XML(gen_uhd_usrp_blocks.py    uhd_usrp_sink.xml)
+GEN_BLOCK_XML(gen_uhd_usrp_blocks.py    uhd_usrp_source_agc.xml)
+GEN_BLOCK_XML(gen_uhd_usrp_blocks.py    uhd_usrp_sink_csma.xml)
 
 add_custom_target(uhd_grc_xml_blocks ALL DEPENDS ${xml_blocks})
 
