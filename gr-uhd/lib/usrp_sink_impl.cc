@@ -68,6 +68,8 @@ namespace gr {
                       args_to_io_sig(stream_args),
                       io_signature::make(0, 0, 0)),
         usrp_common_impl(device_addr, stream_args, length_tag_name),
+        _csma_enable(false),
+        _slottime(0),
         _length_tag_key(length_tag_name.empty() ? pmt::PMT_NIL : pmt::string_to_symbol(length_tag_name)),
         _nitems_to_send(0),
         _curr_freq(stream_args.channels.size(), 0.0),
@@ -215,6 +217,25 @@ namespace gr {
     {
       chan = _stream_args.channels[chan];
       return _dev->get_tx_freq_range(chan);
+    }
+
+    void
+    usrp_sink_impl::set_csma_enable(bool enable, size_t mboard)
+    {
+        _csma_enable = enable;
+    }
+
+    void
+    usrp_sink_impl::set_csma_threshold(const uint32_t threshold, size_t mboard)
+    {
+        _dev->set_csma_threshold(threshold, mboard);
+    }
+
+    void
+    usrp_sink_impl::set_csma_slottime(const uint32_t slottime, size_t mboard)
+    {
+        _dev->set_csma_slottime(slottime, mboard);
+        _slottime = slottime;
     }
 
     void
@@ -570,6 +591,7 @@ namespace gr {
       // default to send a mid-burst packet
       _metadata.start_of_burst = false;
       _metadata.end_of_burst = false;
+      _metadata.use_cs = _csma_enable;
 
       //collect tags in this work()
       const uint64_t samp0_count = nitems_read(0);
@@ -697,6 +719,10 @@ namespace gr {
           // Bursty tx will not use time specs, unless a tx_time tag is also given.
           _metadata.has_time_spec = false;
           _metadata.start_of_burst = pmt::to_bool(value);
+          if(pmt::to_bool(value)) {
+              _metadata.use_cs = _csma_enable;
+              _metadata.sifs   = 3200;
+          }
         }
 
         //length_tag found; set the start of burst flag in the metadata
@@ -713,6 +739,33 @@ namespace gr {
           }
           _nitems_to_send = pmt::to_long(value);
           _metadata.start_of_burst = true;
+        }
+
+        else if(not pmt::is_null(_length_tag_key) and pmt::equal(key, pmt::mp("csma"))) {
+          if (my_tag_count != samp0_count) {
+            max_count = my_tag_count;
+	    break;
+          }
+	  // enable only if also csma is switched on at device
+          _metadata.use_cs = _csma_enable;
+        }
+
+        else if(not pmt::is_null(_length_tag_key) and pmt::equal(key, pmt::mp("backoffs"))) {
+          if (my_tag_count != samp0_count) {
+            max_count = my_tag_count;
+	    break;
+          }
+	  _metadata.backoffs[0] = pmt::u64vector_ref(value, 0);
+	  _metadata.backoffs[1] = pmt::u64vector_ref(value, 1);
+        }
+
+        else if(not pmt::is_null(_length_tag_key) and pmt::equal(key, pmt::mp("aifsn"))) {
+          if (my_tag_count != samp0_count) {
+            max_count = my_tag_count;
+	    break;
+          }
+	  // FIXME: add option for sifs
+	  _metadata.sifs = pmt::to_uint64(value) * _slottime + 3200;
         }
 
         /* II. Tags that can be on the first OR last sample of a burst
@@ -748,6 +801,7 @@ namespace gr {
           found_eob = true;
           max_count = my_tag_count + 1;
           _metadata.end_of_burst = pmt::to_bool(value);
+          _metadata.use_cs = false;
         }
       } // end foreach
 
