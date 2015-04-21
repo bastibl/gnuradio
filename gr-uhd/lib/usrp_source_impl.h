@@ -97,6 +97,7 @@ namespace gr {
       void set_gain(double gain, size_t chan);
       void set_gain(double gain, const std::string &name, size_t chan);
       void set_normalized_gain(double gain, size_t chan);
+      void set_agc(bool agc, size_t chan);
       void set_antenna(const std::string &ant, size_t chan);
       void set_bandwidth(double bandwidth, size_t chan);
       double get_bandwidth(size_t chan);

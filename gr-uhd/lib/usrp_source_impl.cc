@@ -190,6 +190,13 @@ namespace gr {
     }
 
     void
+    usrp_source_impl::set_agc(bool agc, size_t chan)
+    {
+      chan = _stream_args.channels[chan];
+      return _dev->set_agc(agc, chan);
+    }
+
+    void
     usrp_source_impl::set_gain(double gain, size_t chan)
     {
       chan = _stream_args.channels[chan];

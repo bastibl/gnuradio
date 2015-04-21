@@ -212,6 +212,8 @@ namespace gr {
        */
       virtual void set_gain(double gain, size_t chan = 0) = 0;
 
+      virtual void set_agc(bool agc, size_t chan = 0) = 0;
+
       /*!
        * Set the named gain on the dboard.
        * \param gain the gain in dB
