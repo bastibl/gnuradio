@@ -102,7 +102,6 @@ add_library(gnuradio-runtime
 # Messages
 target_sources(gnuradio-runtime PRIVATE
   ${CMAKE_CURRENT_SOURCE_DIR}/messages/msg_accepter.cc
-  ${CMAKE_CURRENT_SOURCE_DIR}/messages/msg_accepter_msgq.cc
   ${CMAKE_CURRENT_SOURCE_DIR}/messages/msg_producer.cc
   ${CMAKE_CURRENT_SOURCE_DIR}/messages/msg_queue.cc
   )

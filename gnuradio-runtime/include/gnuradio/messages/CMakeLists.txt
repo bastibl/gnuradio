@@ -22,7 +22,6 @@
 ########################################################################
 install(FILES
   msg_accepter.h
-  msg_accepter_msgq.h
   msg_passing.h
   msg_producer.h
   msg_queue.h
