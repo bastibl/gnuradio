@@ -47,7 +47,7 @@ class test_hdlc_framer(gr_unittest.TestCase):
         self.tb.start()
         msg = pmt.cons(pmt.PMT_NIL, pmt.init_u8vector(len(src_data),src_data))
         for i in range(npkts):
-            frame.to_basic_block()._post(pmt.intern("in"), msg)
+            frame.to_basic_block().post(pmt.intern("in"), msg)
         sleep(0.2)
         self.tb.stop()
         self.tb.wait()

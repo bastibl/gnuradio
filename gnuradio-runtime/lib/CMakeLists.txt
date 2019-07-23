@@ -71,7 +71,6 @@ add_library(gnuradio-runtime
   logger.cc
   message.cc
   misc.cc
-  msg_accepter.cc
   msg_handler.cc
   msg_queue.cc
   pagesize.cc

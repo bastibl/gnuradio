@@ -113,7 +113,7 @@ class qa_header_payload_demux (gr_unittest.TestCase):
     def test_001_t(self):
         """ Simplest possible test: put in zeros, then header,
         then payload, trigger signal, try to demux.
-        The return signal from the header parser is faked via _post()
+        The return signal from the header parser is faked via post()
         Add in some tags for fun.
         """
         n_zeros = 1
@@ -342,7 +342,7 @@ class qa_header_payload_demux (gr_unittest.TestCase):
         self.tb.connect((hpd, 1), payload_sink)
         self.tb.start()
         time.sleep(.2) # Need this, otherwise, the next message is ignored
-        hpd.to_basic_block()._post(
+        hpd.to_basic_block().post(
             pmt.intern('header_data'),
             pmt.to_pmt({'frame_len': len(payload), 'payload_offset': payload_offset})
         )
@@ -410,7 +410,7 @@ class qa_header_payload_demux (gr_unittest.TestCase):
         self.tb.connect((hpd, 1), payload_sink)
         self.tb.start()
         time.sleep(.2) # Need this, otherwise, the next message is ignored
-        hpd.to_basic_block()._post(
+        hpd.to_basic_block().post(
             pmt.intern('header_data'),
             pmt.from_long(n_symbols)
         )
@@ -495,20 +495,20 @@ class qa_header_payload_demux (gr_unittest.TestCase):
         self.tb.connect((hpd, 1), payload_sink)
         self.tb.start()
         time.sleep(.2) # Need this, otherwise, the next message is ignored
-        hpd.to_basic_block()._post(
+        hpd.to_basic_block().post(
             pmt.intern('header_data'),
             pmt.from_long(len(payload1))
         )
         while len(payload_sink.data()) < len(payload1):
             time.sleep(.2)
-        hpd.to_basic_block()._post(
+        hpd.to_basic_block().post(
             pmt.intern('header_data'),
             pmt.PMT_F
         )
         # This next command is a bit of a showstopper, but there's no condition to check upon
         # to see if the previous msg handling is finished
         time.sleep(.7)
-        hpd.to_basic_block()._post(
+        hpd.to_basic_block().post(
             pmt.intern('header_data'),
             pmt.from_long(len(payload2))
         )

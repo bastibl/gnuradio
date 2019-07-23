@@ -48,7 +48,6 @@ install(FILES
   math.h
   message.h
   misc.h
-  msg_accepter.h
   msg_handler.h
   msg_queue.h
   nco.h

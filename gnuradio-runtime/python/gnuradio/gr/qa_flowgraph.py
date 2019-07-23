@@ -45,7 +45,7 @@ class test_flowgraph (gr_unittest.TestCase):
         self.tb.unlock()
 
         msg = pmt.cons(pmt.PMT_NIL, pmt.init_u8vector(3, (1, 2, 3)))
-        rem.to_basic_block()._post(pmt.intern('pdus'), msg)
+        rem.to_basic_block().post(pmt.intern('pdus'), msg)
         time.sleep(0.2)
 
         self.tb.stop()

@@ -53,7 +53,7 @@ namespace gr {
     bool check_topology(int ninputs, int noutputs);
     std::string alias();
     void set_block_alias(std::string name);
-    void _post(pmt::pmt_t which_port, pmt::pmt_t msg);
+    virtual void post(pmt::pmt_t which_port, pmt::pmt_t msg);
     pmt::pmt_t message_ports_in();
     pmt::pmt_t message_ports_out();
     pmt::pmt_t message_subscribers(pmt::pmt_t which_port);

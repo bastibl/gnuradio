@@ -82,7 +82,7 @@ called.
 Any block that has a subscription to another block's output message
 port will receive the message when it is published. Internally, when a
 block publishes a message, it simply iterates through all blocks that
-have subscribed and uses the gr::basic_block::_post method to send the
+have subscribed and uses the gr::basic_block::post method to send the
 message to that block's message queue.
 
 === Message Handler Functions ===
@@ -146,9 +146,9 @@ The return value for these are a PMT vector filled with PMT symbols,
 so PMT operators must be used to manipulate them.
 
 Each block has internal methods to handle posting and receiving of
-messages. The gr::basic_block::_post method takes in a message and
+messages. The gr::basic_block::post method takes in a message and
 places it into its queue. The publishing model uses the
-gr::basic_block::_post method of the blocks as the way to access the
+gr::basic_block::post method of the blocks as the way to access the
 message queue. So the message queue of the right name will have a new
 message. Posting messages also has the benefit of waking up the
 block's thread if it is in a wait state. So if idle, as soon as a
@@ -158,7 +158,7 @@ message is posted, it will wake up and call the message handler.
 
 An important feature of the message passing architecture
 is how it can be used to take in messages from an external source. We
-can call a block's gr::basic_block::_post method directly and pass it a
+can call a block's gr::basic_block::post method directly and pass it a
 message. So any block with an input message port can receive messages
 from the outside in this way.
 
@@ -175,13 +175,13 @@ here, we will create and insert them by hand.
 
   port = pmt.intern("pdus")
   msg = pmt.cons(pmt.PMT_NIL, pmt.make_u8vector(16, 0xFF))
-  src.to_basic_block()._post(port, msg)
+  src.to_basic_block().post(port, msg)
 
 The PDU's metadata section is empty, hence the pmt::PMT_NIL
 object. The payload is now just a simple vector of 16 bytes of all
 1's. To post the message, we have to access the block's gr::basic_block
 class, which we do using the gr::basic_block::to_basic_block method and
-then call the gr::basic_block::_post method to pass the PDU to the
+then call the gr::basic_block::post method to pass the PDU to the
 right port.
 
 All of these mechanisms are explored and tested in the QA code of the

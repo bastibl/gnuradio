@@ -25,7 +25,7 @@
 
 #include <gnuradio/api.h>
 #include <gnuradio/io_signature.h>
-#include <gnuradio/msg_accepter.h>
+#include <gnuradio/messages/msg_accepter.h>
 #include <gnuradio/runtime_types.h>
 #include <gnuradio/sptr_magic.h>
 #include <gnuradio/thread/thread.h>
@@ -55,7 +55,7 @@ namespace gr {
  * container, and block, which implements actual signal
  * processing functions.
  */
-class GR_RUNTIME_API basic_block : public msg_accepter,
+class GR_RUNTIME_API basic_block : public messages::msg_accepter,
                                    public boost::enable_shared_from_this<basic_block>
 {
     typedef boost::function<void(pmt::pmt_t)> msg_handler_t;
@@ -228,7 +228,7 @@ public:
     /*!
      * Accept msg, place in queue, arrange for thread to be awakened if it's not already.
      */
-    void _post(pmt::pmt_t which_port, pmt::pmt_t msg);
+    virtual void post(pmt::pmt_t which_port, pmt::pmt_t msg);
 
     //! is the queue empty?
     bool empty_p(pmt::pmt_t which_port)

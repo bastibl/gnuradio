@@ -58,7 +58,7 @@ void repeat_impl::set_interpolation(int interp)
 {
     // This ensures that interpolation is only changed between calls to work
     // (and not in the middle of an ongoing work)
-    _post(pmt::mp("interpolation"),                                   /* port */
+    post(pmt::mp("interpolation"),                                   /* port */
           pmt::cons(pmt::mp("interpolation"), pmt::from_long(interp)) /* pair */
     );
 }

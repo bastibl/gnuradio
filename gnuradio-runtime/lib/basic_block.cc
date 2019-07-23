@@ -141,7 +141,6 @@ void basic_block::message_port_pub(pmt::pmt_t port_id, pmt::pmt_t msg)
 
         currlist = pmt::cdr(currlist);
         basic_block_sptr blk = global_block_registry.block_lookup(block);
-        // blk->post(msg);
         blk->post(port, msg);
     }
 }
@@ -178,7 +177,7 @@ void basic_block::message_port_unsub(pmt::pmt_t port_id, pmt::pmt_t target)
         pmt::dict_add(d_message_subscribers, port_id, pmt::list_rm(currlist, target));
 }
 
-void basic_block::_post(pmt::pmt_t which_port, pmt::pmt_t msg)
+void basic_block::post(pmt::pmt_t which_port, pmt::pmt_t msg)
 {
     insert_tail(which_port, msg);
 }
