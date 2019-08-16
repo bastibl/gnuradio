@@ -24,7 +24,6 @@ GR_PYTHON_INSTALL(PROGRAMS
   plot_flops.py
   run_synthetic.py
   synthetic.py
-  wfm_rcv_pll_to_wav.py
   DESTINATION ${GR_PKG_DATA_DIR}/examples/mp-sched
 )
 
