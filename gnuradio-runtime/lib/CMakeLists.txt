@@ -107,7 +107,6 @@ target_sources(gnuradio-runtime PRIVATE
 # Thread
 target_sources(gnuradio-runtime PRIVATE
   ${CMAKE_CURRENT_SOURCE_DIR}/thread/thread.cc
-  ${CMAKE_CURRENT_SOURCE_DIR}/thread/thread_body_wrapper.cc
   ${CMAKE_CURRENT_SOURCE_DIR}/thread/thread_group.cc
   )
 

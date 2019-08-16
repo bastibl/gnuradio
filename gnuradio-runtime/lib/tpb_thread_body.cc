@@ -29,12 +29,38 @@
 #include <gnuradio/prefs.h>
 #include <pmt/pmt.h>
 #include <boost/foreach.hpp>
+#include <exception>
+#include <iostream>
+#include <string>
+
+#ifdef HAVE_SIGNAL_H
+#include <signal.h>
+#endif
 
 namespace gr {
+
 
 void tpb_thread_body::run(block_sptr block,
                           gr::thread::barrier_sptr start_sync,
                           int max_noutput_items)
+{
+    mask_signals();
+    std::string name(boost::str(boost::format("%s%d") % block->name() % block->unique_id()));
+
+    try {
+        tpb_thread_body::execute(block, start_sync, max_noutput_items);
+    } catch (boost::thread_interrupted const&) {
+    } catch (std::exception const& e) {
+        std::cerr << "thread[" << name << "]: " << e.what() << std::endl;
+    } catch (...) {
+        std::cerr << "thread[" << name << "]: "
+                  << "caught unrecognized exception\n";
+    }
+}
+
+void tpb_thread_body::execute(block_sptr block,
+                              gr::thread::barrier_sptr start_sync,
+                              int max_noutput_items)
 {
     block_executor executor(block, max_noutput_items);
 
@@ -174,5 +200,55 @@ void tpb_thread_body::run(block_sptr block,
         }
     }
 }
+
+#if defined(HAVE_PTHREAD_SIGMASK) && defined(HAVE_SIGNAL_H) && !defined(__MINGW32__)
+
+void tpb_thread_body::mask_signals()
+{
+    sigset_t new_set;
+    int r;
+
+    sigemptyset(&new_set);
+    sigaddset(&new_set, SIGHUP); // block these...
+    sigaddset(&new_set, SIGINT);
+    sigaddset(&new_set, SIGPIPE);
+    sigaddset(&new_set, SIGALRM);
+    sigaddset(&new_set, SIGTERM);
+    sigaddset(&new_set, SIGUSR1);
+    sigaddset(&new_set, SIGCHLD);
+#ifdef SIGPOLL
+    sigaddset(&new_set, SIGPOLL);
+#endif
+#ifdef SIGPROF
+    sigaddset(&new_set, SIGPROF);
+#endif
+#ifdef SIGSYS
+    sigaddset(&new_set, SIGSYS);
+#endif
+#ifdef SIGTRAP
+    sigaddset(&new_set, SIGTRAP);
+#endif
+#ifdef SIGURG
+    sigaddset(&new_set, SIGURG);
+#endif
+#ifdef SIGVTALRM
+    sigaddset(&new_set, SIGVTALRM);
+#endif
+#ifdef SIGXCPU
+    sigaddset(&new_set, SIGXCPU);
+#endif
+#ifdef SIGXFSZ
+    sigaddset(&new_set, SIGXFSZ);
+#endif
+    r = pthread_sigmask(SIG_BLOCK, &new_set, 0);
+    if (r != 0)
+        perror("pthread_sigmask");
+}
+
+#else
+
+void tpb_thread_body::mask_signals() {}
+
+#endif
 
 } /* namespace gr */

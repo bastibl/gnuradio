@@ -36,6 +36,10 @@ namespace gr {
  */
 class GR_RUNTIME_API tpb_thread_body
 {
+    static void mask_signals();
+
+    static void
+    execute(block_sptr block, gr::thread::barrier_sptr start_sync, int max_noutput_items);
 
 public:
     static void
