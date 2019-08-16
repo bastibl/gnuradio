@@ -25,12 +25,10 @@
 #include "flat_flowgraph.h"
 #include <gnuradio/api.h>
 #include <gnuradio/block.h>
+#include <gnuradio/thread/thread_group.h>
 #include <boost/utility.hpp>
 
 namespace gr {
-
-class scheduler;
-typedef boost::shared_ptr<scheduler> scheduler_sptr;
 
 /*!
  * \brief Abstract scheduler that takes a flattened flow graph and
@@ -41,26 +39,40 @@ typedef boost::shared_ptr<scheduler> scheduler_sptr;
  */
 class GR_RUNTIME_API scheduler : boost::noncopyable
 {
+
+private:
+    gr::thread::thread_group d_threads;
+
+    /*!
+     * \brief Construct a scheduler and begin evaluating the graph.
+     *
+     * The scheduler will continue running until all blocks until they
+     * report that they are done or the stop method is called.
+     */
+    scheduler(flat_flowgraph_sptr ffg, int max_noutput_items);
+
 public:
+    typedef boost::shared_ptr<scheduler> sptr;
+
     /*!
      * \brief Construct a scheduler and begin evaluating the graph.
      *
      * The scheduler will continue running until all blocks
      * report that they are done or the stop method is called.
      */
-    scheduler(flat_flowgraph_sptr ffg, int max_noutput_items);
+    static scheduler::sptr make(flat_flowgraph_sptr ffg, int max_noutput_items = 100000);
 
     virtual ~scheduler();
 
     /*!
      * \brief Tell the scheduler to stop executing.
      */
-    virtual void stop() = 0;
+    virtual void stop();
 
     /*!
      * \brief Block until the graph is done.
      */
-    virtual void wait() = 0;
+    virtual void wait();
 };
 
 } /* namespace gr */

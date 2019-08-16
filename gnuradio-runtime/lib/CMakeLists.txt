@@ -78,7 +78,6 @@ add_library(gnuradio-runtime
   realtime.cc
   realtime_impl.cc
   scheduler.cc
-  scheduler_tpb.cc
   sptr_magic.cc
   sync_block.cc
   sync_decimator.cc
