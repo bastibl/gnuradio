@@ -24,7 +24,7 @@
 #endif
 
 #include "block_executor.h"
-#include "tpb_thread_body.h"
+#include "thread_body.h"
 #include <gnuradio/block_detail.h>
 #include <gnuradio/prefs.h>
 #include <pmt/pmt.h>
@@ -40,15 +40,16 @@
 namespace gr {
 
 
-void tpb_thread_body::run(block_sptr block,
-                          gr::thread::barrier_sptr start_sync,
-                          int max_noutput_items)
+void thread_body::run(block_sptr block,
+                      gr::thread::barrier_sptr start_sync,
+                      int max_noutput_items)
 {
     mask_signals();
-    std::string name(boost::str(boost::format("%s%d") % block->name() % block->unique_id()));
+    std::string name(
+        boost::str(boost::format("%s%d") % block->name() % block->unique_id()));
 
     try {
-        tpb_thread_body::execute(block, start_sync, max_noutput_items);
+        thread_body::execute(block, start_sync, max_noutput_items);
     } catch (boost::thread_interrupted const&) {
     } catch (std::exception const& e) {
         std::cerr << "thread[" << name << "]: " << e.what() << std::endl;
@@ -58,9 +59,9 @@ void tpb_thread_body::run(block_sptr block,
     }
 }
 
-void tpb_thread_body::execute(block_sptr block,
-                              gr::thread::barrier_sptr start_sync,
-                              int max_noutput_items)
+void thread_body::execute(block_sptr block,
+                          gr::thread::barrier_sptr start_sync,
+                          int max_noutput_items)
 {
     block_executor executor(block, max_noutput_items);
 
@@ -90,7 +91,7 @@ void tpb_thread_body::execute(block_sptr block,
     std::string config_file = p->get_string("LOG", "log_config", "");
     std::string log_level = p->get_string("LOG", "log_level", "off");
     std::string log_file = p->get_string("LOG", "log_file", "");
-    GR_LOG_GETLOGGER(LOG, "gr_log.tpb_thread_body");
+    GR_LOG_GETLOGGER(LOG, "gr_log.thread_body");
     GR_LOG_SET_LEVEL(LOG, log_level);
     GR_CONFIG_LOGGER(config_file);
     if (!log_file.empty()) {
@@ -203,7 +204,7 @@ void tpb_thread_body::execute(block_sptr block,
 
 #if defined(HAVE_PTHREAD_SIGMASK) && defined(HAVE_SIGNAL_H) && !defined(__MINGW32__)
 
-void tpb_thread_body::mask_signals()
+void thread_body::mask_signals()
 {
     sigset_t new_set;
     int r;
@@ -247,7 +248,7 @@ void tpb_thread_body::mask_signals()
 
 #else
 
-void tpb_thread_body::mask_signals() {}
+void thread_body::mask_signals() {}
 
 #endif
 

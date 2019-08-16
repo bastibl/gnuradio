@@ -24,7 +24,7 @@
 #endif
 
 #include "scheduler.h"
-#include "tpb_thread_body.h"
+#include "thread_body.h"
 #include <gnuradio/block_detail.h>
 
 namespace gr {
@@ -67,7 +67,7 @@ scheduler::scheduler(flat_flowgraph_sptr ffg, int max_noutput_items)
             block_max_noutput_items = max_noutput_items;
         }
         auto f = boost::bind(
-            &tpb_thread_body::run, blocks[i], start_sync, block_max_noutput_items);
+            &thread_body::run, blocks[i], start_sync, block_max_noutput_items);
         d_threads.create_thread(f);
     }
     start_sync->wait();

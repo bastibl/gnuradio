@@ -18,8 +18,8 @@
  * with this program; if not, write to the Free Software Foundation, Inc.,
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
-#ifndef INCLUDED_GR_TPB_THREAD_BODY_H
-#define INCLUDED_GR_TPB_THREAD_BODY_H
+#ifndef INCLUDED_GR_THREAD_BODY_H
+#define INCLUDED_GR_THREAD_BODY_H
 
 #include <gnuradio/api.h>
 #include <gnuradio/block.h>
@@ -34,7 +34,7 @@ namespace gr {
  * The constructor turns into the main loop which returns when the
  * block is done or is interrupted.
  */
-class GR_RUNTIME_API tpb_thread_body
+class GR_RUNTIME_API thread_body
 {
     static void mask_signals();
 
@@ -48,4 +48,4 @@ public:
 
 } /* namespace gr */
 
-#endif /* INCLUDED_GR_TPB_THREAD_BODY_H */
+#endif /* INCLUDED_GR_THREAD_BODY_H */
