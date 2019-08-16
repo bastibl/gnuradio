@@ -23,21 +23,20 @@
 #include <config.h>
 #endif
 
+#include "block_executor.h"
 #include "tpb_thread_body.h"
+#include <gnuradio/block_detail.h>
 #include <gnuradio/prefs.h>
 #include <pmt/pmt.h>
 #include <boost/foreach.hpp>
-#include <boost/thread.hpp>
-#include <iostream>
 
 namespace gr {
 
-tpb_thread_body::tpb_thread_body(block_sptr block,
-                                 gr::thread::barrier_sptr start_sync,
-                                 int max_noutput_items)
-    : d_exec(block, max_noutput_items)
+void tpb_thread_body::run(block_sptr block,
+                          gr::thread::barrier_sptr start_sync,
+                          int max_noutput_items)
 {
-    // std::cerr << "tpb_thread_body: " << block << std::endl;
+    block_executor executor(block, max_noutput_items);
 
 #if defined(_MSC_VER) || defined(__MINGW32__)
 #include <windows.h>
@@ -119,7 +118,7 @@ tpb_thread_body::tpb_thread_body(block_sptr block,
 
         // run one iteration if we are a connected stream block
         if (d->noutputs() > 0 || d->ninputs() > 0) {
-            s = d_exec.run_one_iteration();
+            s = executor.run_one_iteration();
         } else {
             s = block_executor::BLKD_IN;
             // a msg port only block wants to shutdown
@@ -175,7 +174,5 @@ tpb_thread_body::tpb_thread_body(block_sptr block,
         }
     }
 }
-
-tpb_thread_body::~tpb_thread_body() {}
 
 } /* namespace gr */

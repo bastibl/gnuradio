@@ -25,29 +25,10 @@
 
 #include "scheduler.h"
 #include "tpb_thread_body.h"
+#include <gnuradio/block_detail.h>
 #include <gnuradio/thread/thread_body_wrapper.h>
 
 namespace gr {
-
-class tpb_container
-{
-    block_sptr d_block;
-    int d_max_noutput_items;
-    thread::barrier_sptr d_start_sync;
-
-public:
-    tpb_container(block_sptr block,
-                  int max_noutput_items,
-                  thread::barrier_sptr start_sync)
-        : d_block(block), d_max_noutput_items(max_noutput_items), d_start_sync(start_sync)
-    {
-    }
-
-    void operator()()
-    {
-        tpb_thread_body body(d_block, d_start_sync, d_max_noutput_items);
-    }
-};
 
 scheduler::sptr scheduler::make(flat_flowgraph_sptr ffg, int max_noutput_items)
 {
@@ -86,8 +67,9 @@ scheduler::scheduler(flat_flowgraph_sptr ffg, int max_noutput_items)
         } else {
             block_max_noutput_items = max_noutput_items;
         }
-        d_threads.create_thread(thread::thread_body_wrapper<tpb_container>(
-            tpb_container(blocks[i], block_max_noutput_items, start_sync), name.str()));
+        auto f = boost::bind(&tpb_thread_body::run, blocks[i], start_sync, block_max_noutput_items);
+        d_threads.create_thread(
+            gr::thread::thread_body_wrapper<decltype(f)>(f, name.str()));
     }
     start_sync->wait();
 }
