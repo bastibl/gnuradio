@@ -83,7 +83,6 @@ add_library(gnuradio-runtime
   sync_interpolator.cc
   sys_paths.cc
   tagged_stream_block.cc
-  test.cc
   thread_body.cc
   top_block_impl.cc
   tpb_detail.cc
