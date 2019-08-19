@@ -40,7 +40,7 @@
 namespace gr {
 
 
-void thread_body::run(block_sptr block,
+void thread_body::run_thread(block_sptr block,
                       gr::thread::barrier_sptr start_sync,
                       int max_noutput_items)
 {
@@ -49,7 +49,7 @@ void thread_body::run(block_sptr block,
         boost::str(boost::format("%s%d") % block->name() % block->unique_id()));
 
     try {
-        thread_body::execute(block, start_sync, max_noutput_items);
+        thread_body::execute_block(block, start_sync, max_noutput_items);
     } catch (boost::thread_interrupted const&) {
     } catch (std::exception const& e) {
         std::cerr << "thread[" << name << "]: " << e.what() << std::endl;
@@ -59,7 +59,7 @@ void thread_body::run(block_sptr block,
     }
 }
 
-void thread_body::execute(block_sptr block,
+void thread_body::execute_block(block_sptr block,
                           gr::thread::barrier_sptr start_sync,
                           int max_noutput_items)
 {

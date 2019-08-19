@@ -39,11 +39,11 @@ class GR_RUNTIME_API thread_body
     static void mask_signals();
 
     static void
-    execute(block_sptr block, gr::thread::barrier_sptr start_sync, int max_noutput_items);
+    execute_block(block_sptr block, gr::thread::barrier_sptr start_sync, int max_noutput_items);
 
 public:
     static void
-    run(block_sptr block, gr::thread::barrier_sptr start_sync, int max_noutput_items);
+    run_thread(block_sptr block, gr::thread::barrier_sptr start_sync, int max_noutput_items);
 };
 
 } /* namespace gr */

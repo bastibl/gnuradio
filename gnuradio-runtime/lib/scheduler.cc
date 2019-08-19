@@ -67,7 +67,7 @@ scheduler::scheduler(flat_flowgraph_sptr ffg, int max_noutput_items)
             block_max_noutput_items = max_noutput_items;
         }
         auto f = boost::bind(
-            &thread_body::run, blocks[i], start_sync, block_max_noutput_items);
+            &thread_body::run_thread, blocks[i], start_sync, block_max_noutput_items);
         d_threads.create_thread(f);
     }
     start_sync->wait();
