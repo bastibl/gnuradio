@@ -24,6 +24,7 @@ include(GrBoost)
 include(GrPython)
 
 find_package(MPLIB REQUIRED)
+find_package(ZeroMQ)
 
 ########################################################################
 # Setup compatibility checks and defines
@@ -41,6 +42,7 @@ GR_REGISTER_COMPONENT("gnuradio-runtime" ENABLE_GNURADIO_RUNTIME
     PYTHONINTERP_FOUND
     MPLIB_FOUND
     LOG4CPP_FOUND
+    ZEROMQ_FOUND
 )
 
 get_filename_component(GNURADIO_RUNTIME_PYTHONPATH

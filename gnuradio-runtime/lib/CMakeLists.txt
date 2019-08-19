@@ -199,6 +199,7 @@ target_link_libraries(gnuradio-runtime PUBLIC
   Boost::thread
   Log4Cpp::log4cpp
   MPLib::mplib
+  ZeroMQ::ZeroMQ
   )
 
 target_include_directories(gnuradio-runtime
@@ -268,7 +269,7 @@ if(TRY_SHM_VMCIRCBUF)
     target_compile_definitions(gnuradio-runtime PRIVATE -DTRY_SHM_VMCIRCBUF )
 endif(TRY_SHM_VMCIRCBUF)
 
-set(EXTRA_DEPS "")
+set(EXTRA_DEPS "ZeroMQ")
 if(ENABLE_CTRLPORT_THRIFT)
   if(THRIFT_FOUND)
     list(APPEND EXTRA_DEPS THRIFT)
