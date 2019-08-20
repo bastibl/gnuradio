@@ -26,7 +26,6 @@
 
 #include "lms_dd_equalizer_cc_impl.h"
 #include <gnuradio/io_signature.h>
-#include <gnuradio/misc.h>
 #include <volk/volk.h>
 
 namespace gr {

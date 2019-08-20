@@ -69,7 +69,6 @@ add_library(gnuradio-runtime
   local_sighandler.cc
   logger.cc
   message.cc
-  misc.cc
   msg_handler.cc
   msg_queue.cc
   pagesize.cc

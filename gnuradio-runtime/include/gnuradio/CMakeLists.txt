@@ -47,7 +47,6 @@ install(FILES
   logger.h
   math.h
   message.h
-  misc.h
   msg_handler.h
   msg_queue.h
   nco.h
