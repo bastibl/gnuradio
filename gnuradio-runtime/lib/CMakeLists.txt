@@ -75,7 +75,6 @@ add_library(gnuradio-runtime
   pagesize.cc
   prefs.cc
   realtime.cc
-  realtime_impl.cc
   scheduler.cc
   sptr_magic.cc
   sync_block.cc

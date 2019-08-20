@@ -102,7 +102,6 @@ install(
     pmt_swig.i
     prefs.i
     py3compat.i
-    realtime.i
     sync_block.i
     sync_decimator.i
     sync_interpolator.i

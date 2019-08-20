@@ -71,6 +71,7 @@
 %constant int sizeof_gr_complex	= sizeof(gr_complex);
 
 %include <gnuradio/endianness.h>
+%include <gnuradio/realtime.h>
 %include "basic_block.i"
 %include "block.i"
 %include "block_detail.i"
@@ -83,7 +84,6 @@
 %include "msg_handler.i"
 %include "msg_queue.i"
 %include "prefs.i"
-%include "realtime.i"
 %include "sync_block.i"
 %include "sync_decimator.i"
 %include "sync_interpolator.i"

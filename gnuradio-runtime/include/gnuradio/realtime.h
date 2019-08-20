@@ -24,15 +24,51 @@
 #define INCLUDED_GR_REALTIME_H
 
 #include <gnuradio/api.h>
-#include <gnuradio/realtime_impl.h>
+#include <stdexcept>
 
 namespace gr {
+
+typedef enum { RT_OK = 0, RT_NOT_IMPLEMENTED, RT_NO_PRIVS, RT_OTHER_ERROR } rt_status_t;
+
+enum rt_sched_policy {
+    RT_SCHED_RR = 0,   // round robin
+    RT_SCHED_FIFO = 1, // first in first out
+};
+
+/*
+ * Define the range for our virtual priorities (don't change
+ * these)
+ *
+ * Processes (or threads) with numerically higher priority values
+ * are scheduled before processes with numerically lower priority
+ * values. Thus, the value returned by rt_priority_max() will be
+ * greater than the value returned by rt_priority_min().
+ */
+static inline int rt_priority_min() { return 0; }
+static inline int rt_priority_max() { return 15; }
+static inline int rt_priority_default() { return 1; }
+
+struct GR_RUNTIME_API rt_sched_param {
+    int priority;
+    rt_sched_policy policy;
+
+    rt_sched_param() : priority(rt_priority_default()), policy(RT_SCHED_RR) {}
+
+    rt_sched_param(int priority_, rt_sched_policy policy_ = RT_SCHED_RR)
+    {
+        if (priority_ < rt_priority_min() || priority_ > rt_priority_max())
+            throw std::invalid_argument("rt_sched_param: priority out of range");
+
+        priority = priority_;
+        policy = policy_;
+    }
+};
 
 /*!
  * \brief If possible, enable high-priority "real time" scheduling.
  * \ingroup misc
  */
-GR_RUNTIME_API rt_status_t enable_realtime_scheduling();
+GR_RUNTIME_API rt_status_t enable_realtime_scheduling(rt_sched_param p = rt_sched_param());
 
 } /* namespace gr */
 
