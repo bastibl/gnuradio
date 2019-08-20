@@ -17,10 +17,6 @@
  * the Free Software Foundation, Inc., 51 Franklin Street,
  * Boston, MA 02110-1301, USA.
  */
-#ifdef HAVE_CONFIG_H
-#include "config.h"
-#endif
-
 #include "ldpc_H_matrix_impl.h"
 #include <math.h>
 #include <fstream>

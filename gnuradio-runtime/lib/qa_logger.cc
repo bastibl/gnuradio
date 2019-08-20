@@ -25,10 +25,6 @@
  * add them here.
  */
 
-#ifdef HAVE_CONFIG_H
-#include <config.h>
-#endif
-
 #include <gnuradio/logger.h>
 #include <boost/test/unit_test.hpp>
 

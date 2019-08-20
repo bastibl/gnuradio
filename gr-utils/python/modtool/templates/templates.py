@@ -130,10 +130,6 @@ namespace gr {
 # C++ file of a GR block
 Templates['block_impl_cpp'] = '''/* -*- c++ -*- */
 ${str_to_fancyc_comment(license)}
-#ifdef HAVE_CONFIG_H
-#include "config.h"
-#endif
-
 #include <gnuradio/io_signature.h>
 % if blocktype == 'noblock':
 #include <${include_dir_prefix}/${blockname}.h>
@@ -445,10 +441,6 @@ class ${blockname}(${parenttype}):
 # C++ file for QA (Boost UTF style)
 Templates['qa_cpp_boostutf'] = '''/* -*- c++ -*- */
 ${str_to_fancyc_comment(license)}
-#ifdef HAVE_CONFIG_H
-#include <config.h>
-#endif
-
 #include <${include_dir_prefix}/${blockname}.h>
 #include <gnuradio/attributes.h>
 #include <boost/test/unit_test.hpp>

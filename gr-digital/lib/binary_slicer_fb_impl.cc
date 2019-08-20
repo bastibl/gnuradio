@@ -20,10 +20,6 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#ifdef HAVE_CONFIG_H
-#include "config.h"
-#endif
-
 #include "binary_slicer_fb_impl.h"
 #include <gnuradio/io_signature.h>
 #include <gnuradio/math.h>

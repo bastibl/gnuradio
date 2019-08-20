@@ -218,7 +218,6 @@ if(MSVC)
         -D_CRT_SECURE_NO_DEPRECATE
         -D_CRT_NONSTDC_NO_DEPRECATE
     )
-    add_definitions(-DHAVE_CONFIG_H)
     add_compile_options(/MP) #build with multiple processors
     add_compile_options(/bigobj) #allow for larger object files
 endif(MSVC)
@@ -505,10 +504,9 @@ add_subdirectory(gr-vocoder)
 add_subdirectory(gr-wavelet)
 add_subdirectory(gr-zeromq)
 
-# Defining GR_CTRLPORT for gnuradio/config.h
+# Defining GR_CTRLPORT for GnuradioConfig.cmake
 if(ENABLE_GR_CTRLPORT)
   SET(GR_CTRLPORT True)
-  add_definitions(-DGR_CTRLPORT)
 
   if(CTRLPORT_BACKENDS GREATER 0)
     SET(GR_RPCSERVER_ENABLED True)
@@ -557,22 +555,9 @@ GR_PRINT_COMPONENT_SUMMARY()
 message(STATUS "Using install prefix: ${CMAKE_INSTALL_PREFIX}")
 message(STATUS "Building for version: ${VERSION} / ${LIBVER}")
 
-# Create a config.h with some definitions to export to other projects.
-CONFIGURE_FILE(
-  ${CMAKE_CURRENT_SOURCE_DIR}/config.h.in
-  ${CMAKE_CURRENT_BINARY_DIR}/gnuradio-runtime/include/gnuradio/config.h
-)
-
 #Re-generate the constants file, now that we actually know which components will be enabled.
 configure_file(
     ${CMAKE_CURRENT_SOURCE_DIR}/gnuradio-runtime/lib/constants.cc.in
     ${CMAKE_CURRENT_BINARY_DIR}/gnuradio-runtime/lib/constants.cc
     ESCAPE_QUOTES
 @ONLY)
-
-# Install config.h in include/gnuradio
-install(
-    FILES
-    ${CMAKE_CURRENT_BINARY_DIR}/gnuradio-runtime/include/gnuradio/config.h
-    DESTINATION ${GR_INCLUDE_DIR}/gnuradio
-)

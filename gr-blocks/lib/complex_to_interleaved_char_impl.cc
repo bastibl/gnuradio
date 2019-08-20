@@ -20,10 +20,6 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#ifdef HAVE_CONFIG_H
-#include "config.h"
-#endif
-
 #include "complex_to_interleaved_char_impl.h"
 #include <gnuradio/io_signature.h>
 

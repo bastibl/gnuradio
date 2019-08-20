@@ -20,10 +20,6 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#ifdef HAVE_CONFIG_H
-#include "config.h"
-#endif
-
 #include "../audio_registry.h"
 #include "alsa_impl.h"
 #include "alsa_source.h"

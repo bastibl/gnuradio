@@ -20,10 +20,6 @@
 
 // Calculate the taps for the CPM phase responses
 
-#ifdef HAVE_CONFIG_H
-#include "config.h"
-#endif
-
 #include <gnuradio/analog/cpm.h>
 #include <gnuradio/math.h>
 

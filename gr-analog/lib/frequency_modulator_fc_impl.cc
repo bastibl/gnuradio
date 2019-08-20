@@ -20,10 +20,6 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#ifdef HAVE_CONFIG_H
-#include "config.h"
-#endif
-
 #include "frequency_modulator_fc_impl.h"
 #include <gnuradio/fxpt.h>
 #include <gnuradio/io_signature.h>

@@ -20,10 +20,6 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#ifdef HAVE_CONFIG_H
-#include <config.h>
-#endif
-
 #include <gnuradio/fft/fft.h>
 #include <gnuradio/filter/mmse_fir_interpolator_ff.h>
 #include <gnuradio/math.h>

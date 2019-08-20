@@ -20,10 +20,6 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#ifdef HAVE_CONFIG_H
-#include "config.h"
-#endif
-
 #include <gnuradio/basic_block.h>
 #include <gnuradio/block_registry.h>
 #include <gnuradio/logger.h>

@@ -6,10 +6,6 @@
  */
 #define FLAG_ERASURE 1 /* Randomly flag 50% of errors as erasures */
 
-#ifdef HAVE_CONFIG_H
-#include <config.h>
-#endif
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>

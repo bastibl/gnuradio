@@ -24,10 +24,6 @@
  * See also ISO 3309 [ISO-3309] or ITU-T V.42 [ITU-V42] for a formal specification.
  */
 
-#ifdef HAVE_CONFIG_H
-#include <config.h>
-#endif
-
 #include <gnuradio/digital/crc32.h>
 
 namespace gr {

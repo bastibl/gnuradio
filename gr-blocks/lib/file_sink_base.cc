@@ -20,10 +20,6 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#ifdef HAVE_CONFIG_H
-#include "config.h"
-#endif
-
 #include <gnuradio/blocks/file_sink_base.h>
 #include <gnuradio/thread/thread.h>
 #include <fcntl.h>

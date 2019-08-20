@@ -19,10 +19,6 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#ifdef HAVE_CONFIG_H
-#include "config.h"
-#endif
-
 #include <gnuradio/digital/header_buffer.h>
 #include <gnuradio/digital/header_format_ofdm.h>
 #include <gnuradio/digital/lfsr.h>

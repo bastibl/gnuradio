@@ -20,10 +20,6 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#ifdef HAVE_CONFIG_H
-#include "config.h"
-#endif
-
 #include "hier_block2_detail.h"
 #include <gnuradio/flowgraph.h>
 #include <gnuradio/hier_block2.h>

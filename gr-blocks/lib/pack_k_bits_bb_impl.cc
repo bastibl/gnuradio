@@ -20,10 +20,6 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#if HAVE_CONFIG_H
-#include "config.h"
-#endif
-
 #include "pack_k_bits_bb_impl.h"
 #include <gnuradio/io_signature.h>
 #include <iostream>

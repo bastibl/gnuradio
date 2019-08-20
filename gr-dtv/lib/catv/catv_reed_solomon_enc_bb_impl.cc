@@ -18,10 +18,6 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#ifdef HAVE_CONFIG_H
-#include "config.h"
-#endif
-
 #include "catv_reed_solomon_enc_bb_impl.h"
 #include <gnuradio/io_signature.h>
 

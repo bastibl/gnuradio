@@ -20,10 +20,6 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#ifdef HAVE_CONFIG_H
-#include "config.h"
-#endif
-
 #include <gnuradio/fec/generic_encoder.h>
 #include <gnuradio/prefs.h>
 #include <stdio.h>

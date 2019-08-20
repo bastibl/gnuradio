@@ -20,10 +20,6 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#ifdef HAVE_CONFIG_H
-#include <config.h>
-#endif
-
 #include "pmt_int.h"
 #include <gnuradio/messages/msg_accepter.h>
 #include <pmt/pmt.h>

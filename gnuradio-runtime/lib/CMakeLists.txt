@@ -134,6 +134,9 @@ if(THRIFT_FOUND)
 list(APPEND EXTRA_DEPS "THRIFT")
 MATH(EXPR CTRLPORT_BACKENDS "${CTRLPORT_BACKENDS} + 1")
 
+target_compile_definitions(gnuradio-runtime PUBLIC -DGR_RPCSERVER_ENABLED)
+target_compile_definitions(gnuradio-runtime PRIVATE -DGR_RPCSERVER_THRIFT)
+
 # Indicate thrift as an installed backend in the cmake summary.
 message(STATUS "Found and enabling Thrift backend to ControlPort")
 GR_APPEND_SUBCOMPONENT("thrift")

@@ -21,10 +21,6 @@
  */
 
 
-#ifdef HAVE_CONFIG_H
-#include <config.h>
-#endif
-
 #include "vector_insert_impl.h"
 #include <gnuradio/block.h>
 #include <gnuradio/io_signature.h>

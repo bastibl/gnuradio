@@ -20,10 +20,6 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#ifdef HAVE_CONFIG_H
-#include "config.h"
-#endif
-
 #include "clock_recovery_mm_ff_impl.h"
 #include <gnuradio/io_signature.h>
 #include <gnuradio/math.h>

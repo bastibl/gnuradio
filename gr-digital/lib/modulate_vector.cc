@@ -36,10 +36,6 @@
 * taps as: list or array
 */
 
-#ifdef HAVE_CONFIG_H
-#include "config.h"
-#endif
-
 #include <gnuradio/blocks/vector_sink.h>
 #include <gnuradio/blocks/vector_source.h>
 #include <gnuradio/digital/modulate_vector.h>

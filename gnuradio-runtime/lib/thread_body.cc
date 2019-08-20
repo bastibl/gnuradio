@@ -19,10 +19,6 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-#ifdef HAVE_CONFIG_H
-#include <config.h>
-#endif
-
 #include "block_executor.h"
 #include "thread_body.h"
 #include <gnuradio/block_detail.h>

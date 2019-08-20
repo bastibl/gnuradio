@@ -20,10 +20,6 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#ifdef HAVE_CONFIG_H
-#include "config.h"
-#endif
-
 #include "corr_est_cc_impl.h"
 #include <gnuradio/filter/firdes.h>
 #include <gnuradio/filter/pfb_arb_resampler.h>

@@ -37,10 +37,6 @@
  * GNU Radio glue.
  */
 
-#ifdef HAVE_CONFIG_H
-#include "config.h"
-#endif
-
 #include <gnuradio/filter/pm_remez.h>
 #include <assert.h>
 #include <cmath>

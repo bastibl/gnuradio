@@ -21,10 +21,6 @@
  */
 
 
-#ifdef HAVE_CONFIG_H
-#include "config.h"
-#endif
-
 #include "mute_impl.h"
 #include <gnuradio/io_signature.h>
 #include <string.h>

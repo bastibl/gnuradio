@@ -5,10 +5,6 @@
  * May be used under the terms of the GNU General Public License (GPL)
  */
 
-#ifdef HAVE_CONFIG_H
-#include <config.h>
-#endif
-
 #include <gnuradio/fec/rs.h>
 #include <stdio.h>
 #include <stdlib.h>

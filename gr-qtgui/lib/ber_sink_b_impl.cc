@@ -28,10 +28,6 @@
 #include <volk/volk.h>
 #include <cmath>
 
-#ifdef HAVE_CONFIG_H
-#include <config.h>
-#endif
-
 namespace gr {
 namespace qtgui {
 

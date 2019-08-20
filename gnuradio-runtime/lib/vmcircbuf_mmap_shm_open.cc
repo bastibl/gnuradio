@@ -20,10 +20,6 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#ifdef HAVE_CONFIG_H
-#include "config.h"
-#endif
-
 #include "vmcircbuf_mmap_shm_open.h"
 #include <assert.h>
 #include <fcntl.h>

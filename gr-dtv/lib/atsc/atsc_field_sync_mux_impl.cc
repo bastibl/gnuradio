@@ -18,10 +18,6 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#ifdef HAVE_CONFIG_H
-#include "config.h"
-#endif
-
 #include "atsc_field_sync_mux_impl.h"
 #include "gnuradio/dtv/atsc_consts.h"
 #include <gnuradio/io_signature.h>
