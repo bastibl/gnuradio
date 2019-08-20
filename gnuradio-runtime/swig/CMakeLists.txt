@@ -97,7 +97,6 @@ install(
     hier_block2.i
     io_signature.i
     message.i
-    msg_handler.i
     msg_queue.i
     pmt_swig.i
     prefs.i

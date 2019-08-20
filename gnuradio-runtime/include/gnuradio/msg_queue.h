@@ -24,7 +24,7 @@
 #define INCLUDED_GR_MSG_QUEUE_H
 
 #include <gnuradio/api.h>
-#include <gnuradio/msg_handler.h>
+#include <gnuradio/message.h>
 #include <gnuradio/thread/thread.h>
 
 namespace gr {
@@ -33,7 +33,7 @@ namespace gr {
  * \brief thread-safe message queue
  * \ingroup misc
  */
-class GR_RUNTIME_API msg_queue : public msg_handler
+class GR_RUNTIME_API msg_queue
 {
     gr::thread::mutex d_mutex;
     gr::thread::condition_variable d_not_empty;

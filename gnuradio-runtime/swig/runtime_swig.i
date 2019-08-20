@@ -48,7 +48,6 @@
 #include <gnuradio/hier_block2.h>
 #include <gnuradio/io_signature.h>
 #include <gnuradio/message.h>
-#include <gnuradio/msg_handler.h>
 #include <gnuradio/msg_queue.h>
 #include <gnuradio/prefs.h>
 #include <gnuradio/realtime.h>
@@ -81,7 +80,6 @@
 %include "hier_block2.i"
 %include "io_signature.i"
 %include "message.i"
-%include "msg_handler.i"
 %include "msg_queue.i"
 %include "prefs.i"
 %include "sync_block.i"
