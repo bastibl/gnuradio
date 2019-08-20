@@ -24,7 +24,6 @@
 #include <gnuradio/block.h>
 #include <gnuradio/block_detail.h>
 #include <gnuradio/block_registry.h>
-#include <gnuradio/tpb_detail.h>
 #include <stdio.h>
 
 gr::block_registry global_block_registry;
@@ -135,7 +134,7 @@ void block_registry::notify_blk(std::string blk)
         return;
     }
     if (primitive_map[blk]->detail().get())
-        primitive_map[blk]->detail()->d_tpb.notify_msg();
+        primitive_map[blk]->detail()->notify_msg();
 }
 
 } /* namespace gr */

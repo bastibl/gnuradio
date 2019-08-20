@@ -27,7 +27,7 @@
 #include <gnuradio/high_res_timer.h>
 #include <gnuradio/runtime_types.h>
 #include <gnuradio/tags.h>
-#include <gnuradio/tpb_detail.h>
+#include <gnuradio/thread/thread.h>
 #include <stdexcept>
 
 namespace gr {
@@ -207,6 +207,42 @@ public:
     bool threaded;                  // set if thread is currently running.
     gr::thread::gr_thread_t thread; // portable thread handle
 
+    gr::thread::mutex mutex; //< protects all vars
+
+    bool input_changed;
+    gr::thread::condition_variable input_cond;
+    bool output_changed;
+    gr::thread::condition_variable output_cond;
+
+    //! Called by us to tell all our upstream blocks that their output
+    //! may have changed.
+    void notify_upstream();
+
+    //! Called by us to tell all our downstream blocks that their
+    //! input may have changed.
+    void notify_downstream();
+
+    //! Called by us to notify both upstream and downstream
+    void notify_neighbors();
+
+    //! Called by pmt msg posters
+    void notify_msg()
+    {
+        gr::thread::scoped_lock guard(mutex);
+        input_changed = true;
+        input_cond.notify_one();
+        output_changed = true;
+        output_cond.notify_one();
+    }
+
+    //! Called by us
+    void clear_changed()
+    {
+        gr::thread::scoped_lock guard(mutex);
+        input_changed = false;
+        output_changed = false;
+    }
+
     void start_perf_counters();
     void stop_perf_counters(int noutput_items, int nproduced);
     void reset_perf_counters();
@@ -239,7 +275,6 @@ public:
 
     float pc_work_time_total();
 
-    tpb_detail d_tpb; // used by thread-per-block scheduler
     int d_produce_or;
 
     int consumed() const;
@@ -280,7 +315,21 @@ private:
 
     block_detail(unsigned int ninputs, unsigned int noutputs);
 
-    friend struct tpb_detail;
+    //! Used by notify_downstream
+    void set_input_changed()
+    {
+        gr::thread::scoped_lock guard(mutex);
+        input_changed = true;
+        input_cond.notify_one();
+    }
+
+    //! Used by notify_upstream
+    void set_output_changed()
+    {
+        gr::thread::scoped_lock guard(mutex);
+        output_changed = true;
+        output_cond.notify_one();
+    }
 
     friend GR_RUNTIME_API block_detail_sptr make_block_detail(unsigned int ninputs,
                                                               unsigned int noutputs);

@@ -60,7 +60,6 @@ install(FILES
   tags.h
   tagged_stream_block.h
   top_block.h
-  tpb_detail.h
   sincos.h
   sptr_magic.h
   sync_block.h

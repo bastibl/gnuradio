@@ -24,6 +24,7 @@
 #include "config.h"
 #endif
 
+#include <gnuradio/block.h>
 #include <gnuradio/block_detail.h>
 #include <gnuradio/buffer.h>
 #include <iostream>
@@ -35,7 +36,9 @@ static long s_ncurrently_allocated = 0;
 long block_detail_ncurrently_allocated() { return s_ncurrently_allocated; }
 
 block_detail::block_detail(unsigned int ninputs, unsigned int noutputs)
-    : d_produce_or(0),
+    : input_changed(false),
+      output_changed(false),
+      d_produce_or(0),
       d_ninputs(ninputs),
       d_noutputs(noutputs),
       d_input(ninputs),
@@ -259,6 +262,37 @@ int block_detail::set_thread_priority(int priority)
     }
     return -1;
 }
+
+void block_detail::notify_upstream()
+{
+    // For each of our inputs, tell the guy upstream that we've
+    // consumed some input, and that he most likely has more output
+    // buffer space available.
+
+    for (size_t i = 0; i < d_input.size(); i++) {
+        // Can you say, "pointer chasing?"
+        d_input[i]->buffer()->link()->detail()->set_output_changed();
+    }
+}
+
+void block_detail::notify_downstream()
+{
+    // For each of our outputs, tell the guys downstream that they
+    // have new input available.
+
+    for (size_t i = 0; i < d_output.size(); i++) {
+        buffer_sptr buf = d_output[i];
+        for (size_t j = 0, k = buf->nreaders(); j < k; j++)
+            buf->reader(j)->link()->detail()->set_input_changed();
+    }
+}
+
+void block_detail::notify_neighbors()
+{
+    notify_downstream();
+    notify_upstream();
+}
+
 
 void block_detail::start_perf_counters()
 {

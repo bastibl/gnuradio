@@ -121,7 +121,7 @@ void thread_body::execute_block(block_sptr block,
     while (1) {
         boost::this_thread::interruption_point();
 
-        d->d_tpb.clear_changed();
+        d->clear_changed();
 
         // handle any queued up messages
         BOOST_FOREACH (basic_block::msg_queue_map_t::value_type& i, block->msg_queue) {
@@ -165,34 +165,34 @@ void thread_body::execute_block(block_sptr block,
 
         switch (s) {
         case block_executor::READY: // Tell neighbors we made progress.
-            d->d_tpb.notify_neighbors(d);
+            d->notify_neighbors();
             break;
 
         case block_executor::READY_NO_OUTPUT: // Notify upstream only
-            d->d_tpb.notify_upstream(d);
+            d->notify_upstream();
             break;
 
         case block_executor::DONE: // Game over.
             block->notify_msg_neighbors();
-            d->d_tpb.notify_neighbors(d);
+            d->notify_neighbors();
             return;
 
         case block_executor::BLKD_IN: // Wait for input.
         {
-            gr::thread::scoped_lock guard(d->d_tpb.mutex);
+            gr::thread::scoped_lock guard(d->mutex);
 
-            if (!d->d_tpb.input_changed) {
+            if (!d->input_changed) {
                 boost::system_time const timeout =
                     boost::get_system_time() + boost::posix_time::milliseconds(250);
-                d->d_tpb.input_cond.timed_wait(guard, timeout);
+                d->input_cond.timed_wait(guard, timeout);
             }
         } break;
 
         case block_executor::BLKD_OUT: // Wait for output buffer space.
         {
-            gr::thread::scoped_lock guard(d->d_tpb.mutex);
-            while (!d->d_tpb.output_changed) {
-                d->d_tpb.output_cond.wait(guard);
+            gr::thread::scoped_lock guard(d->mutex);
+            while (!d->output_changed) {
+                d->output_cond.wait(guard);
             }
         } break;
 
