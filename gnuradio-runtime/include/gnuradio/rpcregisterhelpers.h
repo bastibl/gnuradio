@@ -24,8 +24,7 @@
 #define RPCREGISTERHELPERS_H
 
 #include <gnuradio/rpcmanager.h>
-#include <gnuradio/rpcserver_base.h>
-#include <gnuradio/rpcserver_booter_base.h>
+#include <gnuradio/rpcregisterhelpers.h>
 #include <stdio.h>
 #include <iostream>
 #include <sstream>
@@ -35,7 +34,6 @@ class rpcbasic_base;
 typedef boost::shared_ptr<rpcbasic_base> rpcbasic_sptr;
 
 #include <gnuradio/block_registry.h>
-
 
 /*********************************************************************
  *   RPC Extractor Base Classes
@@ -746,7 +744,6 @@ public:
     rpcbasic_base() {}
     virtual ~rpcbasic_base(){};
 };
-
 
 /*********************************************************************
  *   RPC Register Set Classes

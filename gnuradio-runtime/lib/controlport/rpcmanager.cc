@@ -21,6 +21,7 @@
  */
 
 #include <gnuradio/rpcmanager.h>
+#include <gnuradio/rpcserver_booter_base.h>
 #include <iostream>
 #include <stdexcept>
 
@@ -35,9 +36,9 @@ std::unique_ptr<rpcserver_booter_aggregator> rpcmanager::aggregator;
 rpcmanager::rpcserver_booter_register_helper<rpcserver_booter_thrift> boot_thrift;
 #endif
 
-rpcmanager::rpcmanager() { ; }
+rpcmanager::rpcmanager() {}
 
-rpcmanager::~rpcmanager() { ; }
+rpcmanager::~rpcmanager() {}
 
 rpcserver_booter_base* rpcmanager::get()
 {
@@ -58,7 +59,7 @@ void rpcmanager::register_booter(rpcserver_booter_base* booter)
     }
 
     if (aggregator_registered) {
-        rpcmanager::rpcserver_booter_base_sptr bootreg(booter);
+        rpcserver_booter_base::sptr bootreg(booter);
         aggregator->agg()->registerServer(bootreg);
     } else if (!booter_registered) {
         boot.reset(booter);

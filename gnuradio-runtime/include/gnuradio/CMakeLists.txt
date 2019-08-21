@@ -68,7 +68,6 @@ install(FILES
   types.h
   unittests.h
   rpccallbackregister_base.h
-  rpcmanager_base.h
   rpcmanager.h
   rpcregisterhelpers.h
   rpcserver_aggregator.h

@@ -21,7 +21,6 @@
  */
 
 #include <gnuradio/rpcserver_aggregator.h>
-#include <gnuradio/rpcserver_booter_base.h>
 #include <iostream>
 #include <sstream>
 #include <stdexcept>
@@ -42,7 +41,7 @@ void rpcserver_aggregator::registerConfigureCallback(const std::string& id,
 {
     std::for_each(d_serverlist.begin(),
                   d_serverlist.end(),
-                  registerConfigureCallback_f<rpcmanager_base::rpcserver_booter_base_sptr,
+                  registerConfigureCallback_f<rpcserver_booter_base::sptr,
                                               configureCallback_t>(id, callback));
 }
 
@@ -51,7 +50,7 @@ void rpcserver_aggregator::unregisterConfigureCallback(const std::string& id)
     std::for_each(
         d_serverlist.begin(),
         d_serverlist.end(),
-        unregisterConfigureCallback_f<rpcmanager_base::rpcserver_booter_base_sptr,
+        unregisterConfigureCallback_f<rpcserver_booter_base::sptr,
                                       configureCallback_t>(id));
 }
 
@@ -60,7 +59,7 @@ void rpcserver_aggregator::registerQueryCallback(const std::string& id,
 {
     std::for_each(d_serverlist.begin(),
                   d_serverlist.end(),
-                  registerQueryCallback_f<rpcmanager_base::rpcserver_booter_base_sptr,
+                  registerQueryCallback_f<rpcserver_booter_base::sptr,
                                           queryCallback_t>(id, callback));
 }
 
@@ -68,7 +67,7 @@ void rpcserver_aggregator::unregisterQueryCallback(const std::string& id)
 {
     std::for_each(d_serverlist.begin(),
                   d_serverlist.end(),
-                  unregisterQueryCallback_f<rpcmanager_base::rpcserver_booter_base_sptr,
+                  unregisterQueryCallback_f<rpcserver_booter_base::sptr,
                                             queryCallback_t>(id));
 }
 
@@ -78,7 +77,7 @@ void rpcserver_aggregator::registerHandlerCallback(const std::string& id,
 {
     std::for_each(d_serverlist.begin(),
                   d_serverlist.end(),
-                  registerHandlerCallback_f<rpcmanager_base::rpcserver_booter_base_sptr,
+                  registerHandlerCallback_f<rpcserver_booter_base::sptr,
                                             handlerCallback_t>(id, callback));
 }
 
@@ -86,13 +85,13 @@ void rpcserver_aggregator::unregisterHandlerCallback(const std::string& id)
 {
     std::for_each(d_serverlist.begin(),
                   d_serverlist.end(),
-                  unregisterHandlerCallback_f<rpcmanager_base::rpcserver_booter_base_sptr,
+                  unregisterHandlerCallback_f<rpcserver_booter_base::sptr,
                                               handlerCallback_t>(id));
 }
 
 
 void rpcserver_aggregator::registerServer(
-    rpcmanager_base::rpcserver_booter_base_sptr server)
+    rpcserver_booter_base::sptr server)
 {
     std::vector<std::string>::iterator it(std::find(
         d_registeredServers.begin(), d_registeredServers.end(), server->type()));

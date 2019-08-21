@@ -23,16 +23,18 @@
 #ifndef RPCSERVER_BOOTER_BASE
 #define RPCSERVER_BOOTER_BASE
 
+#include <gnuradio/rpcserver_base.h>
 #include <string>
 #include <vector>
-
-class rpcserver_base;
 
 class rpcserver_booter_base
 {
 public:
-    rpcserver_booter_base() { ; }
-    virtual ~rpcserver_booter_base() { ; }
+
+    typedef boost::shared_ptr<rpcserver_booter_base> sptr;
+
+    rpcserver_booter_base() {}
+    virtual ~rpcserver_booter_base() {}
 
     virtual rpcserver_base* i() = 0;
     virtual const std::vector<std::string> endpoints() = 0;

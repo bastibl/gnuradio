@@ -26,9 +26,9 @@
 #include "thrift/ControlPort.h"
 #include <gnuradio/rpcserver_booter_base.h>
 #include <gnuradio/thrift_server_template.h>
-
-class rpcserver_base;
-class rpcserver_thrift;
+#include <gnuradio/rpcserver_base.h>
+#include <gnuradio/rpcserver_thrift.h>
+#include <string>
 
 class rpcserver_booter_thrift
     : public virtual rpcserver_booter_base,

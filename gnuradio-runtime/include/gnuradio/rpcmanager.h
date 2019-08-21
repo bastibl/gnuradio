@@ -24,12 +24,11 @@
 #define RPCMANAGER_H
 
 #include <gnuradio/api.h>
-#include <gnuradio/rpcmanager_base.h>
 #include <gnuradio/rpcserver_booter_aggregator.h>
 #include <iostream>
 #include <memory>
 
-class GR_RUNTIME_API rpcmanager : public virtual rpcmanager_base
+class GR_RUNTIME_API rpcmanager
 {
 public:
     rpcmanager();
@@ -52,7 +51,6 @@ private:
     static bool make_aggregator;
     static bool booter_registered;
     static bool aggregator_registered;
-    static void rpcserver_booter_base_sptr_dest(rpcserver_booter_base* b) { (void)b; }
     static std::unique_ptr<rpcserver_booter_base> boot;
     static std::unique_ptr<rpcserver_booter_aggregator> aggregator;
 };

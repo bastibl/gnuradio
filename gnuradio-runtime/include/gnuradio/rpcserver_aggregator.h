@@ -23,7 +23,7 @@
 #ifndef RPCSERVER_AGGREGATOR_H
 #define RPCSERVER_AGGREGATOR_H
 
-#include <gnuradio/rpcmanager_base.h>
+#include <gnuradio/rpcserver_booter_base.h>
 #include <gnuradio/rpcserver_base.h>
 #include <string>
 #include <vector>
@@ -44,7 +44,7 @@ public:
     void registerHandlerCallback(const std::string& id, const handlerCallback_t callback);
     void unregisterHandlerCallback(const std::string& id);
 
-    void registerServer(rpcmanager_base::rpcserver_booter_base_sptr server);
+    void registerServer(rpcserver_booter_base::sptr server);
 
     const std::string& type();
 
@@ -56,7 +56,6 @@ private:
         registerConfigureCallback_f(const std::string& _id, const Tcallback _callback)
             : id(_id), callback(_callback)
         {
-            ;
         }
 
         void operator()(T& x) { x->i()->registerConfigureCallback(id, callback); }
@@ -66,7 +65,7 @@ private:
 
     template <class T, typename Tcallback>
     struct unregisterConfigureCallback_f : public std::unary_function<T, void> {
-        unregisterConfigureCallback_f(const std::string& _id) : id(_id) { ; }
+        unregisterConfigureCallback_f(const std::string& _id) : id(_id) {}
 
         void operator()(T& x) { x->i()->unregisterConfigureCallback(id); }
         const std::string& id;
@@ -77,7 +76,6 @@ private:
         registerQueryCallback_f(const std::string& _id, const Tcallback _callback)
             : id(_id), callback(_callback)
         {
-            ;
         }
 
         void operator()(T& x) { x->i()->registerQueryCallback(id, callback); }
@@ -87,7 +85,7 @@ private:
 
     template <class T, typename Tcallback>
     struct unregisterQueryCallback_f : public std::unary_function<T, void> {
-        unregisterQueryCallback_f(const std::string& _id) : id(_id) { ; }
+        unregisterQueryCallback_f(const std::string& _id) : id(_id) {}
 
         void operator()(T& x) { x->i()->unregisterQueryCallback(id); }
         const std::string& id;
@@ -99,7 +97,6 @@ private:
         registerHandlerCallback_f(const std::string& _id, const Tcallback _callback)
             : id(_id), callback(_callback)
         {
-            ;
         }
 
         void operator()(T& x) { x->i()->registerHandlerCallback(id, callback); }
@@ -109,7 +106,7 @@ private:
 
     template <class T, typename Tcallback>
     struct unregisterHandlerCallback_f : public std::unary_function<T, void> {
-        unregisterHandlerCallback_f(const std::string& _id) : id(_id) { ; }
+        unregisterHandlerCallback_f(const std::string& _id) : id(_id) {}
 
         void operator()(T& x) { x->i()->unregisterHandlerCallback(id); }
         const std::string& id;
@@ -117,7 +114,7 @@ private:
 
 
     const std::string d_type;
-    typedef std::vector<rpcmanager_base::rpcserver_booter_base_sptr> rpcServerMap_t;
+    typedef std::vector<rpcserver_booter_base::sptr> rpcServerMap_t;
     std::vector<std::string> d_registeredServers;
     rpcServerMap_t d_serverlist;
 };

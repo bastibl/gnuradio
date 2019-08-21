@@ -65,7 +65,7 @@ enum KnobType {
 
 // Declare this class here but without the nested templated class
 // inside (replaces include of rpcmanager.h)
-class GR_RUNTIME_API rpcmanager : public virtual rpcmanager_base
+class GR_RUNTIME_API rpcmanager
 {
  public:
   rpcmanager();
