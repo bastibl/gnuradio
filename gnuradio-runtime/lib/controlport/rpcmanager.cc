@@ -24,6 +24,17 @@
 #include <iostream>
 #include <stdexcept>
 
+bool rpcmanager::make_aggregator(false);
+bool rpcmanager::booter_registered(false);
+bool rpcmanager::aggregator_registered(false);
+std::unique_ptr<rpcserver_booter_base> rpcmanager::boot;
+std::unique_ptr<rpcserver_booter_aggregator> rpcmanager::aggregator;
+
+#ifdef GR_RPCSERVER_THRIFT
+#include <gnuradio/rpcserver_booter_thrift.h>
+rpcmanager::rpcserver_booter_register_helper<rpcserver_booter_thrift> boot_thrift;
+#endif
+
 rpcmanager::rpcmanager() { ; }
 
 rpcmanager::~rpcmanager() { ; }

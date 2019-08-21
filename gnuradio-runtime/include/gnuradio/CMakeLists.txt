@@ -75,7 +75,6 @@ install(FILES
   rpcserver_base.h
   rpcserver_booter_aggregator.h
   rpcserver_booter_base.h
-  rpcserver_selector.h
   DESTINATION ${GR_INCLUDE_DIR}/gnuradio
 )
 

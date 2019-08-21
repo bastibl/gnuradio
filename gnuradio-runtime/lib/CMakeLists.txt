@@ -119,7 +119,6 @@ target_sources(gnuradio-runtime PRIVATE
   ${CMAKE_CURRENT_SOURCE_DIR}/controlport/rpcmanager.cc
   ${CMAKE_CURRENT_SOURCE_DIR}/controlport/rpcserver_aggregator.cc
   ${CMAKE_CURRENT_SOURCE_DIR}/controlport/rpcserver_booter_aggregator.cc
-  ${CMAKE_CURRENT_SOURCE_DIR}/controlport/rpcserver_selector.cc
 )
 
 OPTION(ENABLE_CTRLPORT_THRIFT "Enable ControlPort Thrift support" ON)
