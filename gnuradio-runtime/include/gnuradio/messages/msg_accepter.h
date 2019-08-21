@@ -36,7 +36,7 @@ class GR_RUNTIME_API msg_accepter
 {
 public:
     msg_accepter(){};
-    virtual ~msg_accepter();
+    virtual ~msg_accepter() {};
 
     /*!
      * \brief send \p msg to \p msg_accepter on port \p which_port

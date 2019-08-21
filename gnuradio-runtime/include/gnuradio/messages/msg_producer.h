@@ -35,8 +35,8 @@ namespace messages {
 class GR_RUNTIME_API msg_producer
 {
 public:
-    msg_producer() {}
-    virtual ~msg_producer();
+    msg_producer(){};
+    virtual ~msg_producer(){};
 
     /*!
      * \brief send \p msg to \p msg_producer
