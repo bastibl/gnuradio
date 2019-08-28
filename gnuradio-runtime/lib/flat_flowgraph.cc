@@ -77,7 +77,7 @@ void flat_flowgraph::setup_connections()
     }
 }
 
-block_detail_sptr flat_flowgraph::allocate_block_detail(basic_block_sptr block)
+block_detail_sptr flat_flowgraph::allocate_block_detail(basic_block::sptr block)
 {
     int ninputs = calc_used_ports(block, true).size();
     int noutputs = calc_used_ports(block, false).size();
@@ -115,7 +115,7 @@ block_detail_sptr flat_flowgraph::allocate_block_detail(basic_block_sptr block)
     return detail;
 }
 
-buffer_sptr flat_flowgraph::allocate_buffer(basic_block_sptr block, int port)
+buffer_sptr flat_flowgraph::allocate_buffer(basic_block::sptr block, int port)
 {
     block_sptr grblock = cast_to_block_sptr(block);
     if (!grblock)
@@ -184,7 +184,7 @@ buffer_sptr flat_flowgraph::allocate_buffer(basic_block_sptr block, int port)
     return b;
 }
 
-void flat_flowgraph::connect_block_inputs(basic_block_sptr block)
+void flat_flowgraph::connect_block_inputs(basic_block::sptr block)
 {
     block_sptr grblock = cast_to_block_sptr(block);
     if (!grblock)
@@ -200,7 +200,7 @@ void flat_flowgraph::connect_block_inputs(basic_block_sptr block)
         // buffer on the source port
         int dst_port = e->dst().port();
         int src_port = e->src().port();
-        basic_block_sptr src_block = e->src().block();
+        basic_block::sptr src_block = e->src().block();
         block_sptr src_grblock = cast_to_block_sptr(src_block);
         if (!src_grblock)
             throw std::runtime_error("connect_block_inputs found non-gr::block");

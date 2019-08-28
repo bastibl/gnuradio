@@ -64,19 +64,19 @@ hier_block2_sptr hier_block2::to_hier_block2()
     return cast_to_hier_block2_sptr(shared_from_this());
 }
 
-void hier_block2::connect(basic_block_sptr block) { d_detail->connect(block); }
+void hier_block2::connect(basic_block::sptr block) { d_detail->connect(block); }
 
-void hier_block2::connect(basic_block_sptr src,
+void hier_block2::connect(basic_block::sptr src,
                           int src_port,
-                          basic_block_sptr dst,
+                          basic_block::sptr dst,
                           int dst_port)
 {
     d_detail->connect(src, src_port, dst, dst_port);
 }
 
-void hier_block2::msg_connect(basic_block_sptr src,
+void hier_block2::msg_connect(basic_block::sptr src,
                               pmt::pmt_t srcport,
-                              basic_block_sptr dst,
+                              basic_block::sptr dst,
                               pmt::pmt_t dstport)
 {
     if (!pmt::is_symbol(srcport)) {
@@ -85,17 +85,17 @@ void hier_block2::msg_connect(basic_block_sptr src,
     d_detail->msg_connect(src, srcport, dst, dstport);
 }
 
-void hier_block2::msg_connect(basic_block_sptr src,
+void hier_block2::msg_connect(basic_block::sptr src,
                               std::string srcport,
-                              basic_block_sptr dst,
+                              basic_block::sptr dst,
                               std::string dstport)
 {
     d_detail->msg_connect(src, pmt::mp(srcport), dst, pmt::mp(dstport));
 }
 
-void hier_block2::msg_disconnect(basic_block_sptr src,
+void hier_block2::msg_disconnect(basic_block::sptr src,
                                  pmt::pmt_t srcport,
-                                 basic_block_sptr dst,
+                                 basic_block::sptr dst,
                                  pmt::pmt_t dstport)
 {
     if (!pmt::is_symbol(srcport)) {
@@ -104,19 +104,19 @@ void hier_block2::msg_disconnect(basic_block_sptr src,
     d_detail->msg_disconnect(src, srcport, dst, dstport);
 }
 
-void hier_block2::msg_disconnect(basic_block_sptr src,
+void hier_block2::msg_disconnect(basic_block::sptr src,
                                  std::string srcport,
-                                 basic_block_sptr dst,
+                                 basic_block::sptr dst,
                                  std::string dstport)
 {
     d_detail->msg_disconnect(src, pmt::mp(srcport), dst, pmt::mp(dstport));
 }
 
-void hier_block2::disconnect(basic_block_sptr block) { d_detail->disconnect(block); }
+void hier_block2::disconnect(basic_block::sptr block) { d_detail->disconnect(block); }
 
-void hier_block2::disconnect(basic_block_sptr src,
+void hier_block2::disconnect(basic_block::sptr src,
                              int src_port,
-                             basic_block_sptr dst,
+                             basic_block::sptr dst,
                              int dst_port)
 {
     d_detail->disconnect(src, src_port, dst, dst_port);

@@ -28,6 +28,10 @@
 #include <iostream>
 #include <stdexcept>
 
+#if defined(GR_CTRLPORT) && defined(GR_PERFORMANCE_COUNTERS)
+#include <gnuradio/rpcregisterhelpers.h>
+#endif
+
 namespace gr {
 
 block::block(const std::string& name,
@@ -643,7 +647,7 @@ void block::notify_msg_neighbors()
             pmt::pmt_t block = pmt::car(target);
 
             currlist = pmt::cdr(currlist);
-            basic_block_sptr blk = global_block_registry.block_lookup(block);
+            basic_block::sptr blk = global_block_registry.block_lookup(block);
             blk->post(d_system_port, pmt::cons(d_pmt_done, pmt::mp(true)));
         }
     }

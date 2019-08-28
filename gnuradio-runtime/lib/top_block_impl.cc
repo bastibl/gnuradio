@@ -25,6 +25,9 @@
 #include "top_block_impl.h"
 #include <gnuradio/prefs.h>
 #include <gnuradio/top_block.h>
+#ifdef GR_CTRLPORT
+#include <gnuradio/rpcregisterhelpers.h>
+#endif
 
 #include <stdlib.h>
 #include <string.h>

@@ -46,14 +46,14 @@ public:
     void register_symbolic_name(basic_block* block, std::string name);
     void update_symbolic_name(basic_block* block, std::string name);
 
-    basic_block_sptr block_lookup(pmt::pmt_t symbol);
+    basic_block::sptr block_lookup(pmt::pmt_t symbol);
 
     void register_primitive(std::string blk, gr::block* ref);
     void unregister_primitive(std::string blk);
     void notify_blk(std::string blk);
 
 private:
-    // typedef std::map< long, basic_block_sptr >   blocksubmap_t;
+    // typedef std::map< long, basic_block::sptr >   blocksubmap_t;
     typedef std::map<long, basic_block*> blocksubmap_t;
     typedef std::map<std::string, blocksubmap_t> blockmap_t;
 

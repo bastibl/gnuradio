@@ -57,28 +57,28 @@ namespace gr {
   public:
     ~hier_block2 ();
 
-    void connect(gr::basic_block_sptr block)
+    void connect(gr::basic_block::sptr block)
       noexcept(false);
-    void connect(gr::basic_block_sptr src, int src_port,
-                 gr::basic_block_sptr dst, int dst_port)
+    void connect(gr::basic_block::sptr src, int src_port,
+                 gr::basic_block::sptr dst, int dst_port)
       noexcept(false);
-    void msg_connect(gr::basic_block_sptr src, pmt::pmt_t srcport,
-                     gr::basic_block_sptr dst, pmt::pmt_t dstport)
+    void msg_connect(gr::basic_block::sptr src, pmt::pmt_t srcport,
+                     gr::basic_block::sptr dst, pmt::pmt_t dstport)
       noexcept(false);
-    void msg_connect(gr::basic_block_sptr src, std::string srcport,
-                     gr::basic_block_sptr dst,  std::string dstport)
+    void msg_connect(gr::basic_block::sptr src, std::string srcport,
+                     gr::basic_block::sptr dst,  std::string dstport)
       noexcept(false);
-    void msg_disconnect(gr::basic_block_sptr src, pmt::pmt_t srcport,
-                        gr::basic_block_sptr dst, pmt::pmt_t dstport)
+    void msg_disconnect(gr::basic_block::sptr src, pmt::pmt_t srcport,
+                        gr::basic_block::sptr dst, pmt::pmt_t dstport)
       noexcept(false);
-    void msg_disconnect(gr::basic_block_sptr src, std::string srcport,
-                        gr::basic_block_sptr dst, std::string dstport)
+    void msg_disconnect(gr::basic_block::sptr src, std::string srcport,
+                        gr::basic_block::sptr dst, std::string dstport)
       noexcept(false);
 
-    void disconnect(gr::basic_block_sptr block)
+    void disconnect(gr::basic_block::sptr block)
       noexcept(false);
-    void disconnect(gr::basic_block_sptr src, int src_port,
-                    gr::basic_block_sptr dst, int dst_port)
+    void disconnect(gr::basic_block::sptr src, int src_port,
+                    gr::basic_block::sptr dst, int dst_port)
       noexcept(false);
     void disconnect_all();
     void lock();

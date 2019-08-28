@@ -100,7 +100,7 @@ void block_registry::update_symbolic_name(basic_block* block, std::string name)
     d_ref_map = pmt::dict_add(d_ref_map, pmt::intern(name), pmt::make_any(block));
 }
 
-basic_block_sptr block_registry::block_lookup(pmt::pmt_t symbol)
+basic_block::sptr block_registry::block_lookup(pmt::pmt_t symbol)
 {
     gr::thread::scoped_lock guard(d_mutex);
 

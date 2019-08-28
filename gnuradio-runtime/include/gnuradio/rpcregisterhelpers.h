@@ -24,7 +24,6 @@
 #define RPCREGISTERHELPERS_H
 
 #include <gnuradio/rpcmanager.h>
-#include <gnuradio/rpcregisterhelpers.h>
 #include <stdio.h>
 #include <iostream>
 #include <sstream>

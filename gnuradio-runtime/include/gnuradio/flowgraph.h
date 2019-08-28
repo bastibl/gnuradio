@@ -37,17 +37,17 @@ namespace gr {
 class GR_RUNTIME_API endpoint
 {
 private:
-    basic_block_sptr d_basic_block;
+    basic_block::sptr d_basic_block;
     int d_port;
 
 public:
     endpoint() : d_basic_block(), d_port(0) {}
-    endpoint(basic_block_sptr block, int port)
+    endpoint(basic_block::sptr block, int port)
     {
         d_basic_block = block;
         d_port = port;
     }
-    basic_block_sptr block() const { return d_basic_block; }
+    basic_block::sptr block() const { return d_basic_block; }
     int port() const { return d_port; }
     std::string identifier() const
     {
@@ -65,19 +65,19 @@ inline bool endpoint::operator==(const endpoint& other) const
 class GR_RUNTIME_API msg_endpoint
 {
 private:
-    basic_block_sptr d_basic_block;
+    basic_block::sptr d_basic_block;
     pmt::pmt_t d_port;
     bool d_is_hier;
 
 public:
     msg_endpoint() : d_basic_block(), d_port(pmt::PMT_NIL) {}
-    msg_endpoint(basic_block_sptr block, pmt::pmt_t port, bool is_hier = false)
+    msg_endpoint(basic_block::sptr block, pmt::pmt_t port, bool is_hier = false)
     {
         d_basic_block = block;
         d_port = port;
         d_is_hier = is_hier;
     }
-    basic_block_sptr block() const { return d_basic_block; }
+    basic_block::sptr block() const { return d_basic_block; }
     pmt::pmt_t port() const { return d_port; }
     bool is_hier() const { return d_is_hier; }
     void set_hier(bool h) { d_is_hier = h; }
@@ -186,17 +186,17 @@ public:
     /*!
      * \brief convenience wrapper; used to connect two endpoints
      */
-    void connect(basic_block_sptr src_block,
+    void connect(basic_block::sptr src_block,
                  int src_port,
-                 basic_block_sptr dst_block,
+                 basic_block::sptr dst_block,
                  int dst_port);
 
     /*!
      * \brief convenience wrapper; used to disconnect two endpoints
      */
-    void disconnect(basic_block_sptr src_block,
+    void disconnect(basic_block::sptr src_block,
                     int src_port,
-                    basic_block_sptr dst_block,
+                    basic_block::sptr dst_block,
                     int dst_port);
 
     /*!
@@ -251,38 +251,38 @@ protected:
     msg_edge_vector_t d_msg_edges;
 
     flowgraph();
-    std::vector<int> calc_used_ports(basic_block_sptr block, bool check_inputs);
-    basic_block_vector_t calc_downstream_blocks(basic_block_sptr block, int port);
-    edge_vector_t calc_upstream_edges(basic_block_sptr block);
-    bool has_block_p(basic_block_sptr block);
-    edge calc_upstream_edge(basic_block_sptr block, int port);
+    std::vector<int> calc_used_ports(basic_block::sptr block, bool check_inputs);
+    basic_block_vector_t calc_downstream_blocks(basic_block::sptr block, int port);
+    edge_vector_t calc_upstream_edges(basic_block::sptr block);
+    bool has_block_p(basic_block::sptr block);
+    edge calc_upstream_edge(basic_block::sptr block, int port);
 
 private:
     void check_valid_port(gr::io_signature::sptr sig, int port);
     void check_valid_port(const msg_endpoint& e);
     void check_dst_not_used(const endpoint& dst);
     void check_type_match(const endpoint& src, const endpoint& dst);
-    edge_vector_t calc_connections(basic_block_sptr block,
+    edge_vector_t calc_connections(basic_block::sptr block,
                                    bool check_inputs); // false=use outputs
-    void check_contiguity(basic_block_sptr block,
+    void check_contiguity(basic_block::sptr block,
                           const std::vector<int>& used_ports,
                           bool check_inputs);
 
-    basic_block_vector_t calc_downstream_blocks(basic_block_sptr block);
+    basic_block_vector_t calc_downstream_blocks(basic_block::sptr block);
 };
 
 // Convenience functions
-inline void flowgraph::connect(basic_block_sptr src_block,
+inline void flowgraph::connect(basic_block::sptr src_block,
                                int src_port,
-                               basic_block_sptr dst_block,
+                               basic_block::sptr dst_block,
                                int dst_port)
 {
     connect(endpoint(src_block, src_port), endpoint(dst_block, dst_port));
 }
 
-inline void flowgraph::disconnect(basic_block_sptr src_block,
+inline void flowgraph::disconnect(basic_block::sptr src_block,
                                   int src_port,
-                                  basic_block_sptr dst_block,
+                                  basic_block::sptr dst_block,
                                   int dst_port)
 {
     disconnect(endpoint(src_block, src_port), endpoint(dst_block, dst_port));

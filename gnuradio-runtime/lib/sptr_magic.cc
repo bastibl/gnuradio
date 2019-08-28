@@ -29,7 +29,7 @@
 namespace gnuradio {
 
 static gr::thread::mutex s_mutex;
-typedef std::map<gr::basic_block*, gr::basic_block_sptr> sptr_map;
+typedef std::map<gr::basic_block*, gr::basic_block::sptr> sptr_map;
 static sptr_map s_map;
 
 struct disarmable_deleter {
@@ -48,7 +48,7 @@ struct disarmable_deleter {
 
 void detail::sptr_magic::create_and_stash_initial_sptr(gr::hier_block2* p)
 {
-    gr::basic_block_sptr sptr(p, disarmable_deleter());
+    gr::basic_block::sptr sptr(p, disarmable_deleter());
     gr::thread::scoped_lock guard(s_mutex);
     s_map.insert(sptr_map::value_type(static_cast<gr::basic_block*>(p), sptr));
 }
@@ -59,12 +59,12 @@ void detail::sptr_magic::cancel_initial_sptr(gr::hier_block2* p)
     sptr_map::iterator pos = s_map.find(static_cast<gr::basic_block*>(p));
     if (pos == s_map.end())
         return; /* Not in the map, nothing to do */
-    gr::basic_block_sptr sptr = pos->second;
+    gr::basic_block::sptr sptr = pos->second;
     s_map.erase(pos);
     boost::get_deleter<disarmable_deleter, gr::basic_block>(sptr)->disarm();
 }
 
-gr::basic_block_sptr detail::sptr_magic::fetch_initial_sptr(gr::basic_block* p)
+gr::basic_block::sptr detail::sptr_magic::fetch_initial_sptr(gr::basic_block* p)
 {
     /*
      * If p isn't a subclass of gr::hier_block2, just create the
@@ -72,7 +72,7 @@ gr::basic_block_sptr detail::sptr_magic::fetch_initial_sptr(gr::basic_block* p)
      */
     gr::hier_block2* hb2 = dynamic_cast<gr::hier_block2*>(p);
     if (!hb2) {
-        return gr::basic_block_sptr(p);
+        return gr::basic_block::sptr(p);
     }
 
     /*
@@ -84,7 +84,7 @@ gr::basic_block_sptr detail::sptr_magic::fetch_initial_sptr(gr::basic_block* p)
     if (pos == s_map.end())
         throw std::invalid_argument("sptr_magic: invalid pointer!");
 
-    gr::basic_block_sptr sptr = pos->second;
+    gr::basic_block::sptr sptr = pos->second;
     s_map.erase(pos);
     return sptr;
 }

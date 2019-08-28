@@ -39,7 +39,9 @@
 #include <string>
 
 #ifdef GR_CTRLPORT
-#include <gnuradio/rpcregisterhelpers.h>
+class rpcbasic_base;
+typedef boost::shared_ptr<rpcbasic_base> rpcbasic_sptr;
+//#include <gnuradio/rpcregisterhelpers.h>
 #endif
 
 namespace gr {
@@ -58,9 +60,11 @@ namespace gr {
 class GR_RUNTIME_API basic_block : public messages::msg_accepter,
                                    public boost::enable_shared_from_this<basic_block>
 {
-    typedef boost::function<void(pmt::pmt_t)> msg_handler_t;
+public:
+    typedef boost::shared_ptr<basic_block> sptr;
 
 private:
+    typedef boost::function<void(pmt::pmt_t)> msg_handler_t;
     typedef std::map<pmt::pmt_t, msg_handler_t, pmt::comparator> d_msg_handlers_t;
     d_msg_handlers_t d_msg_handlers;
 
@@ -153,7 +157,7 @@ public:
 
     gr::io_signature::sptr input_signature() const { return d_input_signature; }
     gr::io_signature::sptr output_signature() const { return d_output_signature; }
-    basic_block_sptr to_basic_block(); // Needed for Python type coercion
+    basic_block::sptr to_basic_block(); // Needed for Python type coercion
 
     /*!
      * True if the block has an alias (see set_block_alias).
@@ -396,22 +400,26 @@ public:
     virtual std::string log_level() = 0;
 };
 
-inline bool operator<(basic_block_sptr lhs, basic_block_sptr rhs)
+inline bool operator<(basic_block::sptr lhs, basic_block::sptr rhs)
 {
     return lhs->unique_id() < rhs->unique_id();
 }
 
-typedef std::vector<basic_block_sptr> basic_block_vector_t;
-typedef std::vector<basic_block_sptr>::iterator basic_block_viter_t;
+typedef std::vector<basic_block::sptr> basic_block_vector_t;
+typedef std::vector<basic_block::sptr>::iterator basic_block_viter_t;
 
 GR_RUNTIME_API long basic_block_ncurrently_allocated();
 
-inline std::ostream& operator<<(std::ostream& os, basic_block_sptr basic_block)
+inline std::ostream& operator<<(std::ostream& os, basic_block::sptr basic_block)
 {
     os << basic_block->identifier();
     return os;
 }
 
 } /* namespace gr */
+
+#ifdef GR_CTRLPORT
+#include <gnuradio/rpcregisterhelpers.h>
+#endif
 
 #endif /* INCLUDED_GR_BASIC_BLOCK_H */

@@ -72,7 +72,7 @@ public:
      * This type is only guaranteed to be passable to connect and
      * disconnect. No other assumptions should be made about it.
      */
-    typedef basic_block_sptr opaque_self;
+    typedef basic_block::sptr opaque_self;
 
     /*!
      * \brief Return an object, representing the current block, which
@@ -91,7 +91,7 @@ public:
      * This adds a gr-block or hierarchical block to the internal
      * graph without wiring it to anything else.
      */
-    void connect(basic_block_sptr block);
+    void connect(basic_block::sptr block);
 
     /*!
      * \brief Add gr-blocks or hierarchical blocks to internal graph
@@ -101,7 +101,7 @@ public:
      * gr-blocks or hierarchical blocks to the internal flowgraph, and
      * wires the specified output port to the specified input port.
      */
-    void connect(basic_block_sptr src, int src_port, basic_block_sptr dst, int dst_port);
+    void connect(basic_block::sptr src, int src_port, basic_block::sptr dst, int dst_port);
 
     /*!
      * \brief Add gr-blocks or hierarchical blocks to internal graph
@@ -111,21 +111,21 @@ public:
      * gr-blocks or hierarchical blocks to the internal message port
      * subscription
      */
-    void msg_connect(basic_block_sptr src,
+    void msg_connect(basic_block::sptr src,
                      pmt::pmt_t srcport,
-                     basic_block_sptr dst,
+                     basic_block::sptr dst,
                      pmt::pmt_t dstport);
-    void msg_connect(basic_block_sptr src,
+    void msg_connect(basic_block::sptr src,
                      std::string srcport,
-                     basic_block_sptr dst,
+                     basic_block::sptr dst,
                      std::string dstport);
-    void msg_disconnect(basic_block_sptr src,
+    void msg_disconnect(basic_block::sptr src,
                         pmt::pmt_t srcport,
-                        basic_block_sptr dst,
+                        basic_block::sptr dst,
                         pmt::pmt_t dstport);
-    void msg_disconnect(basic_block_sptr src,
+    void msg_disconnect(basic_block::sptr src,
                         std::string srcport,
-                        basic_block_sptr dst,
+                        basic_block::sptr dst,
                         std::string dstport);
 
     /*!
@@ -135,7 +135,7 @@ public:
      * This removes a gr-block or hierarchical block from the internal
      * flowgraph, disconnecting it from other blocks as needed.
      */
-    void disconnect(basic_block_sptr block);
+    void disconnect(basic_block::sptr block);
 
     /*!
      * \brief Disconnect a pair of gr-blocks or hierarchical blocks in
@@ -145,7 +145,7 @@ public:
      * output port of a pair of gr-blocks or hierarchical blocks.
      */
     void
-    disconnect(basic_block_sptr src, int src_port, basic_block_sptr dst, int dst_port);
+    disconnect(basic_block::sptr src, int src_port, basic_block::sptr dst, int dst_port);
 
     /*!
      * \brief Disconnect all connections in the internal flowgraph.
@@ -329,7 +329,7 @@ public:
  */
 GR_RUNTIME_API std::string dot_graph(hier_block2_sptr hierblock2);
 
-inline hier_block2_sptr cast_to_hier_block2_sptr(basic_block_sptr block)
+inline hier_block2_sptr cast_to_hier_block2_sptr(basic_block::sptr block)
 {
     return boost::dynamic_pointer_cast<hier_block2, basic_block>(block);
 }

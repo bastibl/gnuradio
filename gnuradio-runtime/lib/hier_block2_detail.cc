@@ -60,7 +60,7 @@ hier_block2_detail::~hier_block2_detail()
     d_owner = 0; // Don't use delete, we didn't allocate
 }
 
-void hier_block2_detail::connect(basic_block_sptr block)
+void hier_block2_detail::connect(basic_block::sptr block)
 {
     std::stringstream msg;
 
@@ -89,9 +89,9 @@ void hier_block2_detail::connect(basic_block_sptr block)
     d_blocks.push_back(block);
 }
 
-void hier_block2_detail::connect(basic_block_sptr src,
+void hier_block2_detail::connect(basic_block::sptr src,
                                  int src_port,
-                                 basic_block_sptr dst,
+                                 basic_block::sptr dst,
                                  int dst_port)
 {
     std::stringstream msg;
@@ -149,9 +149,9 @@ void hier_block2_detail::connect(basic_block_sptr src,
     // TODO: connects to NC
 }
 
-void hier_block2_detail::msg_connect(basic_block_sptr src,
+void hier_block2_detail::msg_connect(basic_block::sptr src,
                                      pmt::pmt_t srcport,
-                                     basic_block_sptr dst,
+                                     basic_block::sptr dst,
                                      pmt::pmt_t dstport)
 {
     if (HIER_BLOCK2_DETAIL_DEBUG)
@@ -200,9 +200,9 @@ void hier_block2_detail::msg_connect(basic_block_sptr src,
                   msg_endpoint(dst, dstport, hier_in));
 }
 
-void hier_block2_detail::msg_disconnect(basic_block_sptr src,
+void hier_block2_detail::msg_disconnect(basic_block::sptr src,
                                         pmt::pmt_t srcport,
-                                        basic_block_sptr dst,
+                                        basic_block::sptr dst,
                                         pmt::pmt_t dstport)
 {
     if (HIER_BLOCK2_DETAIL_DEBUG)
@@ -253,7 +253,7 @@ void hier_block2_detail::msg_disconnect(basic_block_sptr src,
     src->message_port_unsub(srcport, pmt::cons(dst->alias_pmt(), dstport));
 }
 
-void hier_block2_detail::disconnect(basic_block_sptr block)
+void hier_block2_detail::disconnect(basic_block::sptr block)
 {
     // Check on singleton list
     for (basic_block_viter_t p = d_blocks.begin(); p != d_blocks.end(); p++) {
@@ -296,9 +296,9 @@ void hier_block2_detail::disconnect(basic_block_sptr block)
     }
 }
 
-void hier_block2_detail::disconnect(basic_block_sptr src,
+void hier_block2_detail::disconnect(basic_block::sptr src,
                                     int src_port,
-                                    basic_block_sptr dst,
+                                    basic_block::sptr dst,
                                     int dst_port)
 {
     if (HIER_BLOCK2_DETAIL_DEBUG)
@@ -363,7 +363,7 @@ void hier_block2_detail::refresh_io_signature()
     }
 }
 
-void hier_block2_detail::connect_input(int my_port, int port, basic_block_sptr block)
+void hier_block2_detail::connect_input(int my_port, int port, basic_block::sptr block)
 {
     std::stringstream msg;
 
@@ -386,7 +386,7 @@ void hier_block2_detail::connect_input(int my_port, int port, basic_block_sptr b
     endps.push_back(endp);
 }
 
-void hier_block2_detail::connect_output(int my_port, int port, basic_block_sptr block)
+void hier_block2_detail::connect_output(int my_port, int port, basic_block::sptr block)
 {
     std::stringstream msg;
 
@@ -406,7 +406,7 @@ void hier_block2_detail::connect_output(int my_port, int port, basic_block_sptr 
     d_outputs[my_port] = endpoint(block, port);
 }
 
-void hier_block2_detail::disconnect_input(int my_port, int port, basic_block_sptr block)
+void hier_block2_detail::disconnect_input(int my_port, int port, basic_block::sptr block)
 {
     std::stringstream msg;
 
@@ -429,7 +429,7 @@ void hier_block2_detail::disconnect_input(int my_port, int port, basic_block_spt
     endps.erase(p);
 }
 
-void hier_block2_detail::disconnect_output(int my_port, int port, basic_block_sptr block)
+void hier_block2_detail::disconnect_output(int my_port, int port, basic_block::sptr block)
 {
     std::stringstream msg;
 
@@ -583,7 +583,7 @@ void hier_block2_detail::flatten_aux(flat_flowgraph_sptr sfg) const
     // For every block (gr::block and gr::hier_block2), set up the RPC
     // interface.
     for (p = edges.begin(); p != edges.end(); p++) {
-        basic_block_sptr b;
+        basic_block::sptr b;
         b = p->src().block();
 
         if (set_all_min_buff) {
@@ -772,7 +772,7 @@ void hier_block2_detail::flatten_aux(flat_flowgraph_sptr sfg) const
     basic_block_vector_t tmp = d_fg->calc_used_blocks();
 
     // First add the list of singleton blocks
-    std::vector<basic_block_sptr>::const_iterator b; // Because flatten_aux is const
+    std::vector<basic_block::sptr>::const_iterator b; // Because flatten_aux is const
     for (b = d_blocks.begin(); b != d_blocks.end(); b++) {
         tmp.push_back(*b);
     }
@@ -791,7 +791,7 @@ void hier_block2_detail::flatten_aux(flat_flowgraph_sptr sfg) const
     }
 
     for (unsigned int i = 0; i < d_outputs.size(); i++) {
-        basic_block_sptr blk = d_outputs[i].block();
+        basic_block::sptr blk = d_outputs[i].block();
         if (!blk) {
             msg << "In hierarchical block " << d_owner->name() << ", output " << i
                 << " is not connected internally";

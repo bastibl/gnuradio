@@ -20,16 +20,7 @@
  * Boston, MA 02110-1301, USA.
  */
 
-class gr::basic_block;
-typedef boost::shared_ptr<gr::basic_block> gr::basic_block_sptr;
-%template(basic_block_sptr) boost::shared_ptr<gr::basic_block>;
-
 %import "pmt_swig.i"
-
-// support vectors of these...
-namespace std {
-  %template(x_vector_basic_block_sptr) vector<gr::basic_block_sptr>;
-};
 
 %begin %{
 #define SWIG_PYTHON_2_UNICODE
@@ -43,13 +34,15 @@ namespace gr {
     basic_block();
 
   public:
+    typedef boost::shared_ptr<gr::basic_block> sptr;
+
     virtual ~basic_block();
     std::string name() const;
     std::string symbol_name() const;
     gr::io_signature::sptr input_signature() const;
     gr::io_signature::sptr output_signature() const;
     long unique_id() const;
-    gr::basic_block_sptr to_basic_block();
+    gr::basic_block::sptr to_basic_block();
     bool check_topology(int ninputs, int noutputs);
     std::string alias();
     void set_block_alias(std::string name);
@@ -62,6 +55,8 @@ namespace gr {
   %rename(block_ncurrently_allocated) basic_block_ncurrently_allocated;
   long basic_block_ncurrently_allocated();
 }
+
+%template(basic_block_sptr) boost::shared_ptr<gr::basic_block>;
 
 #ifdef SWIGPYTHON
 %import py3compat.i

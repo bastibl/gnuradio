@@ -55,7 +55,7 @@ basic_block::~basic_block()
     global_block_registry.block_unregister(this);
 }
 
-basic_block_sptr basic_block::to_basic_block() { return shared_from_this(); }
+basic_block::sptr basic_block::to_basic_block() { return shared_from_this(); }
 
 void basic_block::set_block_alias(std::string name)
 {
@@ -135,7 +135,7 @@ void basic_block::message_port_pub(pmt::pmt_t port_id, pmt::pmt_t msg)
         pmt::pmt_t port = pmt::cdr(target);
 
         currlist = pmt::cdr(currlist);
-        basic_block_sptr blk = global_block_registry.block_lookup(block);
+        basic_block::sptr blk = global_block_registry.block_lookup(block);
         blk->post(port, msg);
     }
 }

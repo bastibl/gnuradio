@@ -39,18 +39,18 @@ public:
     hier_block2_detail(hier_block2* owner);
     ~hier_block2_detail();
 
-    void connect(basic_block_sptr block);
-    void connect(basic_block_sptr src, int src_port, basic_block_sptr dst, int dst_port);
-    void msg_connect(basic_block_sptr src,
+    void connect(basic_block::sptr block);
+    void connect(basic_block::sptr src, int src_port, basic_block::sptr dst, int dst_port);
+    void msg_connect(basic_block::sptr src,
                      pmt::pmt_t srcport,
-                     basic_block_sptr dst,
+                     basic_block::sptr dst,
                      pmt::pmt_t dstport);
-    void msg_disconnect(basic_block_sptr src,
+    void msg_disconnect(basic_block::sptr src,
                         pmt::pmt_t srcport,
-                        basic_block_sptr dst,
+                        basic_block::sptr dst,
                         pmt::pmt_t dstport);
-    void disconnect(basic_block_sptr block);
-    void disconnect(basic_block_sptr, int src_port, basic_block_sptr, int dst_port);
+    void disconnect(basic_block::sptr block);
+    void disconnect(basic_block::sptr, int src_port, basic_block::sptr, int dst_port);
     void disconnect_all();
     void lock();
     void unlock();
@@ -78,10 +78,10 @@ private:
     basic_block_vector_t d_blocks;
 
     void refresh_io_signature();
-    void connect_input(int my_port, int port, basic_block_sptr block);
-    void connect_output(int my_port, int port, basic_block_sptr block);
-    void disconnect_input(int my_port, int port, basic_block_sptr block);
-    void disconnect_output(int my_port, int port, basic_block_sptr block);
+    void connect_input(int my_port, int port, basic_block::sptr block);
+    void connect_output(int my_port, int port, basic_block::sptr block);
+    void disconnect_input(int my_port, int port, basic_block::sptr block);
+    void disconnect_output(int my_port, int port, basic_block::sptr block);
 
     endpoint_vector_t resolve_port(int port, bool is_input);
     endpoint_vector_t resolve_endpoint(const endpoint& endp, bool is_input) const;
