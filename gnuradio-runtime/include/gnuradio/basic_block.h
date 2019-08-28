@@ -78,8 +78,6 @@ protected:
     friend class flat_flowgraph; // TODO: will be redundant
     friend class thread_body;
 
-    enum vcolor { WHITE, GREY, BLACK };
-
     std::string d_name;
     gr::io_signature::sptr d_input_signature;
     gr::io_signature::sptr d_output_signature;
@@ -87,7 +85,6 @@ protected:
     long d_symbolic_id;
     std::string d_symbol_name;
     std::string d_symbol_alias;
-    vcolor d_color;
     bool d_rpc_set;
 
     msg_queue_map_t msg_queue;
@@ -108,12 +105,6 @@ protected:
     {
         d_output_signature = iosig;
     }
-
-    /*!
-     * \brief Allow the flowgraph to set for sorting and partitioning
-     */
-    void set_color(vcolor color) { d_color = color; }
-    vcolor color() const { return d_color; }
 
     /*!
      * \brief Tests if there is a handler attached to port \p which_port

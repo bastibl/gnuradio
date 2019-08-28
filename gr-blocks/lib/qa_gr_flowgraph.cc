@@ -268,39 +268,3 @@ BOOST_AUTO_TEST_CASE(t15_clear)
     BOOST_REQUIRE(fg->edges().empty());
     BOOST_REQUIRE(fg->calc_used_blocks().empty());
 }
-
-BOOST_AUTO_TEST_CASE(t16_partition)
-{
-    gr::flowgraph_sptr fg = gr::make_flowgraph();
-
-    gr::block_sptr nop11 = gr::blocks::nop::make(sizeof(int));
-    gr::block_sptr nop12 = gr::blocks::nop::make(sizeof(int));
-    gr::block_sptr nop13 = gr::blocks::nop::make(sizeof(int));
-    gr::block_sptr nop14 = gr::blocks::nop::make(sizeof(int));
-
-    gr::block_sptr nop21 = gr::blocks::nop::make(sizeof(int));
-    gr::block_sptr nop22 = gr::blocks::nop::make(sizeof(int));
-    gr::block_sptr nop23 = gr::blocks::nop::make(sizeof(int));
-
-    gr::block_sptr nop31 = gr::blocks::nop::make(sizeof(int));
-    gr::block_sptr nop32 = gr::blocks::nop::make(sizeof(int));
-
-    // Build disjoint graph #1
-    fg->connect(nop11, 0, nop12, 0);
-    fg->connect(nop12, 0, nop13, 0);
-    fg->connect(nop13, 0, nop14, 0);
-
-    // Build disjoint graph #2
-    fg->connect(nop21, 0, nop22, 0);
-    fg->connect(nop22, 0, nop23, 0);
-
-    // Build disjoint graph #3
-    fg->connect(nop31, 0, nop32, 0);
-
-    std::vector<gr::basic_block_vector_t> graphs = fg->partition();
-
-    BOOST_REQUIRE(graphs.size() == 3);
-    BOOST_REQUIRE(graphs[0].size() == 4);
-    BOOST_REQUIRE(graphs[1].size() == 3);
-    BOOST_REQUIRE(graphs[2].size() == 2);
-}

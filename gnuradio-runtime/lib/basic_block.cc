@@ -43,7 +43,6 @@ basic_block::basic_block(const std::string& name,
       d_unique_id(s_next_id++),
       d_symbolic_id(global_block_registry.block_register(this)),
       d_symbol_name(global_block_registry.register_symbolic_name(this)),
-      d_color(WHITE),
       d_rpc_set(false),
       d_message_subscribers(pmt::make_dict())
 {

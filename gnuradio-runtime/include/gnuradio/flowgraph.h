@@ -245,21 +245,6 @@ public:
      */
     basic_block_vector_t calc_used_blocks();
 
-    /*!
-     * \brief topologically sort blocks
-     * \details
-     * Uses depth-first search to return a sorted vector of blocks
-     *
-     * \return toplogically sorted vector of blocks.  All the sources come first.
-     */
-    basic_block_vector_t topological_sort(basic_block_vector_t& blocks);
-
-    /*!
-     * \brief Calculate vector of disjoint graph partions
-     * \return vector of disjoint vectors of topologically sorted blocks
-     */
-    std::vector<basic_block_vector_t> partition();
-
 protected:
     basic_block_vector_t d_blocks;
     edge_vector_t d_edges;
@@ -284,14 +269,6 @@ private:
                           bool check_inputs);
 
     basic_block_vector_t calc_downstream_blocks(basic_block_sptr block);
-    basic_block_vector_t calc_reachable_blocks(basic_block_sptr block,
-                                               basic_block_vector_t& blocks);
-    void reachable_dfs_visit(basic_block_sptr block, basic_block_vector_t& blocks);
-    basic_block_vector_t calc_adjacent_blocks(basic_block_sptr block,
-                                              basic_block_vector_t& blocks);
-    basic_block_vector_t sort_sources_first(basic_block_vector_t& blocks);
-    bool source_p(basic_block_sptr block);
-    void topological_dfs_visit(basic_block_sptr block, basic_block_vector_t& output);
 };
 
 // Convenience functions

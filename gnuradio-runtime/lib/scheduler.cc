@@ -32,12 +32,7 @@ scheduler::sptr scheduler::make(flat_flowgraph_sptr ffg, int max_noutput_items)
 
 scheduler::scheduler(flat_flowgraph_sptr ffg, int max_noutput_items)
 {
-    // Get a topologically sorted vector of all the blocks in use.
-    // Being topologically sorted probably isn't going to matter, but
-    // there's a non-zero chance it might help...
-
     basic_block_vector_t used_blocks = ffg->calc_used_blocks();
-    used_blocks = ffg->topological_sort(used_blocks);
     block_vector_t blocks = flat_flowgraph::make_block_vector(used_blocks);
 
     // Ensure that the done flag is clear on all blocks
