@@ -86,7 +86,6 @@ add_library(gnuradio-runtime
   tagged_stream_block.cc
   test.cc
   thread_body.cc
-  top_block.cc
   top_block_impl.cc
   tpb_detail.cc
   vmcircbuf.cc

@@ -28,26 +28,17 @@
 
 namespace gr {
 
-class top_block_impl;
-
-GR_RUNTIME_API top_block_sptr make_top_block(const std::string& name);
-
 /*!
  *\brief Top-level hierarchical block representing a flowgraph
  * \ingroup container_blk
  */
-class GR_RUNTIME_API top_block : public hier_block2
+class GR_RUNTIME_API top_block : virtual public hier_block2
 {
-private:
-    friend GR_RUNTIME_API top_block_sptr make_top_block(const std::string& name);
-
-    top_block_impl* d_impl;
-
-protected:
-    top_block(const std::string& name);
 
 public:
-    ~top_block();
+
+    typedef boost::shared_ptr<top_block> sptr;
+    static sptr make(const std::string& name);
 
     /*!
      * \brief The simple interface to running a flowgraph.
@@ -59,7 +50,7 @@ public:
      * allowed for any block in the flowgraph. This passes through to
      * the start function; see that function for more details.
      */
-    void run(int max_noutput_items = 100000000);
+    virtual void run(int max_noutput_items = 100000000) = 0;
 
     /*!
      * Start the contained flowgraph. Creates one or more threads to
@@ -73,14 +64,14 @@ public:
      * maximum. Use this to adjust the maximum latency a flowgraph can
      * exhibit.
      */
-    void start(int max_noutput_items = 100000000);
+    virtual void start(int max_noutput_items = 100000000) = 0;
 
     /*!
      * Stop the running flowgraph. Notifies each thread created by the
      * scheduler to shutdown, then returns to caller. Calling stop()
      * on a top_block that is already stopped IS NOT an error.
      */
-    void stop();
+    virtual void stop() = 0;
 
     /*!
      * Wait for a flowgraph to complete. Flowgraphs complete when
@@ -90,7 +81,7 @@ public:
      * on a top_block that is not running IS NOT an error (wait
      * returns w/o blocking).
      */
-    void wait();
+    virtual void wait() = 0;
 
     /*!
      * Lock a flowgraph in preparation for reconfiguration. When an
@@ -101,7 +92,7 @@ public:
      * thread (E.g., block::work method) or deadlock will occur
      * when reconfiguration happens.
      */
-    virtual void lock();
+    virtual void lock() = 0;
 
     /*!
      * Unlock a flowgraph in preparation for reconfiguration. When an
@@ -112,40 +103,33 @@ public:
      * (E.g., block::work method) or deadlock will occur when
      * reconfiguration happens.
      */
-    virtual void unlock();
+    virtual void unlock() = 0;
 
     /*!
      * Returns a string that lists the edge connections in the
      * flattened flowgraph.
      */
-    std::string edge_list();
+    virtual std::string edge_list() = 0;
 
     /*!
      * Returns a string that lists the msg edge connections in the
      * flattened flowgraph.
      */
-    std::string msg_edge_list();
+    virtual std::string msg_edge_list() = 0;
 
     /*!
      * Displays flattened flowgraph edges and block connectivity
      */
-    void dump();
+    virtual void dump() = 0;
 
     //! Get the number of max noutput_items in the flowgraph
-    int max_noutput_items();
+    virtual int max_noutput_items() = 0;
 
     //! Set the maximum number of noutput_items in the flowgraph
-    void set_max_noutput_items(int nmax);
+    virtual void set_max_noutput_items(int nmax) = 0;
 
-    top_block_sptr to_top_block(); // Needed for Python type coercion
-
-    void setup_rpc();
+    virtual void setup_rpc() = 0;
 };
-
-inline top_block_sptr cast_to_top_block_sptr(basic_block_sptr block)
-{
-    return boost::dynamic_pointer_cast<top_block, basic_block>(block);
-}
 
 } // namespace gr
 

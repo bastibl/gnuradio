@@ -38,22 +38,43 @@
 
 namespace gr {
 
-top_block_impl::top_block_impl(top_block* owner)
-    : d_owner(owner), d_ffg(), d_state(IDLE), d_lock_count(0), d_retry_wait(false)
+
+top_block::sptr top_block::make(const std::string& name)
+{
+    return gnuradio::get_initial_sptr(new top_block_impl(name));
+}
+
+
+top_block_impl::top_block_impl(const std::string& name)
+    : hier_block2(name, io_signature::make(0, 0, 0), io_signature::make(0, 0, 0)), d_ffg(), d_state(IDLE), d_lock_count(0), d_retry_wait(false)
 {
 }
 
 top_block_impl::~top_block_impl()
 {
+    stop();
+    wait();
+
     if (d_lock_count) {
         std::cerr << "error: destroying locked block." << std::endl;
     }
-    d_owner = 0;
 }
 
 void top_block_impl::start(int max_noutput_items)
 {
     gr::thread::scoped_lock l(d_mutex);
+
+#ifdef GNURADIO_HRT_USE_CLOCK_GETTIME
+    std::string initial_clock =
+        prefs::singleton()->get_string("PerfCounters", "clock", "thread");
+    if (initial_clock.compare("thread") == 0) {
+        gr::high_res_timer_source = CLOCK_THREAD_CPUTIME_ID;
+    } else if (initial_clock.compare("monotonic") == 0) {
+        gr::high_res_timer_source = CLOCK_MONOTONIC;
+    } else {
+        throw std::runtime_error("bad argument for PerfCounters.clock!");
+    }
+#endif
 
     d_max_noutput_items = max_noutput_items;
 
@@ -65,7 +86,7 @@ void top_block_impl::start(int max_noutput_items)
         throw std::runtime_error("top_block::start: can't start with flow graph locked");
 
     // Create new flat flow graph by flattening hierarchy
-    d_ffg = d_owner->flatten();
+    d_ffg = flatten();
 
     // Validate new simple flow graph and wire it up
     d_ffg->validate();
@@ -80,6 +101,10 @@ void top_block_impl::start(int max_noutput_items)
 
     d_scheduler = scheduler::make(d_ffg, d_max_noutput_items);
     d_state = RUNNING;
+
+    if (prefs::singleton()->get_bool("ControlPort", "on", false)) {
+        setup_rpc();
+    }
 }
 
 void top_block_impl::stop()
@@ -110,6 +135,13 @@ void top_block_impl::wait()
         }
     } while (true);
 }
+
+void top_block_impl::run(int max_noutput_items)
+{
+    start(max_noutput_items);
+    wait();
+}
+
 
 void top_block_impl::wait_for_jobs()
 {
@@ -152,7 +184,7 @@ void top_block_impl::restart()
     wait_for_jobs();
 
     // Create new simple flow graph
-    flat_flowgraph_sptr new_ffg = d_owner->flatten();
+    flat_flowgraph_sptr new_ffg = flatten();
     new_ffg->validate();               // check consistency, sanity, etc
     new_ffg->merge_connections(d_ffg); // reuse buffers, etc
     d_ffg = new_ffg;
@@ -187,5 +219,92 @@ void top_block_impl::dump()
 int top_block_impl::max_noutput_items() { return d_max_noutput_items; }
 
 void top_block_impl::set_max_noutput_items(int nmax) { d_max_noutput_items = nmax; }
+
+void top_block_impl::setup_rpc()
+{
+#ifdef GR_CTRLPORT
+    if (is_rpc_set())
+        return;
+
+    // Triggers
+    d_rpc_vars.emplace_back(new rpcbasic_register_trigger<top_block>(
+        alias(), "stop", &top_block::stop, "Stop the flowgraph", RPC_PRIVLVL_MIN));
+
+    d_rpc_vars.emplace_back(new rpcbasic_register_trigger<top_block>(
+        alias(), "lock", &top_block::lock, "Lock the flowgraph", RPC_PRIVLVL_MIN));
+
+    d_rpc_vars.emplace_back(new rpcbasic_register_trigger<top_block>(
+        alias(), "unlock", &top_block::unlock, "Unock the flowgraph", RPC_PRIVLVL_MIN));
+
+    // Getters
+    add_rpc_variable(rpcbasic_sptr(
+        new rpcbasic_register_get<top_block, int>(alias(),
+                                                  "max noutput_items",
+                                                  &top_block::max_noutput_items,
+                                                  pmt::mp(0),
+                                                  pmt::mp(8192),
+                                                  pmt::mp(8192),
+                                                  "items",
+                                                  "Max number of output items",
+                                                  RPC_PRIVLVL_MIN,
+                                                  DISPNULL)));
+
+    if (prefs::singleton()->get_bool("ControlPort", "edges_list", false)) {
+        add_rpc_variable(rpcbasic_sptr(new rpcbasic_register_get<top_block, std::string>(
+            alias(),
+            "edge list",
+            &top_block::edge_list,
+            pmt::mp(""),
+            pmt::mp(""),
+            pmt::mp(""),
+            "edges",
+            "List of edges in the graph",
+            RPC_PRIVLVL_MIN,
+            DISPNULL)));
+    }
+
+    if (prefs::singleton()->get_bool("ControlPort", "edges_list", false)) {
+        add_rpc_variable(rpcbasic_sptr(new rpcbasic_register_get<top_block, std::string>(
+            alias(),
+            "msg edges list",
+            &top_block::msg_edge_list,
+            pmt::mp(""),
+            pmt::mp(""),
+            pmt::mp(""),
+            "msg_edges",
+            "List of msg edges in the graph",
+            RPC_PRIVLVL_MIN,
+            DISPNULL)));
+    }
+
+#ifdef GNURADIO_HRT_USE_CLOCK_GETTIME
+    add_rpc_variable(rpcbasic_sptr(
+        new rpcbasic_register_variable_rw<int>(alias(),
+                                               "perfcounter_clock",
+                                               (int*)&gr::high_res_timer_source,
+                                               pmt::mp(0),
+                                               pmt::mp(2),
+                                               pmt::mp(2),
+                                               "clock",
+                                               "Performance Counters Realtime Clock Type",
+                                               RPC_PRIVLVL_MIN,
+                                               DISPNULL)));
+#endif
+
+    // Setters
+    add_rpc_variable(rpcbasic_sptr(
+        new rpcbasic_register_set<top_block, int>(alias(),
+                                                  "max noutput_items",
+                                                  &top_block::set_max_noutput_items,
+                                                  pmt::mp(0),
+                                                  pmt::mp(8192),
+                                                  pmt::mp(8192),
+                                                  "items",
+                                                  "Max number of output items",
+                                                  RPC_PRIVLVL_MIN,
+                                                  DISPNULL)));
+    rpc_set();
+#endif /* GR_CTRLPORT */
+}
 
 } /* namespace gr */

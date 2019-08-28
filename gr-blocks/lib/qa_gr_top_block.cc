@@ -39,7 +39,7 @@ BOOST_AUTO_TEST_CASE(t0)
     if (VERBOSE)
         std::cout << "qa_top_block::t0()\n";
 
-    gr::top_block_sptr tb = gr::make_top_block("top");
+    gr::top_block::sptr tb = gr::top_block::make("top");
 
     BOOST_REQUIRE(tb);
 }
@@ -49,7 +49,7 @@ BOOST_AUTO_TEST_CASE(t1_run)
     if (VERBOSE)
         std::cout << "qa_top_block::t1()\n";
 
-    gr::top_block_sptr tb = gr::make_top_block("top");
+    gr::top_block::sptr tb = gr::top_block::make("top");
 
     gr::block_sptr src = gr::blocks::null_source::make(sizeof(int));
     gr::block_sptr head = gr::blocks::head::make(sizeof(int), 100000);
@@ -65,7 +65,7 @@ BOOST_AUTO_TEST_CASE(t2_start_stop_wait)
     if (VERBOSE)
         std::cout << "qa_top_block::t2()\n";
 
-    gr::top_block_sptr tb = gr::make_top_block("top");
+    gr::top_block::sptr tb = gr::top_block::make("top");
 
     gr::block_sptr src = gr::blocks::null_source::make(sizeof(int));
     gr::block_sptr head = gr::blocks::head::make(sizeof(int), 100000);
@@ -84,7 +84,7 @@ BOOST_AUTO_TEST_CASE(t3_lock_unlock)
     if (VERBOSE)
         std::cout << "qa_top_block::t3()\n";
 
-    gr::top_block_sptr tb = gr::make_top_block("top");
+    gr::top_block::sptr tb = gr::top_block::make("top");
 
     gr::block_sptr src = gr::blocks::null_source::make(sizeof(int));
     gr::block_sptr dst = gr::blocks::null_sink::make(sizeof(int));
@@ -105,7 +105,7 @@ BOOST_AUTO_TEST_CASE(t4_reconfigure)
     if (VERBOSE)
         std::cout << "qa_top_block::t4()\n";
 
-    gr::top_block_sptr tb = gr::make_top_block("top");
+    gr::top_block::sptr tb = gr::top_block::make("top");
 
     gr::block_sptr src = gr::blocks::null_source::make(sizeof(int));
     gr::block_sptr head = gr::blocks::head::make(sizeof(int), 100000);
@@ -132,7 +132,7 @@ BOOST_AUTO_TEST_CASE(t5_max_noutputs)
     if (VERBOSE)
         std::cout << "qa_top_block::t5()\n";
 
-    gr::top_block_sptr tb = gr::make_top_block("top");
+    gr::top_block::sptr tb = gr::top_block::make("top");
 
     gr::block_sptr src = gr::blocks::null_source::make(sizeof(int));
     gr::block_sptr head = gr::blocks::head::make(sizeof(int), 100000);
@@ -150,7 +150,7 @@ BOOST_AUTO_TEST_CASE(t6_reconfig_max_noutputs)
     if (VERBOSE)
         std::cout << "qa_top_block::t6()\n";
 
-    gr::top_block_sptr tb = gr::make_top_block("top");
+    gr::top_block::sptr tb = gr::top_block::make("top");
 
     gr::block_sptr src = gr::blocks::null_source::make(sizeof(int));
     gr::block_sptr head = gr::blocks::head::make(sizeof(int), 100000);
@@ -178,7 +178,7 @@ BOOST_AUTO_TEST_CASE(t7_max_noutputs_per_block)
     if (VERBOSE)
         std::cout << "qa_top_block::t7()\n";
 
-    gr::top_block_sptr tb = gr::make_top_block("top");
+    gr::top_block::sptr tb = gr::top_block::make("top");
 
     gr::block_sptr src = gr::blocks::null_source::make(sizeof(int));
     gr::block_sptr head = gr::blocks::head::make(sizeof(int), 100000);
@@ -198,7 +198,7 @@ BOOST_AUTO_TEST_CASE(t8_reconfig_max_noutputs_per_block)
     if (VERBOSE)
         std::cout << "qa_top_block::t8()\n";
 
-    gr::top_block_sptr tb = gr::make_top_block("top");
+    gr::top_block::sptr tb = gr::top_block::make("top");
 
     gr::block_sptr src = gr::blocks::null_source::make(sizeof(int));
     gr::block_sptr head = gr::blocks::head::make(sizeof(int), 100000);
@@ -228,7 +228,7 @@ BOOST_AUTO_TEST_CASE(t9_max_output_buffer)
     if (VERBOSE)
         std::cout << "qa_top_block::t9()\n";
 
-    gr::top_block_sptr tb = gr::make_top_block("top");
+    gr::top_block::sptr tb = gr::top_block::make("top");
 
     gr::block_sptr src = gr::blocks::null_source::make(sizeof(int));
     gr::block_sptr head = gr::blocks::head::make(sizeof(int), 100000);
@@ -248,7 +248,7 @@ BOOST_AUTO_TEST_CASE(t10_reconfig_max_output_buffer)
     if (VERBOSE)
         std::cout << "qa_top_block::t10()\n";
 
-    gr::top_block_sptr tb = gr::make_top_block("top");
+    gr::top_block::sptr tb = gr::top_block::make("top");
 
     gr::block_sptr src = gr::blocks::null_source::make(sizeof(int));
     gr::block_sptr head = gr::blocks::head::make(sizeof(int), 100000);
@@ -276,7 +276,7 @@ BOOST_AUTO_TEST_CASE(t10_reconfig_max_output_buffer)
 
 BOOST_AUTO_TEST_CASE(t11_set_block_affinity)
 {
-    gr::top_block_sptr tb = gr::make_top_block("top");
+    gr::top_block::sptr tb = gr::top_block::make("top");
     gr::block_sptr src(gr::blocks::null_source::make(sizeof(float)));
     gr::block_sptr snk(gr::blocks::null_sink::make(sizeof(float)));
 

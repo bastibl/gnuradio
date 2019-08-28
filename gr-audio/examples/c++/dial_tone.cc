@@ -51,7 +51,7 @@ int main(int argc, char** argv)
     // Construct a top block that will contain flowgraph blocks.  Alternatively,
     // one may create a derived class from top_block and hold instantiated blocks
     // as member data for later manipulation.
-    top_block_sptr tb = make_top_block("dial_tone");
+    top_block::sptr tb = top_block::make("dial_tone");
 
     // Construct a real-valued signal source for each tone, at given sample rate
     analog::sig_source_f::sptr src0 =

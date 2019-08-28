@@ -69,7 +69,7 @@ gr_derived_block::~gr_derived_block() {}
 
 BOOST_AUTO_TEST_CASE(test_1)
 {
-    gr::top_block_sptr tb(gr::make_top_block("test"));
+    gr::top_block::sptr tb = gr::top_block::make("test");
 
     gr::block_sptr src(gr::blocks::null_source::make(sizeof(int)));
     gr::block_sptr head(gr::blocks::head::make(sizeof(int), 1000));

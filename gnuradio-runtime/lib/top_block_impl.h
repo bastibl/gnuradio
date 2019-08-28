@@ -25,6 +25,7 @@
 
 #include "scheduler.h"
 #include <gnuradio/api.h>
+#include <gnuradio/top_block.h>
 #include <gnuradio/thread/thread.h>
 
 namespace gr {
@@ -36,11 +37,13 @@ namespace gr {
  * The actual implementation of top_block. Separate class allows
  * decoupling of changes from dependent classes.
  */
-class GR_RUNTIME_API top_block_impl
+class GR_RUNTIME_API top_block_impl : public top_block
 {
 public:
-    top_block_impl(top_block* owner);
-    ~top_block_impl();
+    top_block_impl(const std::string& name);
+    virtual ~top_block_impl();
+
+    void run(int max_noutput_items = 100000000);
 
     // Create and start scheduler threads
     void start(int max_noutput_items = 100000000);
@@ -72,10 +75,12 @@ public:
     // Set the maximum number of noutput_items in the flowgraph
     void set_max_noutput_items(int nmax);
 
+    void setup_rpc();
+
 protected:
+
     enum tb_state { IDLE, RUNNING };
 
-    top_block* d_owner;
     flat_flowgraph_sptr d_ffg;
     scheduler::sptr d_scheduler;
 

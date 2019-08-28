@@ -90,7 +90,7 @@ ${indent(declarations)}
 
 public:
 % if not generate_options.startswith('hb'):
-    top_block_sptr tb;
+    top_block::sptr tb;
 % endif
 	${class_name}(${param_str});
 	~${class_name}();

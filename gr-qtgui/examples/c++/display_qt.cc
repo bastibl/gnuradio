@@ -44,7 +44,7 @@ mywindow::mywindow() : QWidget()
     int rate = 48000;
 
     // Create the GNU Radio top block
-    tb = make_top_block("display_qt");
+    tb = top_block::make("display_qt");
 
     // Source will be sine wave in noise
     src0 = analog::sig_source_f::make(rate, analog::GR_SIN_WAVE, 1500, 1);

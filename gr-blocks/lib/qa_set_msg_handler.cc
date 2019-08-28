@@ -43,7 +43,7 @@ BOOST_AUTO_TEST_CASE(t0)
 {
     static const int NMSGS = 10;
 
-    gr::top_block_sptr tb = gr::make_top_block("top");
+    gr::top_block::sptr tb = gr::top_block::make("top");
     gr::block_sptr src = gr::blocks::null_source::make(sizeof(int));
     gr::blocks::nop::sptr nop = gr::blocks::nop::make(sizeof(int));
     gr::block_sptr dst = gr::blocks::null_sink::make(sizeof(int));

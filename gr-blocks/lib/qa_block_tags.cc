@@ -61,7 +61,7 @@ std::ostream& operator<<(std::ostream& os, const gr::tag_t& t) { return os; }
 BOOST_AUTO_TEST_CASE(t0)
 {
     unsigned int N = 1000;
-    gr::top_block_sptr tb = gr::make_top_block("top");
+    gr::top_block::sptr tb = gr::top_block::make("top");
     gr::block_sptr src(gr::blocks::null_source::make(sizeof(int)));
     gr::block_sptr head(gr::blocks::head::make(sizeof(int), N));
     gr::block_sptr snk(gr::blocks::null_sink::make(sizeof(int)));
@@ -84,7 +84,7 @@ BOOST_AUTO_TEST_CASE(t0)
 BOOST_AUTO_TEST_CASE(t1)
 {
     int N = 40000;
-    gr::top_block_sptr tb = gr::make_top_block("top");
+    gr::top_block::sptr tb = gr::top_block::make("top");
     gr::block_sptr src(gr::blocks::null_source::make(sizeof(int)));
     gr::block_sptr head(gr::blocks::head::make(sizeof(int), N));
     gr::blocks::annotator_alltoall::sptr ann0(
@@ -171,7 +171,7 @@ BOOST_AUTO_TEST_CASE(t1)
 BOOST_AUTO_TEST_CASE(t2)
 {
     int N = 40000;
-    gr::top_block_sptr tb = gr::make_top_block("top");
+    gr::top_block::sptr tb = gr::top_block::make("top");
     gr::block_sptr src(gr::blocks::null_source::make(sizeof(int)));
     gr::block_sptr head(gr::blocks::head::make(sizeof(int), N));
     gr::blocks::annotator_alltoall::sptr ann0(
@@ -278,7 +278,7 @@ BOOST_AUTO_TEST_CASE(t2)
 BOOST_AUTO_TEST_CASE(t3)
 {
     int N = 40000;
-    gr::top_block_sptr tb = gr::make_top_block("top");
+    gr::top_block::sptr tb = gr::top_block::make("top");
     gr::block_sptr src(gr::blocks::null_source::make(sizeof(int)));
     gr::block_sptr head(gr::blocks::head::make(sizeof(int), N));
     gr::blocks::annotator_1to1::sptr ann0(
@@ -368,7 +368,7 @@ BOOST_AUTO_TEST_CASE(t3)
 BOOST_AUTO_TEST_CASE(t4)
 {
     int N = 40000;
-    gr::top_block_sptr tb = gr::make_top_block("top");
+    gr::top_block::sptr tb = gr::top_block::make("top");
     gr::block_sptr src(gr::blocks::null_source::make(sizeof(int)));
     gr::block_sptr head(gr::blocks::head::make(sizeof(int), N));
     gr::blocks::annotator_1to1::sptr ann0(
@@ -399,7 +399,7 @@ BOOST_AUTO_TEST_CASE(t4)
 BOOST_AUTO_TEST_CASE(t5)
 {
     int N = 40000;
-    gr::top_block_sptr tb = gr::make_top_block("top");
+    gr::top_block::sptr tb = gr::top_block::make("top");
     gr::block_sptr src(gr::blocks::null_source::make(sizeof(float)));
     gr::block_sptr head(gr::blocks::head::make(sizeof(float), N));
     gr::blocks::annotator_alltoall::sptr ann0(

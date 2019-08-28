@@ -70,6 +70,7 @@
 #include <gnuradio/feval.h>
 #include <gnuradio/py_feval.h>
 #include <gnuradio/high_res_timer.h>
+#include <gnuradio/top_block.h>
 %}
 
 %include <gnuradio/high_res_timer.h>
