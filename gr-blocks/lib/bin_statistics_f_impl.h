@@ -24,9 +24,6 @@
 #define INCLUDED_GR_BIN_STATISTICS_F_IMPL_H
 
 #include <gnuradio/blocks/bin_statistics_f.h>
-#include <gnuradio/feval.h>
-#include <gnuradio/message.h>
-#include <gnuradio/msg_queue.h>
 
 namespace gr {
 namespace blocks {
@@ -37,7 +34,7 @@ private:
     enum state_t { ST_INIT, ST_TUNE_DELAY, ST_DWELL_DELAY };
 
     size_t d_vlen;
-    msg_queue::sptr d_msgq;
+    gr::messages::msg_queue_sptr d_msgq;
     feval_dd* d_tune;
     size_t d_tune_delay;
     size_t d_dwell_delay;
@@ -56,7 +53,7 @@ protected:
 
     size_t vlen() const { return d_vlen; }
     double center_freq() const { return d_center_freq; }
-    msg_queue::sptr msgq() const { return d_msgq; }
+    gr::messages::msg_queue_sptr msgq() const { return d_msgq; }
 
     virtual void reset_stats();
     virtual void accrue_stats(const float* input);
@@ -64,7 +61,7 @@ protected:
 
 public:
     bin_statistics_f_impl(unsigned int vlen,
-                          msg_queue::sptr msgq,
+                          gr::messages::msg_queue_sptr msgq,
                           feval_dd* tune,
                           size_t tune_delay,
                           size_t dwell_delay);

@@ -31,6 +31,7 @@ from __future__ import print_function
 import struct
 
 from gnuradio import gr, gr_unittest, blocks
+import pmt
 
 
 class counter(gr.feval_dd):
@@ -88,10 +89,9 @@ class counter4(gr.feval_dd):
 
 class parse_msg(object):
     def __init__(self, msg):
-        self.center_freq = msg.arg1()
-        self.vlen = int(msg.arg2())
-        assert(msg.length() == self.vlen * gr.sizeof_float)
-        self.data = struct.unpack(b'%df' % self.vlen, msg.to_string())
+        self.center_freq = pmt.to_double(pmt.car(msg))
+        self.data = pmt.f32vector_elements(pmt.cdr(msg))
+        self.vlen = len(self.data)
 
 
 class test_bin_statistics(gr_unittest.TestCase):
@@ -107,7 +107,7 @@ class test_bin_statistics(gr_unittest.TestCase):
         tune = counter(1)
         tune_delay = 0
         dwell_delay = 1
-        msgq = gr.msg_queue()
+        msgq = gr.make_msg_queue()
 
         src_data = tuple([float(x) for x in
                           ( 1,  2,  3,  4,
@@ -139,7 +139,7 @@ class test_bin_statistics(gr_unittest.TestCase):
         tune = counter(1)
         tune_delay = 1
         dwell_delay = 2
-        msgq = gr.msg_queue()
+        msgq = gr.make_msg_queue()
 
         src_data = tuple([float(x) for x in
                           ( 1,  2,  3,  4,
@@ -169,7 +169,7 @@ class test_bin_statistics(gr_unittest.TestCase):
         tune = counter3(foobar3, 1)
         tune_delay = 1
         dwell_delay = 2
-        msgq = gr.msg_queue()
+        msgq = gr.make_msg_queue()
 
         src_data = tuple([float(x) for x in
                           ( 1,  2,  3,  4,
@@ -201,7 +201,7 @@ class test_bin_statistics(gr_unittest.TestCase):
         tune = counter4(self, 1)
         tune_delay = 1
         dwell_delay = 2
-        msgq = gr.msg_queue()
+        msgq = gr.make_msg_queue()
 
         src_data = tuple([float(x) for x in
                           ( 1,  2,  3,  4,

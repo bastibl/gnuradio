@@ -25,7 +25,7 @@
 
 #include <gnuradio/blocks/api.h>
 #include <gnuradio/feval.h>
-#include <gnuradio/msg_queue.h>
+#include <gnuradio/messages/msg_queue.h>
 #include <gnuradio/sync_block.h>
 
 namespace gr {
@@ -42,7 +42,7 @@ protected:
 
     virtual size_t vlen() const = 0;
     virtual double center_freq() const = 0;
-    virtual gr::msg_queue::sptr msgq() const = 0;
+    virtual gr::messages::msg_queue_sptr msgq() const = 0;
 
     virtual void reset_stats() = 0;
     virtual void accrue_stats(const float* input) = 0;
@@ -64,7 +64,7 @@ public:
      * \param dwell_delay number of samples for the dwell delay
      */
     static sptr make(unsigned int vlen, // vector length
-                     gr::msg_queue::sptr msgq,
+                     gr::messages::msg_queue_sptr msgq,
                      feval_dd* tune,      // callback
                      size_t tune_delay,   // samples
                      size_t dwell_delay); // samples

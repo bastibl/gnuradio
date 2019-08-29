@@ -28,7 +28,7 @@ namespace gr {
 namespace blocks {
 
 bin_statistics_f::sptr bin_statistics_f::make(unsigned int vlen,
-                                              msg_queue::sptr msgq,
+                                              gr::messages::msg_queue_sptr msgq,
                                               feval_dd* tune,
                                               size_t tune_delay,
                                               size_t dwell_delay)
@@ -38,7 +38,7 @@ bin_statistics_f::sptr bin_statistics_f::make(unsigned int vlen,
 }
 
 bin_statistics_f_impl::bin_statistics_f_impl(unsigned int vlen,
-                                             msg_queue::sptr msgq,
+                                             gr::messages::msg_queue_sptr msgq,
                                              feval_dd* tune,
                                              size_t tune_delay,
                                              size_t dwell_delay)
@@ -151,8 +151,9 @@ void bin_statistics_f_impl::send_stats()
         return;
 
     // build & send a message
-    message::sptr msg = message::make(0, center_freq(), vlen(), vlen() * sizeof(float));
-    memcpy(msg->msg(), &d_max[0], vlen() * sizeof(float));
+    pmt::pmt_t freq = pmt::from_double(center_freq());
+    pmt::pmt_t vec = pmt::init_f32vector(vlen(), d_max);
+    pmt::pmt_t msg = pmt::cons(freq, vec);
     msgq()->insert_tail(msg);
 }
 
