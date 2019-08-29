@@ -24,7 +24,7 @@
 #define INCLUDED_GR_PACKET_SINK_H
 
 #include <gnuradio/digital/api.h>
-#include <gnuradio/msg_queue.h>
+#include <gnuradio/messages/msg_queue.h>
 #include <gnuradio/sync_block.h>
 
 namespace gr {
@@ -67,7 +67,7 @@ public:
      * \param threshold Number of bits that can be incorrect in the \p sync_vector.
      */
     static sptr make(const std::vector<unsigned char>& sync_vector,
-                     msg_queue::sptr target_queue,
+                     gr::messages::msg_queue_sptr target_queue,
                      int threshold = -1);
 
     //! return true if we detect carrier

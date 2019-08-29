@@ -71,7 +71,7 @@ inline void packet_sink_impl::enter_have_header(int payload_len)
 }
 
 packet_sink::sptr packet_sink::make(const std::vector<unsigned char>& sync_vector,
-                                    msg_queue::sptr target_queue,
+                                    gr::messages::msg_queue_sptr target_queue,
                                     int threshold)
 {
     return gnuradio::get_initial_sptr(
@@ -79,7 +79,7 @@ packet_sink::sptr packet_sink::make(const std::vector<unsigned char>& sync_vecto
 }
 
 packet_sink_impl::packet_sink_impl(const std::vector<unsigned char>& sync_vector,
-                                   msg_queue::sptr target_queue,
+                                   gr::messages::msg_queue_sptr target_queue,
                                    int threshold)
     : sync_block("packet_sink",
                  io_signature::make(1, 1, sizeof(float)),
@@ -182,11 +182,9 @@ int packet_sink_impl::work(int noutput_items,
 
                     if (d_packetlen_cnt == d_packetlen) { // packet is filled
                         // build a message
-                        message::sptr msg = message::make(0, 0, 0, d_packetlen_cnt);
-                        memcpy(msg->msg(), d_packet, d_packetlen_cnt);
+                        pmt::pmt_t msg = pmt::make_blob(d_packet, d_packetlen_cnt);
 
                         d_target_queue->insert_tail(msg); // send it
-                        msg.reset();                      // free it up
 
                         enter_search();
                         break;

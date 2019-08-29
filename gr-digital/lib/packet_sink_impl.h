@@ -36,9 +36,9 @@ private:
     static const int MAX_PKT_LEN = 4096;
     static const int HEADERBITLEN = 32;
 
-    msg_queue::sptr d_target_queue;   // where to send the packet when received
-    unsigned long long d_sync_vector; // access code to locate start of packet
-    unsigned int d_threshold;         // how many bits may be wrong in sync vector
+    gr::messages::msg_queue_sptr d_target_queue; // where to send the packet when received
+    unsigned long long d_sync_vector;            // access code to locate start of packet
+    unsigned int d_threshold; // how many bits may be wrong in sync vector
 
     state_t d_state;
 
@@ -75,7 +75,7 @@ protected:
 
 public:
     packet_sink_impl(const std::vector<unsigned char>& sync_vector,
-                     msg_queue::sptr target_queue,
+                     gr::messages::msg_queue_sptr target_queue,
                      int threshold = -1);
     ~packet_sink_impl();
 
