@@ -23,7 +23,7 @@
 #ifndef INCLUDED_GR_UHD_AMSG_SOURCE_H
 #define INCLUDED_GR_UHD_AMSG_SOURCE_H
 
-#include <gnuradio/msg_queue.h>
+#include <gnuradio/messages/msg_queue.h>
 #include <gnuradio/uhd/api.h>
 #include <uhd/usrp/multi_usrp.hpp>
 
@@ -51,13 +51,14 @@ public:
      * \brief Make a new USRP asynchronous message-based source block.
      * \ingroup uhd_blk
      */
-    static sptr make(const ::uhd::device_addr_t& device_addr, msg_queue::sptr msgq);
+    static sptr make(const ::uhd::device_addr_t& device_addr,
+                     gr::messages::msg_queue_sptr msgq);
 
     /*!
      * Convert a raw asynchronous message to an asynchronous metadata object.
      * \return The asynchronous metadata object.
      */
-    static ::uhd::async_metadata_t msg_to_async_metadata_t(const message::sptr msg);
+    static ::uhd::async_metadata_t msg_to_async_metadata_t(const pmt::pmt_t msg);
 };
 
 } /* namespace uhd */

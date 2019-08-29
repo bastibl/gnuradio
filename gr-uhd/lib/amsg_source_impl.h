@@ -29,16 +29,16 @@ namespace uhd {
 class amsg_source_impl : public amsg_source
 {
 public:
-    amsg_source_impl(const ::uhd::device_addr_t& device_addr, msg_queue::sptr msgq);
+    amsg_source_impl(const ::uhd::device_addr_t& device_addr, gr::messages::msg_queue_sptr msgq);
     ~amsg_source_impl();
 
     void recv_loop();
-    void post(message::sptr msg);
+    void post(pmt::pmt_t msg);
 
 protected:
     ::uhd::usrp::multi_usrp::sptr _dev;
     gr::thread::thread _amsg_thread;
-    msg_queue::sptr _msgq;
+    gr::messages::msg_queue_sptr _msgq;
     bool _running;
 };
 
