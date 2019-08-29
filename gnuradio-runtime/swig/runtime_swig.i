@@ -47,8 +47,7 @@
 #include <gnuradio/feval.h>
 #include <gnuradio/hier_block2.h>
 #include <gnuradio/io_signature.h>
-#include <gnuradio/message.h>
-#include <gnuradio/msg_queue.h>
+#include <gnuradio/messages/msg_queue.h>
 #include <gnuradio/prefs.h>
 #include <gnuradio/realtime.h>
 #include <gnuradio/sync_block.h>
@@ -79,7 +78,6 @@
 %include "feval.i"
 %include "hier_block2.i"
 %include "io_signature.i"
-%include "message.i"
 %include "msg_queue.i"
 %include "prefs.i"
 %include "sync_block.i"

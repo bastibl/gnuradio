@@ -68,8 +68,7 @@ add_library(gnuradio-runtime
   io_signature.cc
   local_sighandler.cc
   logger.cc
-  message.cc
-  msg_queue.cc
+  messages/msg_queue.cc
   pagesize.cc
   prefs.cc
   realtime.cc
@@ -88,11 +87,6 @@ add_library(gnuradio-runtime
   vmcircbuf_mmap_tmpfile.cc
   vmcircbuf_prefs.cc
   vmcircbuf_sysv_shm.cc
-  )
-
-# Messages
-target_sources(gnuradio-runtime PRIVATE
-  ${CMAKE_CURRENT_SOURCE_DIR}/messages/msg_queue.cc
   )
 
 # Thread

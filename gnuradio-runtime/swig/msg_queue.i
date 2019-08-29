@@ -21,41 +21,25 @@
  */
 
 namespace gr {
-  /*!
-   * \brief thread-safe message queue
-   */
-  class msg_queue : public gr::msg_handler
-  {
-  public:
-    typedef boost::shared_ptr<msg_queue> sptr;
+namespace messages {
 
-    static sptr make(unsigned int limit=0);
-
+/*!
+ * \brief thread-safe message queue
+ */
+class GR_RUNTIME_API msg_queue
+{
+public:
     msg_queue(unsigned int limit);
     ~msg_queue();
-
-    //! Generic msg_handler method: insert the message.
-    //void handle(gr::message::sptr msg) { insert_tail (msg); }
-
-    /*!
-     * \brief Insert message at tail of queue.
-     * \param msg message
-     *
-     * Block if queue if full.
-     */
-    //void insert_tail(gr::message::sptr msg);
 
     /*!
      * \brief Delete message from head of queue and return it.
      * Block if no message is available.
      */
-    //gr::message::sptr delete_head();
+    pmt::pmt_t delete_head();
 
-    /*!
-     * \brief If there's a message in the q, delete it and return it.
-     * If no message is available, return 0.
-     */
-    gr::message::sptr delete_head_nowait();
+    //! Delete all messages from the queue
+    void flush();
 
     //! is the queue empty?
     bool empty_p() const;
@@ -66,9 +50,14 @@ namespace gr {
     //! return number of messages in queue
     unsigned int count() const;
 
-    //! Delete all messages from the queue
-    void flush();
-  };
+    //! return limit on number of message in queue.  0 -> unbounded
+    unsigned int limit() const;
+};
+
+typedef boost::shared_ptr<msg_queue> msg_queue_sptr;
+GR_RUNTIME_API msg_queue_sptr make_msg_queue(unsigned int limit = 0);
+
+}
 }
 
 /*
@@ -82,15 +71,15 @@ namespace gr {
  */
 #ifdef SWIGPYTHON
 %inline %{
-  gr::message::sptr py_msg_queue__delete_head(gr::msg_queue::sptr q) {
-    gr::message::sptr msg;
+    pmt::pmt_t py_msg_queue__delete_head(gr::messages::msg_queue_sptr q) {
+    pmt::pmt_t msg;
     GR_PYTHON_BLOCKING_CODE(
         msg = q->delete_head();
     )
     return msg;
   }
 
-  void py_msg_queue__insert_tail(gr::msg_queue::sptr q, gr::message::sptr msg) {
+    void py_msg_queue__insert_tail(gr::messages::msg_queue_sptr q, pmt::pmt_t msg) {
     GR_PYTHON_BLOCKING_CODE(
         q->insert_tail(msg);
     )
@@ -98,11 +87,11 @@ namespace gr {
 %}
 
 // smash in new python delete_head and insert_tail methods...
-%template(msg_queue_sptr) boost::shared_ptr<gr::msg_queue>;
+%template(msg_queue_sptr) boost::shared_ptr<gr::messages::msg_queue>;
 %pythoncode %{
 msg_queue_sptr.delete_head = py_msg_queue__delete_head
 msg_queue_sptr.insert_tail = py_msg_queue__insert_tail
 msg_queue_sptr.handle = py_msg_queue__insert_tail
-msg_queue = msg_queue.make
+msg_queue = make_msg_queue
 %}
 #endif	// SWIGPYTHON

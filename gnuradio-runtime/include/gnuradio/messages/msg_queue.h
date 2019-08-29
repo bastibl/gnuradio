@@ -34,7 +34,7 @@ namespace messages {
 class msg_queue;
 typedef boost::shared_ptr<msg_queue> msg_queue_sptr;
 
-msg_queue_sptr make_msg_queue(unsigned int limit = 0);
+GR_RUNTIME_API msg_queue_sptr make_msg_queue(unsigned int limit = 0);
 
 /*!
  * \brief thread-safe message queue

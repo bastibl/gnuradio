@@ -46,8 +46,6 @@ install(FILES
   io_signature.h
   logger.h
   math.h
-  message.h
-  msg_queue.h
   nco.h
   prefs.h
   py_feval.h

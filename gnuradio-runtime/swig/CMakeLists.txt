@@ -96,7 +96,6 @@ install(
     gr_types.i
     hier_block2.i
     io_signature.i
-    message.i
     msg_queue.i
     pmt_swig.i
     prefs.i
