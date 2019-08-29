@@ -36,7 +36,7 @@ private:
     static const int MAX_PKT_LEN = 4096;
     static const int HEADERBITLEN = 32;
 
-    msg_queue::sptr d_target_queue; // where to send the packet when received
+    gr::messages::msg_queue_sptr d_target_queue; // where to send the packet when received
     state_t d_state;
     unsigned int d_header;  // header bits
     int d_headerbitlen_cnt; // how many so far
@@ -69,7 +69,7 @@ protected:
     }
 
 public:
-    framer_sink_1_impl(msg_queue::sptr target_queue);
+    framer_sink_1_impl(gr::messages::msg_queue_sptr target_queue);
     ~framer_sink_1_impl();
 
     int work(int noutput_items,

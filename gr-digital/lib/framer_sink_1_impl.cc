@@ -64,12 +64,12 @@ inline void framer_sink_1_impl::enter_have_header(int payload_len, int whitener_
     d_packet_byte_index = 0;
 }
 
-framer_sink_1::sptr framer_sink_1::make(msg_queue::sptr target_queue)
+framer_sink_1::sptr framer_sink_1::make(gr::messages::msg_queue_sptr target_queue)
 {
     return gnuradio::get_initial_sptr(new framer_sink_1_impl(target_queue));
 }
 
-framer_sink_1_impl::framer_sink_1_impl(msg_queue::sptr target_queue)
+framer_sink_1_impl::framer_sink_1_impl(gr::messages::msg_queue_sptr target_queue)
     : sync_block("framer_sink_1",
                  io_signature::make(1, 1, sizeof(unsigned char)),
                  io_signature::make(0, 0, 0)),
@@ -130,12 +130,10 @@ int framer_sink_1_impl::work(int noutput_items,
 
                         if (d_packetlen == 0) { // check for zero-length payload
                             // build a zero-length message
-                            // NOTE: passing header field as arg1 is not scalable
-                            message::sptr msg =
-                                message::make(0, d_packet_whitener_offset, 0, 0);
+                            pmt::pmt_t offset = pmt::from_long(d_packet_whitener_offset);
+                            pmt::pmt_t msg = pmt::cons(offset, pmt::PMT_NIL);
 
                             d_target_queue->insert_tail(msg); // send it
-                            msg.reset();                      // free it up
 
                             enter_search();
                         }
@@ -159,13 +157,11 @@ int framer_sink_1_impl::work(int noutput_items,
 
                     if (d_packetlen_cnt == d_packetlen) { // packet is filled
                         // build a message
-                        // NOTE: passing header field as arg1 is not scalable
-                        message::sptr msg = message::make(
-                            0, d_packet_whitener_offset, 0, d_packetlen_cnt);
-                        memcpy(msg->msg(), d_packet, d_packetlen_cnt);
+                        pmt::pmt_t offset = pmt::from_long(d_packet_whitener_offset);
+                        pmt::pmt_t data = pmt::make_blob(d_packet, d_packetlen_cnt);
+                        pmt::pmt_t msg = pmt::cons(offset, data);
 
                         d_target_queue->insert_tail(msg); // send it
-                        msg.reset();                      // free it up
 
                         enter_search();
                         break;

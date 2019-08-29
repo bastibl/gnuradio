@@ -24,7 +24,7 @@
 #define INCLUDED_GR_FRAMER_SINK_1_H
 
 #include <gnuradio/digital/api.h>
-#include <gnuradio/msg_queue.h>
+#include <gnuradio/messages/msg_queue.h>
 #include <gnuradio/sync_block.h>
 
 namespace gr {
@@ -59,7 +59,7 @@ public:
      *
      * \param target_queue The message queue where frames go.
      */
-    static sptr make(msg_queue::sptr target_queue);
+    static sptr make(gr::messages::msg_queue_sptr target_queue);
 };
 
 } /* namespace digital */

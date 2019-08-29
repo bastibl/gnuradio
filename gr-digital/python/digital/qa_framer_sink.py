@@ -22,6 +22,7 @@
 
 
 from gnuradio import gr, gr_unittest, digital, blocks
+import pmt
 
 default_access_code = '\xAC\xDD\xA4\xE2\xF2\x8C\x20\xFC'
 
@@ -66,7 +67,7 @@ class test_framker_sink(gr_unittest.TestCase):
         self.tb.run()
 
         result_data = rcvd_pktq.delete_head()
-        result_data = result_data.to_string()
+        result_data = bytes(pmt.u8vector_elements(pmt.cdr(result_data)))
         self.assertEqual(expected_data, result_data)
 
     def test_002(self):
@@ -90,7 +91,7 @@ class test_framker_sink(gr_unittest.TestCase):
         self.tb.run()
 
         result_data = rcvd_pktq.delete_head()
-        result_data = result_data.to_string()
+        result_data = bytes(pmt.u8vector_elements(pmt.cdr(result_data)))
         self.assertEqual(expected_data, result_data)
 
 if __name__ == '__main__':
