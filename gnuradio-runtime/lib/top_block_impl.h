@@ -25,8 +25,8 @@
 
 #include "scheduler.h"
 #include <gnuradio/api.h>
-#include <gnuradio/top_block.h>
 #include <gnuradio/thread/thread.h>
+#include <gnuradio/top_block.h>
 
 namespace gr {
 
@@ -77,8 +77,11 @@ public:
 
     void setup_rpc();
 
-protected:
+    flat_flowgraph_sptr flatten() const;
 
+    std::string dot_graph();
+
+protected:
     enum tb_state { IDLE, RUNNING };
 
     flat_flowgraph_sptr d_ffg;

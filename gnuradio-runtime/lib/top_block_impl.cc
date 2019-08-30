@@ -45,7 +45,11 @@ top_block::sptr top_block::make(const std::string& name)
 
 
 top_block_impl::top_block_impl(const std::string& name)
-    : hier_block2(name, io_signature::make(0, 0, 0), io_signature::make(0, 0, 0)), d_ffg(), d_state(IDLE), d_lock_count(0), d_retry_wait(false)
+    : hier_block2(name, io_signature::make(0, 0, 0), io_signature::make(0, 0, 0)),
+      d_ffg(),
+      d_state(IDLE),
+      d_lock_count(0),
+      d_retry_wait(false)
 {
 }
 
@@ -173,6 +177,28 @@ void top_block_impl::unlock()
 
     restart();
     d_lock_cond.notify_all();
+}
+
+
+flat_flowgraph_sptr top_block_impl::flatten() const
+{
+    flat_flowgraph_sptr new_ffg = make_flat_flowgraph();
+    flatten_aux(new_ffg);
+
+    // prune any remaining hier connections
+    new_ffg->clear_hier();
+
+    // print all primitive connections at exit
+    std::cout << "flatten_aux finished in top_block" << std::endl;
+    new_ffg->dump();
+
+    return new_ffg;
+}
+
+
+std::string top_block_impl::dot_graph()
+{
+    return dot_graph_fg(flatten());
 }
 
 /*

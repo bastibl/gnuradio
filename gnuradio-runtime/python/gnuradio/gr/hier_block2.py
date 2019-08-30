@@ -22,7 +22,7 @@ from __future__ import unicode_literals
 
 import functools
 
-from .runtime_swig import hier_block2_swig, dot_graph
+from .runtime_swig import hier_block2_make
 import pmt
 
 
@@ -80,7 +80,7 @@ class hier_block2(object):
         """
         Create a hierarchical block with a given name and I/O signatures.
         """
-        self._impl = hier_block2_swig(name, input_signature, output_signature)
+        self._impl = hier_block2_make(name, input_signature, output_signature)
 
     def __getattr__(self, name):
         """
@@ -151,9 +151,3 @@ class hier_block2(object):
         Register a message port for this hier block
         """
         self.primitive_message_port_register_hier_out(pmt.intern(portname))
-
-    def dot_graph(self):
-        """
-        Return graph representation in dot language
-        """
-        return dot_graph(self._impl)

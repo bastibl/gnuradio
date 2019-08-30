@@ -117,6 +117,11 @@ public:
      */
     virtual std::string msg_edge_list() = 0;
 
+
+    virtual flat_flowgraph_sptr flatten() const = 0;
+
+    virtual std::string dot_graph() = 0;
+
     /*!
      * Displays flattened flowgraph edges and block connectivity
      */

@@ -33,6 +33,8 @@ namespace gr {
     virtual std::string msg_edge_list() = 0;
     virtual void dump() = 0;
 
+    virtual std::string dot_graph() = 0;
+
     int max_noutput_items() = 0;
     void set_max_noutput_items(int nmax) = 0;
 
@@ -83,12 +85,6 @@ void top_block_unlock_unlocked(gr::top_block::sptr r) noexcept(false)
     (
         r->unlock();
     )
-}
-
-std::string
-dot_graph_tb(gr::top_block::sptr r)
-{
-  return dot_graph(r);
 }
 
 %}

@@ -230,6 +230,17 @@ block_executor::block_executor(block_sptr block, int max_noutput_items)
         *d_log << "block_executor: " << d_block << std::endl;
     }
 
+    // Only run setup_rpc if ControlPort config param is enabled.
+    bool ctrlport_on = prefs::singleton()->get_bool("ControlPort", "on", false);
+
+    // if ctrlport is enabled, call setup RPC for all blocks in the flowgraph
+    if (ctrlport_on) {
+        if (!d_block->is_rpc_set()) {
+            d_block->setup_rpc();
+            d_block->rpc_set();
+        }
+    }
+
 #ifdef GR_PERFORMANCE_COUNTERS
     prefs* prefs = prefs::singleton();
     d_use_pc = prefs->get_bool("PerfCounters", "on", false);

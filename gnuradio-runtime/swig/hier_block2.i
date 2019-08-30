@@ -22,21 +22,6 @@
 
 %include <basic_block.i>
 
-class gr::hier_block2;
-typedef boost::shared_ptr<gr::hier_block2> gr::hier_block2_sptr;
-%template(hier_block2_sptr) boost::shared_ptr<gr::hier_block2>;
-
-namespace gr {
-  // Hack to have a Python shim implementation of gr.hier_block2
-  // that instantiates one of these and passes through calls
-  %rename(hier_block2_swig) make_hier_block2;
-  gr::hier_block2_sptr
-  make_hier_block2(const std::string name,
-                   gr::io_signature::sptr input_signature,
-                   gr::io_signature::sptr output_signature)
-    noexcept(false);
-}
-
 // Rename connect and disconnect so that we can more easily build a
 // better interface in scripting land.
 %rename(primitive_connect) gr::hier_block2::connect;
@@ -55,6 +40,12 @@ namespace gr {
                 gr::io_signature::sptr output_signature);
 
   public:
+
+    typedef boost::shared_ptr<hier_block2> sptr;
+    static sptr make(const std::string& name,
+                     gr::io_signature::sptr input_signature,
+                     gr::io_signature::sptr output_signature);
+
     ~hier_block2 ();
 
     void connect(gr::basic_block::sptr block)
@@ -81,8 +72,6 @@ namespace gr {
                     gr::basic_block::sptr dst, int dst_port)
       noexcept(false);
     void disconnect_all();
-    void lock();
-    void unlock();
 
     void message_port_register_hier_in(pmt::pmt_t port_id);
     void message_port_register_hier_out(pmt::pmt_t port_id);
@@ -101,9 +90,7 @@ namespace gr {
     size_t min_output_buffer(int i);
     void set_min_output_buffer(size_t min_output_buffer);
     void set_min_output_buffer(int port, size_t min_output_buffer);
-
-    gr::hier_block2_sptr to_hier_block2(); // Needed for Python type coercion
   };
-
-  std::string dot_graph(hier_block2_sptr hierblock2);
 }
+
+%template(hier_block2_sptr) boost::shared_ptr<gr::hier_block2>;

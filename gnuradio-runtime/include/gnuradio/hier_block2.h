@@ -25,17 +25,10 @@
 
 #include <gnuradio/api.h>
 #include <gnuradio/basic_block.h>
+#include <gnuradio/flowgraph.h>
+#include <gnuradio/block.h>
 
 namespace gr {
-
-/*!
- * \brief public constructor for hier_block2
- */
-GR_RUNTIME_API hier_block2_sptr make_hier_block2(const std::string& name,
-                                                 gr::io_signature::sptr input_signature,
-                                                 gr::io_signature::sptr output_signature);
-
-class hier_block2_detail;
 
 /*!
  * \brief Hierarchical container class for gr::block's and gr::hier_block2's
@@ -44,35 +37,19 @@ class hier_block2_detail;
  */
 class GR_RUNTIME_API hier_block2 : public basic_block
 {
-private:
-    friend class hier_block2_detail;
-    friend GR_RUNTIME_API hier_block2_sptr
-    make_hier_block2(const std::string& name,
+public:
+    typedef boost::shared_ptr<hier_block2> sptr;
+    static sptr make(const std::string& name,
                      gr::io_signature::sptr input_signature,
                      gr::io_signature::sptr output_signature);
 
-    /*!
-     * \brief Private implementation details of gr::hier_block2
-     */
-    hier_block2_detail* d_detail;
-
-
 protected:
-    hier_block2(void) {} // allows pure virtual interface sub-classes
     hier_block2(const std::string& name,
                 gr::io_signature::sptr input_signature,
                 gr::io_signature::sptr output_signature);
 
 public:
     virtual ~hier_block2();
-
-    /*!
-     * \brief typedef for object returned from self().
-     *
-     * This type is only guaranteed to be passable to connect and
-     * disconnect. No other assumptions should be made about it.
-     */
-    typedef basic_block::sptr opaque_self;
 
     /*!
      * \brief Return an object, representing the current block, which
@@ -82,7 +59,7 @@ public:
      * or disconnect.  Any other use of self() results in unspecified
      * (erroneous) behavior.
      */
-    opaque_self self();
+    basic_block::sptr self();
 
     /*!
      * \brief Add a stand-alone (possibly hierarchical) block to
@@ -101,7 +78,8 @@ public:
      * gr-blocks or hierarchical blocks to the internal flowgraph, and
      * wires the specified output port to the specified input port.
      */
-    void connect(basic_block::sptr src, int src_port, basic_block::sptr dst, int dst_port);
+    void
+    connect(basic_block::sptr src, int src_port, basic_block::sptr dst, int dst_port);
 
     /*!
      * \brief Add gr-blocks or hierarchical blocks to internal graph
@@ -122,11 +100,11 @@ public:
     void msg_disconnect(basic_block::sptr src,
                         pmt::pmt_t srcport,
                         basic_block::sptr dst,
-                        pmt::pmt_t dstport);
+                        pmt::pmt_t dstport = 0);
     void msg_disconnect(basic_block::sptr src,
                         std::string srcport,
                         basic_block::sptr dst,
-                        std::string dstport);
+                        std::string dstport = 0);
 
     /*!
      * \brief Remove a gr-block or hierarchical block from the
@@ -156,31 +134,9 @@ public:
     void disconnect_all();
 
     /*!
-     * Lock a flowgraph in preparation for reconfiguration.  When an
-     * equal number of calls to lock() and unlock() have occurred, the
-     * flowgraph will be reconfigured.
-     *
-     * N.B. lock() and unlock() may not be called from a flowgraph
-     * thread (E.g., gr::block::work method) or deadlock will occur
-     * when reconfiguration happens.
-     */
-    virtual void lock();
-
-    /*!
-     * Unlock a flowgraph in preparation for reconfiguration.  When an
-     * equal number of calls to lock() and unlock() have occurred, the
-     * flowgraph will be reconfigured.
-     *
-     * N.B. lock() and unlock() may not be called from a flowgraph
-     * thread (E.g., gr::block::work method) or deadlock will occur
-     * when reconfiguration happens.
-     */
-    virtual void unlock();
-
-    /*!
      * \brief Returns max buffer size (itemcount) on output port \p i.
      */
-    int max_output_buffer(size_t port = 0);
+    int max_output_buffer(size_t port = 0) const;
 
     /*!
      * \brief Sets max buffer size (itemcount) on all output ports.
@@ -195,7 +151,7 @@ public:
     /*!
      * \brief Returns min buffer size (itemcount) on output port \p i.
      */
-    int min_output_buffer(size_t port = 0);
+    int min_output_buffer(size_t port = 0) const;
 
     /*!
      * \brief Sets min buffer size (itemcount) on all output ports.
@@ -207,57 +163,17 @@ public:
      */
     void set_min_output_buffer(size_t port, int min_output_buffer);
 
+    bool has_msg_port(pmt::pmt_t which_port);
 
-    // This is a public method for ease of code organization, but should be
-    // ignored by the user.
-    flat_flowgraph_sptr flatten() const;
+    bool message_port_is_hier(pmt::pmt_t port_id);
 
-    hier_block2_sptr to_hier_block2(); // Needed for Python type coercion
+    bool message_port_is_hier_in(pmt::pmt_t port_id);
 
-    bool has_msg_port(pmt::pmt_t which_port)
-    {
-        return message_port_is_hier(which_port) || basic_block::has_msg_port(which_port);
-    }
+    bool message_port_is_hier_out(pmt::pmt_t port_id);
 
-    bool message_port_is_hier(pmt::pmt_t port_id)
-    {
-        return message_port_is_hier_in(port_id) || message_port_is_hier_out(port_id);
-    }
+    void message_port_register_hier_in(pmt::pmt_t port_id);
 
-    bool message_port_is_hier_in(pmt::pmt_t port_id)
-    {
-        return pmt::list_has(hier_message_ports_in, port_id);
-    }
-
-    bool message_port_is_hier_out(pmt::pmt_t port_id)
-    {
-        return pmt::list_has(hier_message_ports_out, port_id);
-    }
-
-    pmt::pmt_t hier_message_ports_in;
-    pmt::pmt_t hier_message_ports_out;
-
-    void message_port_register_hier_in(pmt::pmt_t port_id)
-    {
-        if (pmt::list_has(hier_message_ports_in, port_id))
-            throw std::invalid_argument(
-                "hier msg in port by this name already registered");
-        if (msg_queue.find(port_id) != msg_queue.end())
-            throw std::invalid_argument(
-                "block already has a primitive input port by this name");
-        hier_message_ports_in = pmt::list_add(hier_message_ports_in, port_id);
-    }
-
-    void message_port_register_hier_out(pmt::pmt_t port_id)
-    {
-        if (pmt::list_has(hier_message_ports_out, port_id))
-            throw std::invalid_argument(
-                "hier msg out port by this name already registered");
-        if (pmt::dict_has_key(d_message_subscribers, port_id))
-            throw std::invalid_argument(
-                "block already has a primitive output port by this name");
-        hier_message_ports_out = pmt::list_add(hier_message_ports_out, port_id);
-    }
+    void message_port_register_hier_out(pmt::pmt_t port_id);
 
     /*!
      * \brief Set the affinity of all blocks in hier_block2 to processor core \p n.
@@ -313,7 +229,7 @@ public:
      * \details this returns whether all the block min output buffers
      * should be set or just the block ports connected to the hier ports.
      */
-    bool all_min_output_buffer_p(void);
+    bool all_min_output_buffer_p() const;
 
     /*!
      * \brief Get if all block max buffers should be set.
@@ -321,13 +237,35 @@ public:
      * \details this returns whether all the block max output buffers
      * should be set or just the block ports connected to the hier ports.
      */
-    bool all_max_output_buffer_p(void);
-};
+    bool all_max_output_buffer_p() const;
 
-/*!
- * \brief Return hierarchical block's flow graph represented in dot language
- */
-GR_RUNTIME_API std::string dot_graph(hier_block2_sptr hierblock2);
+private:
+    // Track output buffer min/max settings
+    std::vector<size_t> d_max_output_buffer;
+    std::vector<size_t> d_min_output_buffer;
+
+    // Private implementation data
+    flowgraph_sptr d_fg;
+    std::vector<endpoint_vector_t>
+        d_inputs;                // Multiple internal endpoints per external input
+    endpoint_vector_t d_outputs; // Single internal endpoint per external output
+    basic_block_vector_t d_blocks;
+
+    void refresh_io_signature();
+    void connect_input(int my_port, int port, basic_block::sptr block);
+    void connect_output(int my_port, int port, basic_block::sptr block);
+    void disconnect_input(int my_port, int port, basic_block::sptr block);
+    void disconnect_output(int my_port, int port, basic_block::sptr block);
+
+    pmt::pmt_t hier_message_ports_in;
+    pmt::pmt_t hier_message_ports_out;
+
+    endpoint_vector_t resolve_port(int port, bool is_input);
+    endpoint_vector_t resolve_endpoint(const endpoint& endp, bool is_input) const;
+
+protected:
+    void flatten_aux(flat_flowgraph_sptr sfg) const;
+};
 
 inline hier_block2_sptr cast_to_hier_block2_sptr(basic_block::sptr block)
 {

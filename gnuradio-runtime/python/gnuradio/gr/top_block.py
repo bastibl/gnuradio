@@ -25,7 +25,7 @@ from __future__ import unicode_literals
 from .runtime_swig import (top_block_make,
     top_block_wait_unlocked, top_block_run_unlocked,
     top_block_start_unlocked, top_block_stop_unlocked,
-    top_block_unlock_unlocked, dot_graph_tb)
+    top_block_unlock_unlocked)
 
 import threading
 
@@ -139,4 +139,4 @@ class top_block(hier_block2):
         """
         Return graph representation in dot language
         """
-        return dot_graph_tb(self._impl)
+        return self._impl.dot_graph()
