@@ -219,22 +219,6 @@ void top_block_impl::restart()
     d_retry_wait = true;
 }
 
-std::string top_block_impl::edge_list()
-{
-    if (d_ffg)
-        return d_ffg->edge_list();
-    else
-        return "";
-}
-
-std::string top_block_impl::msg_edge_list()
-{
-    if (d_ffg)
-        return d_ffg->msg_edge_list();
-    else
-        return "";
-}
-
 void top_block_impl::dump()
 {
     if (d_ffg)

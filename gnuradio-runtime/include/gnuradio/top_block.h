@@ -105,19 +105,6 @@ public:
      */
     virtual void unlock() = 0;
 
-    /*!
-     * Returns a string that lists the edge connections in the
-     * flattened flowgraph.
-     */
-    virtual std::string edge_list() = 0;
-
-    /*!
-     * Returns a string that lists the msg edge connections in the
-     * flattened flowgraph.
-     */
-    virtual std::string msg_edge_list() = 0;
-
-
     virtual flat_flowgraph_sptr flatten() const = 0;
 
     virtual std::string dot_graph() = 0;

@@ -29,8 +29,6 @@ namespace gr {
     static sptr make(const std::string& name);
 
     virtual void lock() = 0;
-    virtual std::string edge_list() = 0;
-    virtual std::string msg_edge_list() = 0;
     virtual void dump() = 0;
 
     virtual std::string dot_graph() = 0;
