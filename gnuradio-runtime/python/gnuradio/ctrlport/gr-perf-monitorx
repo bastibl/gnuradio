@@ -729,7 +729,7 @@ class MForm(Qt.QWidget):
             elif(keyname == "msg edges list"):
                 msgedgelist = knobs[k].value
             elif(blockname not in tmplist):
-                # only take gr_blocks (no hier_block2)
+                # only take gr_blocks (no hier_block)
                 if(input_name(blockname) in knobs):
                     tmplist.append(blockname)
 

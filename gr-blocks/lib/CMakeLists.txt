@@ -234,8 +234,8 @@ if(ENABLE_TESTING)
     qa_block_tags.cc
     qa_gr_block.cc
     qa_gr_flowgraph.cc
-    qa_gr_hier_block2.cc
-    qa_gr_hier_block2_derived.cc
+    qa_gr_hier_block.cc
+    qa_gr_hier_block_derived.cc
     qa_gr_top_block.cc
     qa_rotator.cc
     qa_set_msg_handler.cc

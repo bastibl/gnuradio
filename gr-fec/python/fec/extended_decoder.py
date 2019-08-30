@@ -34,7 +34,7 @@ from .threaded_decoder import threaded_decoder
 from .capillary_threaded_decoder import capillary_threaded_decoder
 
 
-class extended_decoder(gr.hier_block2):
+class extended_decoder(gr.hier_block):
 
 #solution to log_(1-2*t)(1-2*.0335) = 1/taps where t is thresh (syndrome density)
 #for i in numpy.arange(.1, .499, .01):
@@ -84,9 +84,9 @@ class extended_decoder(gr.hier_block2):
 
     def __init__(self, decoder_obj_list, threading, ann=None, puncpat='11',
                  integration_period=10000, flush=None, rotator=None):
-        gr.hier_block2.__init__(self, "extended_decoder",
-                                gr.io_signature(1, 1, gr.sizeof_float),
-                                gr.io_signature(1, 1, gr.sizeof_char))
+        gr.hier_block.__init__(self, "extended_decoder",
+                               gr.io_signature(1, 1, gr.sizeof_float),
+                               gr.io_signature(1, 1, gr.sizeof_char))
         self.blocks=[]
         self.ann=ann
         self.puncpat=puncpat

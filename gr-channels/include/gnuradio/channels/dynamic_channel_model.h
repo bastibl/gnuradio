@@ -24,7 +24,7 @@
 #define INCLUDED_CHANNELS_DYNAMIC_CHANNEL_MODEL_H
 
 #include <gnuradio/channels/api.h>
-#include <gnuradio/hier_block2.h>
+#include <gnuradio/hier_block.h>
 #include <gnuradio/types.h>
 
 namespace gr {
@@ -45,7 +45,7 @@ namespace channels {
  * selective fading channel response that is either Rayleigh or Ricean
  * for a user specified power delay profile.
  */
-class CHANNELS_API dynamic_channel_model : virtual public hier_block2
+class CHANNELS_API dynamic_channel_model : virtual public hier_block
 {
 public:
     // gr::channels::dynamic_channel_model::sptr

@@ -34,7 +34,7 @@ except ImportError:
     sys.stderr.write('fft.logpwrfft required gr-filter.\n')
     sys.exit(1)
 
-class _logpwrfft_base(gr.hier_block2):
+class _logpwrfft_base(gr.hier_block):
     """
     Create a log10(abs(fft)) stream chain, with real or complex input.
     """
@@ -53,9 +53,9 @@ class _logpwrfft_base(gr.hier_block2):
             average: Whether to average [True, False]
             win: the window taps generation function
         """
-        gr.hier_block2.__init__(self, self._name,
-                                gr.io_signature(1, 1, self._item_size),          # Input signature
-                                gr.io_signature(1, 1, gr.sizeof_float*fft_size)) # Output signature
+        gr.hier_block.__init__(self, self._name,
+                               gr.io_signature(1, 1, self._item_size),          # Input signature
+                               gr.io_signature(1, 1, gr.sizeof_float*fft_size)) # Output signature
 
         self._sd = blocks.stream_to_vector_decimator(item_size=self._item_size,
                                                      sample_rate=sample_rate,

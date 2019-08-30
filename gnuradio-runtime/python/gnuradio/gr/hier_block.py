@@ -22,7 +22,7 @@ from __future__ import unicode_literals
 
 import functools
 
-from .runtime_swig import hier_block2_make
+from .runtime_swig import hier_block_make
 import pmt
 
 
@@ -68,7 +68,7 @@ def _optional_endpoints(func):
 #
 # It also allows us to intercept method calls if needed
 #
-class hier_block2(object):
+class hier_block(object):
     """
     Subclass this to create a python hierarchical block.
 
@@ -80,7 +80,7 @@ class hier_block2(object):
         """
         Create a hierarchical block with a given name and I/O signatures.
         """
-        self._impl = hier_block2_make(name, input_signature, output_signature)
+        self._impl = hier_block_make(name, input_signature, output_signature)
 
     def __getattr__(self, name):
         """
@@ -93,7 +93,7 @@ class hier_block2(object):
         return getattr(self._impl, name)
 
     # FIXME: these should really be implemented
-    # in the original C++ class (gr_hier_block2), then they would all be inherited here
+    # in the original C++ class (gr_hier_block), then they would all be inherited here
 
     @_multiple_endpoints
     def connect(self, *args):

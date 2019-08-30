@@ -49,7 +49,7 @@ Runtime
    gnuradio.gr.sync_decimator
    gnuradio.gr.sync_interpolator
    gnuradio.gr.tagged_stream_block
-   gnuradio.gr.hier_block2
+   gnuradio.gr.hier_block
    gnuradio.gr.high_res_timer_now
    gnuradio.gr.high_res_timer_now_perfmon
    gnuradio.gr.high_res_timer_epoch

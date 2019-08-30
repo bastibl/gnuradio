@@ -121,7 +121,7 @@ We give examples of using this below.
 
 === Connecting Messages through the Flowgraph ===
 
-From the flowgraph level, we have instrumented a gr::hier_block2::msg_connect
+From the flowgraph level, we have instrumented a gr::hier_block::msg_connect
 method to make it easy to subscribe blocks to other blocks'
 messages. Assume that the block \b src has an output message port named
 \a pdus and the block \b dbg has an input port named \a print. The message 

@@ -144,7 +144,6 @@ common_block_members =[
     'primitive_message_port_register_hier_out',
     'primitive_msg_connect',
     'primitive_msg_disconnect',
-    'to_hier_block2',
     'type',
     'unlock',
 ]

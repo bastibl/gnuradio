@@ -41,7 +41,7 @@ install(FILES
   fxpt_nco.h
   fxpt_vco.h
   gr_complex.h
-  hier_block2.h
+  hier_block.h
   high_res_timer.h
   io_signature.h
   logger.h

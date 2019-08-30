@@ -46,13 +46,13 @@ ofdm_sync_sc_cfb_impl::ofdm_sync_sc_cfb_impl(int fft_len,
                                              int cp_len,
                                              bool use_even_carriers,
                                              float threshold)
-    : hier_block2("ofdm_sync_sc_cfb",
-                  io_signature::make(1, 1, sizeof(gr_complex)),
+    : hier_block("ofdm_sync_sc_cfb",
+                 io_signature::make(1, 1, sizeof(gr_complex)),
 #ifndef SYNC_ADD_DEBUG_OUTPUT
-                  io_signature::make2(2, 2, sizeof(float), sizeof(unsigned char)))
+                 io_signature::make2(2, 2, sizeof(float), sizeof(unsigned char)))
 #else
-                  io_signature::make3(
-                      3, 3, sizeof(float), sizeof(unsigned char), sizeof(float)))
+                 io_signature::make3(
+                     3, 3, sizeof(float), sizeof(unsigned char), sizeof(float)))
 #endif
 {
     std::vector<float> ma_taps(fft_len / 2, 1.0);

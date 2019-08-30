@@ -73,9 +73,9 @@ dynamic_channel_model_impl::dynamic_channel_model_impl(double samp_rate,
                                                        int ntaps_mpath,
                                                        double noise_amp,
                                                        double noise_seed)
-    : hier_block2("dynamic_channel_model",
-                  io_signature::make(1, 1, sizeof(gr_complex)),
-                  io_signature::make(1, 1, sizeof(gr_complex)))
+    : hier_block("dynamic_channel_model",
+                 io_signature::make(1, 1, sizeof(gr_complex)),
+                 io_signature::make(1, 1, sizeof(gr_complex)))
 {
     d_noise_adder = blocks::add_cc::make();
     d_noise = analog::fastnoise_source_c::make(

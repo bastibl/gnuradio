@@ -45,7 +45,7 @@ top_block::sptr top_block::make(const std::string& name)
 
 
 top_block_impl::top_block_impl(const std::string& name)
-    : hier_block2(name, io_signature::make(0, 0, 0), io_signature::make(0, 0, 0)),
+    : hier_block(name, io_signature::make(0, 0, 0), io_signature::make(0, 0, 0)),
       d_ffg(),
       d_state(IDLE),
       d_lock_count(0),

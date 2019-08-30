@@ -27,7 +27,7 @@ from __future__ import unicode_literals
 from gnuradio import gr, blocks, filter
 
 
-class ofdm_sync_ml(gr.hier_block2):
+class ofdm_sync_ml(gr.hier_block):
     def __init__(self, fft_length, cp_length, snr, kstime, logging):
         ''' Maximum Likelihood OFDM synchronizer:
         J. van de Beek, M. Sandell, and P. O. Borjesson, "ML Estimation
@@ -35,9 +35,9 @@ class ofdm_sync_ml(gr.hier_block2):
         Signal Processing, vol. 45, no. 7, pp. 1800-1805, 1997.
         '''
 
-        gr.hier_block2.__init__(self, "ofdm_sync_ml",
-                                gr.io_signature(1, 1, gr.sizeof_gr_complex), # Input signature
-                                gr.io_signature2(2, 2, gr.sizeof_float, gr.sizeof_char)) # Output signature
+        gr.hier_block.__init__(self, "ofdm_sync_ml",
+                               gr.io_signature(1, 1, gr.sizeof_gr_complex), # Input signature
+                               gr.io_signature2(2, 2, gr.sizeof_float, gr.sizeof_char)) # Output signature
 
         self.input = blocks.add_const_cc(0)
 

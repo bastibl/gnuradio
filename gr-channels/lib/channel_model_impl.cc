@@ -45,9 +45,9 @@ channel_model_impl::channel_model_impl(double noise_voltage,
                                        const std::vector<gr_complex>& taps,
                                        double noise_seed,
                                        bool block_tags)
-    : hier_block2("channel_model",
-                  io_signature::make(1, 1, sizeof(gr_complex)),
-                  io_signature::make(1, 1, sizeof(gr_complex)))
+    : hier_block("channel_model",
+                 io_signature::make(1, 1, sizeof(gr_complex)),
+                 io_signature::make(1, 1, sizeof(gr_complex)))
 {
     d_taps = taps;
     while (d_taps.size() < 2) {

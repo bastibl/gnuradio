@@ -376,7 +376,7 @@ public:
      * having to worry about thread-safety issues with work,
      * general_work or another invocation of msg_handler.
      *
-     * If the block inherits from hier_block2, the runtime system
+     * If the block inherits from hier_block, the runtime system
      * will ensure that no reentrant calls are made to msg_handler.
      */
     template <typename T>

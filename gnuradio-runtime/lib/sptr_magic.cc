@@ -19,7 +19,7 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-#include <gnuradio/hier_block2.h>
+#include <gnuradio/hier_block.h>
 #include <gnuradio/sptr_magic.h>
 #include <map>
 #include <stdexcept>
@@ -46,14 +46,14 @@ struct disarmable_deleter {
     void disarm() { armed = false; }
 };
 
-void detail::sptr_magic::create_and_stash_initial_sptr(gr::hier_block2* p)
+void detail::sptr_magic::create_and_stash_initial_sptr(gr::hier_block* p)
 {
     gr::basic_block::sptr sptr(p, disarmable_deleter());
     gr::thread::scoped_lock guard(s_mutex);
     s_map.insert(sptr_map::value_type(static_cast<gr::basic_block*>(p), sptr));
 }
 
-void detail::sptr_magic::cancel_initial_sptr(gr::hier_block2* p)
+void detail::sptr_magic::cancel_initial_sptr(gr::hier_block* p)
 {
     gr::thread::scoped_lock guard(s_mutex);
     sptr_map::iterator pos = s_map.find(static_cast<gr::basic_block*>(p));
@@ -67,16 +67,16 @@ void detail::sptr_magic::cancel_initial_sptr(gr::hier_block2* p)
 gr::basic_block::sptr detail::sptr_magic::fetch_initial_sptr(gr::basic_block* p)
 {
     /*
-     * If p isn't a subclass of gr::hier_block2, just create the
+     * If p isn't a subclass of gr::hier_block, just create the
      * shared ptr and return it.
      */
-    gr::hier_block2* hb2 = dynamic_cast<gr::hier_block2*>(p);
+    gr::hier_block* hb2 = dynamic_cast<gr::hier_block*>(p);
     if (!hb2) {
         return gr::basic_block::sptr(p);
     }
 
     /*
-     * p is a subclass of gr::hier_block2, thus we've already created the shared pointer
+     * p is a subclass of gr::hier_block, thus we've already created the shared pointer
      * and stashed it away.  Fish it out and return it.
      */
     gr::thread::scoped_lock guard(s_mutex);

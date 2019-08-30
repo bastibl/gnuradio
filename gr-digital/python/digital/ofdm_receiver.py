@@ -39,7 +39,7 @@ from .ofdm_sync_pnac import ofdm_sync_pnac
 from .ofdm_sync_ml import ofdm_sync_ml
 
 
-class ofdm_receiver(gr.hier_block2):
+class ofdm_receiver(gr.hier_block):
     """
     Performs receiver synchronization on OFDM symbols.
 
@@ -65,9 +65,9 @@ class ofdm_receiver(gr.hier_block2):
             logging: turn file logging on or off (bool)
         """
 
-        gr.hier_block2.__init__(self, "ofdm_receiver",
-                                gr.io_signature(1, 1, gr.sizeof_gr_complex), # Input signature
-                                gr.io_signature2(2, 2, gr.sizeof_gr_complex*occupied_tones, gr.sizeof_char)) # Output signature
+        gr.hier_block.__init__(self, "ofdm_receiver",
+                               gr.io_signature(1, 1, gr.sizeof_gr_complex), # Input signature
+                               gr.io_signature2(2, 2, gr.sizeof_gr_complex*occupied_tones, gr.sizeof_char)) # Output signature
 
         bw = (float(occupied_tones) / float(fft_length)) / 2.0
         tb = bw*0.08

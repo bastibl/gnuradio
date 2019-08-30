@@ -88,7 +88,7 @@ def setup_parser():
     return parser
 
 
-class FrequencyHopperSrc(gr.hier_block2):
+class FrequencyHopperSrc(gr.hier_block):
     """ Provides tags for frequency hopping """
     def __init__(
             self,
@@ -99,7 +99,7 @@ class FrequencyHopperSrc(gr.hier_block2):
             tx_gain=0,
             verbose=False
         ):
-        gr.hier_block2.__init__(
+        gr.hier_block.__init__(
             self, "FrequencyHopperSrc",
             gr.io_signature(1, 1, gr.sizeof_gr_complex),
             gr.io_signature(1, 1, gr.sizeof_gr_complex),

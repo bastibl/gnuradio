@@ -32,11 +32,11 @@ from . import fec_swig as fec
 from .bitflip import read_bitlist
 
 
-class extended_async_encoder(gr.hier_block2):
+class extended_async_encoder(gr.hier_block):
     def __init__(self, encoder_obj_list, puncpat=None):
-        gr.hier_block2.__init__(self, "extended_async_encoder",
-                                gr.io_signature(0, 0, 0),
-                                gr.io_signature(0, 0, 0))
+        gr.hier_block.__init__(self, "extended_async_encoder",
+                               gr.io_signature(0, 0, 0),
+                               gr.io_signature(0, 0, 0))
 
         # Set us up as a message passing block
         self.message_port_register_hier_in('in')

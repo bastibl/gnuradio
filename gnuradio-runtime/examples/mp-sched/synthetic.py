@@ -29,15 +29,15 @@ from argparse import ArgumentParser
 import os
 
 
-class pipeline(gr.hier_block2):
+class pipeline(gr.hier_block):
     def __init__(self, nstages, ntaps=256):
         """
         Create a pipeline of nstages of filter.fir_filter_fff's connected in serial
         terminating in a blocks.null_sink.
         """
-        gr.hier_block2.__init__(self, "pipeline",
-                                gr.io_signature(1, 1, gr.sizeof_float),
-                                gr.io_signature(0, 0, 0))
+        gr.hier_block.__init__(self, "pipeline",
+                               gr.io_signature(1, 1, gr.sizeof_float),
+                               gr.io_signature(0, 0, 0))
         taps = ntaps*[1.0 / ntaps]
         upstream = self
         for i in range(nstages):

@@ -12,10 +12,10 @@ from gnuradio import blocks
 from gnuradio import gr
 from gnuradio.filter import firdes
 
-class amp_bal(gr.hier_block2):
+class amp_bal(gr.hier_block):
 
     def __init__(self, alpha=0):
-        gr.hier_block2.__init__(
+        gr.hier_block.__init__(
             self, "Amplitude Balance",
             gr.io_signature(1, 1, gr.sizeof_gr_complex*1),
             gr.io_signature(1, 1, gr.sizeof_gr_complex*1),

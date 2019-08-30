@@ -24,11 +24,11 @@ from __future__ import unicode_literals
 from gnuradio import gr, filter, analog
 from .atsc_rx_filter import *
 
-class atsc_rx(gr.hier_block2):
+class atsc_rx(gr.hier_block):
     def __init__(self, input_rate, sps):
-        gr.hier_block2.__init__(self, "atsc_rx",
-                                gr.io_signature(1, 1, gr.sizeof_gr_complex), # Input signature
-                                gr.io_signature(1, 1, gr.sizeof_char))       # Output signature
+        gr.hier_block.__init__(self, "atsc_rx",
+                               gr.io_signature(1, 1, gr.sizeof_gr_complex), # Input signature
+                               gr.io_signature(1, 1, gr.sizeof_char))       # Output signature
 
         # ATSC receiver filter/interpolator
         rx_filt = atsc_rx_filter(input_rate, sps)

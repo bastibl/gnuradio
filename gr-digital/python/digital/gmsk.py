@@ -59,7 +59,7 @@ _def_omega_relative_limit = 0.005
 #                              GMSK modulator
 # /////////////////////////////////////////////////////////////////////////////
 
-class gmsk_mod(gr.hier_block2):
+class gmsk_mod(gr.hier_block):
     """
     Hierarchical block for Gaussian Minimum Shift Key (GMSK)
     modulation.
@@ -80,9 +80,9 @@ class gmsk_mod(gr.hier_block2):
                  verbose=_def_verbose,
                  log=_def_log):
 
-        gr.hier_block2.__init__(self, "gmsk_mod",
-                                gr.io_signature(1, 1, gr.sizeof_char),       # Input signature
-                                gr.io_signature(1, 1, gr.sizeof_gr_complex)) # Output signature
+        gr.hier_block.__init__(self, "gmsk_mod",
+                               gr.io_signature(1, 1, gr.sizeof_char),       # Input signature
+                               gr.io_signature(1, 1, gr.sizeof_gr_complex)) # Output signature
 
         samples_per_symbol = int(samples_per_symbol)
         self._samples_per_symbol = samples_per_symbol
@@ -167,7 +167,7 @@ class gmsk_mod(gr.hier_block2):
 #                            GMSK demodulator
 # /////////////////////////////////////////////////////////////////////////////
 
-class gmsk_demod(gr.hier_block2):
+class gmsk_demod(gr.hier_block):
     """
     Hierarchical block for Gaussian Minimum Shift Key (GMSK)
     demodulation.
@@ -194,9 +194,9 @@ class gmsk_demod(gr.hier_block2):
                  verbose=_def_verbose,
                  log=_def_log):
 
-        gr.hier_block2.__init__(self, "gmsk_demod",
-                                gr.io_signature(1, 1, gr.sizeof_gr_complex), # Input signature
-                                gr.io_signature(1, 1, gr.sizeof_char))       # Output signature
+        gr.hier_block.__init__(self, "gmsk_demod",
+                               gr.io_signature(1, 1, gr.sizeof_gr_complex), # Input signature
+                               gr.io_signature(1, 1, gr.sizeof_char))       # Output signature
 
         self._samples_per_symbol = samples_per_symbol
         self._gain_mu = gain_mu

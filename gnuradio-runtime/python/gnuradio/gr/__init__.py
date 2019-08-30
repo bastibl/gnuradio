@@ -44,7 +44,7 @@ except ImportError:
 
 from .exceptions import *
 from .top_block import *
-from .hier_block2 import *
+from .hier_block import *
 from .tag_utils import *
 from .gateway import basic_block, sync_block, decim_block, interp_block, py_io_signature
 

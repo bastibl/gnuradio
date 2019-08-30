@@ -38,7 +38,7 @@ from . import psk, qam
 #                   mod/demod with packets as i/o
 # /////////////////////////////////////////////////////////////////////////////
 
-class ofdm_mod(gr.hier_block2):
+class ofdm_mod(gr.hier_block):
     """
     Modulates an OFDM stream. Based on the options fft_length, occupied_tones, and
     cp_length, this block creates OFDM symbols using a specified modulation option.
@@ -58,9 +58,9 @@ class ofdm_mod(gr.hier_block2):
             pad_for_usrp: If true, packets are padded such that they end up a multiple of 128 samples
         """
 
-        gr.hier_block2.__init__(self, "ofdm_mod",
-                                gr.io_signature(0, 0, 0),       # Input signature
-                                gr.io_signature(1, 1, gr.sizeof_gr_complex)) # Output signature
+        gr.hier_block.__init__(self, "ofdm_mod",
+                               gr.io_signature(0, 0, 0),       # Input signature
+                               gr.io_signature(1, 1, gr.sizeof_gr_complex)) # Output signature
 
         self._pad_for_usrp = pad_for_usrp
         self._modulation = options.modulation
@@ -176,7 +176,7 @@ class ofdm_mod(gr.hier_block2):
         print("CP length:       %3d"   % (self._cp_length))
 
 
-class ofdm_demod(gr.hier_block2):
+class ofdm_demod(gr.hier_block):
     """
     Demodulates a received OFDM stream. Based on the options fft_length, occupied_tones, and
     cp_length, this block performs synchronization, FFT, and demodulation of incoming OFDM
@@ -197,7 +197,7 @@ class ofdm_demod(gr.hier_block2):
             options: pass modulation options from higher layers (fft length, occupied tones, etc.)
             callback: function of two args: ok, payload (ok: bool; payload: string)
         """
-        gr.hier_block2.__init__(self, "ofdm_demod",
+        gr.hier_block.__init__(self, "ofdm_demod",
                                 gr.io_signature(1, 1, gr.sizeof_gr_complex), # Input signature
                                 gr.io_signature(1, 1, gr.sizeof_gr_complex)) # Output signature
 

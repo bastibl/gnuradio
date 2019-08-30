@@ -32,7 +32,7 @@ from . import optfir
 from . import filter_swig as filter
 
 
-class channelizer_ccf(gr.hier_block2):
+class channelizer_ccf(gr.hier_block):
     '''
     Make a Polyphase Filter channelizer (complex in, complex out, floating-point taps)
 
@@ -40,9 +40,9 @@ class channelizer_ccf(gr.hier_block2):
     It will then output a stream for each channel.
     '''
     def __init__(self, numchans, taps=None, oversample_rate=1, atten=100):
-        gr.hier_block2.__init__(self, "pfb_channelizer_ccf",
-                                gr.io_signature(1, 1, gr.sizeof_gr_complex),
-                                gr.io_signature(numchans, numchans, gr.sizeof_gr_complex))
+        gr.hier_block.__init__(self, "pfb_channelizer_ccf",
+                               gr.io_signature(1, 1, gr.sizeof_gr_complex),
+                               gr.io_signature(numchans, numchans, gr.sizeof_gr_complex))
 
         self._nchans = numchans
         self._oversample_rate = oversample_rate
@@ -90,7 +90,7 @@ class channelizer_ccf(gr.hier_block2):
         self.pfb.declare_sample_delay(delay)
 
 
-class interpolator_ccf(gr.hier_block2):
+class interpolator_ccf(gr.hier_block):
     '''
     Make a Polyphase Filter interpolator (complex in, complex out, floating-point taps)
 
@@ -100,9 +100,9 @@ class interpolator_ccf(gr.hier_block2):
     other PFB block.
     '''
     def __init__(self, interp, taps=None, atten=100):
-        gr.hier_block2.__init__(self, "pfb_interpolator_ccf",
-                                gr.io_signature(1, 1, gr.sizeof_gr_complex),
-                                gr.io_signature(1, 1, gr.sizeof_gr_complex))
+        gr.hier_block.__init__(self, "pfb_interpolator_ccf",
+                               gr.io_signature(1, 1, gr.sizeof_gr_complex),
+                               gr.io_signature(1, 1, gr.sizeof_gr_complex))
 
         self._interp = interp
         self._taps = taps
@@ -140,7 +140,7 @@ class interpolator_ccf(gr.hier_block2):
         self.pfb.declare_sample_delay(delay)
 
 
-class decimator_ccf(gr.hier_block2):
+class decimator_ccf(gr.hier_block):
     '''
     Make a Polyphase Filter decimator (complex in, complex out, floating-point taps)
 
@@ -149,9 +149,9 @@ class decimator_ccf(gr.hier_block2):
     '''
     def __init__(self, decim, taps=None, channel=0, atten=100,
                  use_fft_rotators=True, use_fft_filters=True):
-        gr.hier_block2.__init__(self, "pfb_decimator_ccf",
-                                gr.io_signature(1, 1, gr.sizeof_gr_complex),
-                                gr.io_signature(1, 1, gr.sizeof_gr_complex))
+        gr.hier_block.__init__(self, "pfb_decimator_ccf",
+                               gr.io_signature(1, 1, gr.sizeof_gr_complex),
+                               gr.io_signature(1, 1, gr.sizeof_gr_complex))
 
         self._decim = decim
         self._channel = channel
@@ -198,7 +198,7 @@ class decimator_ccf(gr.hier_block2):
         self.pfb.declare_sample_delay(delay)
 
 
-class arb_resampler_ccf(gr.hier_block2):
+class arb_resampler_ccf(gr.hier_block):
     '''
     Convenience wrapper for the polyphase filterbank arbitrary resampler.
 
@@ -208,9 +208,9 @@ class arb_resampler_ccf(gr.hier_block2):
     other PFB block.
     '''
     def __init__(self, rate, taps=None, flt_size=32, atten=100):
-        gr.hier_block2.__init__(self, "pfb_arb_resampler_ccf",
-                                gr.io_signature(1, 1, gr.sizeof_gr_complex), # Input signature
-                                gr.io_signature(1, 1, gr.sizeof_gr_complex)) # Output signature
+        gr.hier_block.__init__(self, "pfb_arb_resampler_ccf",
+                               gr.io_signature(1, 1, gr.sizeof_gr_complex), # Input signature
+                               gr.io_signature(1, 1, gr.sizeof_gr_complex)) # Output signature
 
         self._rate = rate
         self._size = flt_size
@@ -272,7 +272,7 @@ class arb_resampler_ccf(gr.hier_block2):
     def declare_sample_delay(self, delay):
         self.pfb.declare_sample_delay(delay)
 
-class arb_resampler_fff(gr.hier_block2):
+class arb_resampler_fff(gr.hier_block):
     '''
     Convenience wrapper for the polyphase filterbank arbitrary resampler.
 
@@ -282,9 +282,9 @@ class arb_resampler_fff(gr.hier_block2):
     other PFB block.
     '''
     def __init__(self, rate, taps=None, flt_size=32, atten=100):
-        gr.hier_block2.__init__(self, "pfb_arb_resampler_fff",
-                                gr.io_signature(1, 1, gr.sizeof_float), # Input signature
-                                gr.io_signature(1, 1, gr.sizeof_float)) # Output signature
+        gr.hier_block.__init__(self, "pfb_arb_resampler_fff",
+                               gr.io_signature(1, 1, gr.sizeof_float), # Input signature
+                               gr.io_signature(1, 1, gr.sizeof_float)) # Output signature
 
         self._rate = rate
         self._size = flt_size
@@ -346,7 +346,7 @@ class arb_resampler_fff(gr.hier_block2):
     def declare_sample_delay(self, delay):
         self.pfb.declare_sample_delay(delay)
 
-class arb_resampler_ccc(gr.hier_block2):
+class arb_resampler_ccc(gr.hier_block):
     '''
     Convenience wrapper for the polyphase filterbank arbitrary resampler.
 
@@ -356,9 +356,9 @@ class arb_resampler_ccc(gr.hier_block2):
     other PFB block.
     '''
     def __init__(self, rate, taps=None, flt_size=32, atten=100):
-        gr.hier_block2.__init__(self, "pfb_arb_resampler_ccc",
-                                gr.io_signature(1, 1, gr.sizeof_gr_complex), # Input signature
-                                gr.io_signature(1, 1, gr.sizeof_gr_complex)) # Output signature
+        gr.hier_block.__init__(self, "pfb_arb_resampler_ccc",
+                               gr.io_signature(1, 1, gr.sizeof_gr_complex), # Input signature
+                               gr.io_signature(1, 1, gr.sizeof_gr_complex)) # Output signature
 
         self._rate = rate
         self._size = flt_size
@@ -402,7 +402,7 @@ class arb_resampler_ccc(gr.hier_block2):
         self.pfb.declare_sample_delay(delay)
 
 
-class channelizer_hier_ccf(gr.hier_block2):
+class channelizer_hier_ccf(gr.hier_block):
     """
     Make a Polyphase Filter channelizer (complex in, complex out, floating-point taps)
 
@@ -423,7 +423,7 @@ class channelizer_hier_ccf(gr.hier_block2):
             n_filterbanks = n_chans
         if outchans is None:
             outchans = list(range(n_chans))
-        gr.hier_block2.__init__(
+        gr.hier_block.__init__(
             self, "pfb_channelizer_hier_ccf",
             gr.io_signature(1, 1, gr.sizeof_gr_complex),
             gr.io_signature(len(outchans), len(outchans), gr.sizeof_gr_complex))

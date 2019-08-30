@@ -94,7 +94,7 @@ Normally, though, we don't work directly with these simple encoder()
 or decoder() deployments but a wrapper around those blocks. GNU
 Radio's gr-fec package comes with two Python deployments to make
 things easier: fec.extended_encoder and fec.extended_decoder. For one
-thing, these extended hier_block2 blocks take care of the puncturing
+thing, these extended hier_block blocks take care of the puncturing
 and depuncturing operations often found in FEC codes. The other thing
 that these blocks do for us is read the API of the encoder/decoder
 variables to properly convert the data in or out, depending on how the
@@ -321,7 +321,7 @@ Dimension 1 is > 1, the encoder/decoder will ignore this setting and
 only use the first object in the list.
 
 \li <b>Ordinary</b>: all "Dimension 1" number (N) of encoder/decoder
-blocks will be used in parallel. The hier_block2 will block
+blocks will be used in parallel. The hier_block will block
 deinterleave the packets into N streams (using
 gr::blocks::deinterleave with a value of blocksize as the frame length
 and no relative rate changes) and pass these to each of the N coders

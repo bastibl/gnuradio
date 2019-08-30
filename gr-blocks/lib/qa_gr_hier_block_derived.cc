@@ -34,7 +34,7 @@ class gr_derived_block;
 typedef boost::shared_ptr<gr_derived_block> gr_derived_block_sptr;
 gr_derived_block_sptr gr_make_derived_block();
 
-class gr_derived_block : public gr::hier_block2
+class gr_derived_block : public gr::hier_block
 {
 private:
     friend gr_derived_block_sptr gr_make_derived_block();
@@ -51,9 +51,9 @@ gr_derived_block_sptr gr_make_derived_block()
 }
 
 gr_derived_block::gr_derived_block()
-    : gr::hier_block2("gr_derived_block",
-                      gr::io_signature::make(1, 1, sizeof(int)), // Input signature
-                      gr::io_signature::make(1, 1, sizeof(int))) // Output signature
+    : gr::hier_block("gr_derived_block",
+                     gr::io_signature::make(1, 1, sizeof(int)), // Input signature
+                     gr::io_signature::make(1, 1, sizeof(int))) // Output signature
 {
     gr::block_sptr copy(gr::blocks::copy::make(sizeof(int)));
 

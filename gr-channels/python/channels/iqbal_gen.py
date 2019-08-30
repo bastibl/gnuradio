@@ -13,7 +13,7 @@ from gnuradio import gr
 from gnuradio.filter import firdes
 import math
 
-class iqbal_gen(gr.hier_block2):
+class iqbal_gen(gr.hier_block):
 
     def __init__(self, magnitude=0, phase=0, mode=0):
         '''
@@ -47,7 +47,7 @@ class iqbal_gen(gr.hier_block2):
 
         (ASCII ART monospace viewing)
         '''
-        gr.hier_block2.__init__(
+        gr.hier_block.__init__(
             self, "IQ Imbalance Generator",
             gr.io_signature(1, 1, gr.sizeof_gr_complex*1),
             gr.io_signature(1, 1, gr.sizeof_gr_complex*1),

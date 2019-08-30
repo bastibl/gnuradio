@@ -116,9 +116,9 @@ class ${class_name}(gr.top_block):
 
 
 % if generate_options == 'hb_qt_gui':
-class ${class_name}(gr.hier_block2, Qt.QWidget):
+class ${class_name}(gr.hier_block, Qt.QWidget):
 % else:
-class ${class_name}(gr.hier_block2):
+class ${class_name}(gr.hier_block):
 % endif
 <%def name="make_io_sig(io_sigs)">\
     <% size_strs = ['%s*%s'%(io_sig['size'], io_sig['vlen']) for io_sig in io_sigs] %>\
@@ -131,7 +131,7 @@ gr.io_signaturev(${len(io_sigs)}, ${len(io_sigs)}, [${', '.join(size_strs)}])\
     % endif
 </%def>\
     def __init__(${param_str}):
-        gr.hier_block2.__init__(
+        gr.hier_block.__init__(
             self, "${ title }",
             ${make_io_sig(in_sigs)},
             ${make_io_sig(out_sigs)},

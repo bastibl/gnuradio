@@ -33,7 +33,7 @@ from . import analog_swig as analog
 from .fm_emph import fm_deemph
 
 
-class nbfm_rx(gr.hier_block2):
+class nbfm_rx(gr.hier_block):
     """
     Narrow Band FM Receiver.
 
@@ -55,9 +55,9 @@ class nbfm_rx(gr.hier_block2):
       audio_filter
     """
     def __init__(self, audio_rate, quad_rate, tau=75e-6, max_dev=5e3):
-        gr.hier_block2.__init__(self, "nbfm_rx",
-                                gr.io_signature(1, 1, gr.sizeof_gr_complex), # Input signature
-                                gr.io_signature(1, 1, gr.sizeof_float))      # Output signature
+        gr.hier_block.__init__(self, "nbfm_rx",
+                               gr.io_signature(1, 1, gr.sizeof_gr_complex), # Input signature
+                               gr.io_signature(1, 1, gr.sizeof_float))      # Output signature
 
         # FIXME audio_rate and quad_rate ought to be exact rationals
         self._audio_rate = audio_rate = int(audio_rate)

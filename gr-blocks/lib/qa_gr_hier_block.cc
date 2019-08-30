@@ -20,16 +20,16 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#include <gnuradio/hier_block2.h>
+#include <gnuradio/hier_block.h>
 #include <gnuradio/io_signature.h>
 #include <boost/test/unit_test.hpp>
 
 BOOST_AUTO_TEST_CASE(test_make)
 {
-    gr::hier_block2_sptr src1(
-        gr::hier_block2::make("test",
-                          gr::io_signature::make(1, 1, 1 * sizeof(int)),
-                          gr::io_signature::make(1, 1, 1 * sizeof(int))));
+    gr::hier_block_sptr src1(
+        gr::hier_block::make("test",
+                             gr::io_signature::make(1, 1, 1 * sizeof(int)),
+                             gr::io_signature::make(1, 1, 1 * sizeof(int))));
 
     BOOST_REQUIRE(src1);
     BOOST_REQUIRE_EQUAL(std::string("test"), src1->name());

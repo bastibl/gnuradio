@@ -27,11 +27,11 @@ import numpy
 
 from .fec_test import fec_test
 
-class bercurve_generator(gr.hier_block2):
+class bercurve_generator(gr.hier_block):
 
     def __init__(self, encoder_list, decoder_list, esno=numpy.arange(0.0, 3.0, .25),
                  samp_rate=3200000, threading='capillary', puncpat='11', seed=0):
-        gr.hier_block2.__init__(
+        gr.hier_block.__init__(
             self, "ber_curve_generator",
             gr.io_signature(0, 0, 0),
             gr.io_signature(len(esno) * 2, len(esno) * 2, gr.sizeof_char*1))

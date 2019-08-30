@@ -25,7 +25,7 @@ from gnuradio import gr
 from . import blocks_swig as blocks
 
 
-class stream_to_vector_decimator(gr.hier_block2):
+class stream_to_vector_decimator(gr.hier_block):
     """
     Convert the stream to a vector, decimate the vector stream to achieve the vector rate.
     """
@@ -44,9 +44,9 @@ class stream_to_vector_decimator(gr.hier_block2):
         self._vec_len = vec_len
         self._sample_rate = sample_rate
 
-        gr.hier_block2.__init__(self, "stream_to_vector_decimator",
-                                gr.io_signature(1, 1, item_size),         # Input signature
-                                gr.io_signature(1, 1, item_size*vec_len)) # Output signature
+        gr.hier_block.__init__(self, "stream_to_vector_decimator",
+                               gr.io_signature(1, 1, item_size),         # Input signature
+                               gr.io_signature(1, 1, item_size*vec_len)) # Output signature
 
         s2v = blocks.stream_to_vector(item_size, vec_len)
         self.one_in_n = blocks.keep_one_in_n(item_size*vec_len, 1)

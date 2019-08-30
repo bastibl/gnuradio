@@ -35,7 +35,7 @@ class block;
 class block_detail;
 class buffer;
 class buffer_reader;
-class hier_block2;
+class hier_block;
 class flat_flowgraph;
 class flowgraph;
 
@@ -43,7 +43,7 @@ typedef boost::shared_ptr<block> block_sptr;
 typedef boost::shared_ptr<block_detail> block_detail_sptr;
 typedef boost::shared_ptr<buffer> buffer_sptr;
 typedef boost::shared_ptr<buffer_reader> buffer_reader_sptr;
-typedef boost::shared_ptr<hier_block2> hier_block2_sptr;
+typedef boost::shared_ptr<hier_block> hier_block_sptr;
 typedef boost::shared_ptr<flat_flowgraph> flat_flowgraph_sptr;
 typedef boost::shared_ptr<flowgraph> flowgraph_sptr;
 

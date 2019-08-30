@@ -29,11 +29,11 @@ ATSC_CHANNEL_BW   = 6.0e6
 ATSC_SYMBOL_RATE  = 4.5e6/286*684 # ~10.76 Mbaud
 ATSC_RRC_SYMS     = 8             # filter kernel extends over 2N+1 symbols
 
-class atsc_rx_filter(gr.hier_block2):
+class atsc_rx_filter(gr.hier_block):
     def __init__(self, input_rate, sps):
-        gr.hier_block2.__init__(self, "atsc_rx_filter",
-                                gr.io_signature(1, 1, gr.sizeof_gr_complex), # Input signature
-                                gr.io_signature(1, 1, gr.sizeof_gr_complex)) # Output signature
+        gr.hier_block.__init__(self, "atsc_rx_filter",
+                               gr.io_signature(1, 1, gr.sizeof_gr_complex), # Input signature
+                               gr.io_signature(1, 1, gr.sizeof_gr_complex)) # Output signature
 
         # Create matched RX filter with RRC response for fractional
         # interpolator.

@@ -24,29 +24,29 @@
 
 // Rename connect and disconnect so that we can more easily build a
 // better interface in scripting land.
-%rename(primitive_connect) gr::hier_block2::connect;
-%rename(primitive_disconnect) gr::hier_block2::disconnect;
-%rename(primitive_msg_connect) gr::hier_block2::msg_connect;
-%rename(primitive_msg_disconnect) gr::hier_block2::msg_disconnect;
-%rename(primitive_message_port_register_hier_in) gr::hier_block2::message_port_register_hier_in;
-%rename(primitive_message_port_register_hier_out) gr::hier_block2::message_port_register_hier_out;
+%rename(primitive_connect) gr::hier_block::connect;
+%rename(primitive_disconnect) gr::hier_block::disconnect;
+%rename(primitive_msg_connect) gr::hier_block::msg_connect;
+%rename(primitive_msg_disconnect) gr::hier_block::msg_disconnect;
+%rename(primitive_message_port_register_hier_in) gr::hier_block::message_port_register_hier_in;
+%rename(primitive_message_port_register_hier_out) gr::hier_block::message_port_register_hier_out;
 
 namespace gr {
-  class hier_block2 : public gr::basic_block
+  class hier_block : public gr::basic_block
   {
   private:
-    hier_block2(const std::string name,
+    hier_block(const std::string name,
                 gr::io_signature::sptr input_signature,
                 gr::io_signature::sptr output_signature);
 
   public:
 
-    typedef boost::shared_ptr<hier_block2> sptr;
+    typedef boost::shared_ptr<hier_block> sptr;
     static sptr make(const std::string& name,
                      gr::io_signature::sptr input_signature,
                      gr::io_signature::sptr output_signature);
 
-    ~hier_block2 ();
+    ~hier_block ();
 
     void connect(gr::basic_block::sptr block)
       noexcept(false);
@@ -93,4 +93,4 @@ namespace gr {
   };
 }
 
-%template(hier_block2_sptr) boost::shared_ptr<gr::hier_block2>;
+%template(hier_block_sptr) boost::shared_ptr<gr::hier_block>;

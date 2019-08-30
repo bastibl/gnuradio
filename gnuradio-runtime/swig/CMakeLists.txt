@@ -94,7 +94,7 @@ install(
     gr_shared_ptr.i
     gr_swig_block_magic.i
     gr_types.i
-    hier_block2.i
+    hier_block.i
     io_signature.i
     msg_queue.i
     pmt_swig.i

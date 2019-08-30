@@ -47,10 +47,10 @@ class block_with_message_input(gr.basic_block):
         self.message_port_register_in(pmt.intern("test"))
 
 
-class hier_block_with_message_output(gr.hier_block2):
+class hier_block_with_message_output(gr.hier_block):
 
     def __init__(self):
-        gr.hier_block2.__init__(self,
+        gr.hier_block.__init__(self,
             "hier_block_with_message_output",
             gr.io_signature(0, 0, 0),  # Input signature
             gr.io_signature(0, 0, 0))  # Output signature
@@ -59,10 +59,10 @@ class hier_block_with_message_output(gr.hier_block2):
         self.msg_connect(self.block, "test", self, "test")
 
 
-class hier_block_with_message_input(gr.hier_block2):
+class hier_block_with_message_input(gr.hier_block):
 
     def __init__(self):
-        gr.hier_block2.__init__(self,
+        gr.hier_block.__init__(self,
             "hier_block_with_message_output",
             gr.io_signature(0, 0, 0),  # Input signature
             gr.io_signature(0, 0, 0))  # Output signature
@@ -71,10 +71,10 @@ class hier_block_with_message_input(gr.hier_block2):
         self.msg_connect(self, "test", self.block, "test")
 
 
-class hier_block_with_message_inout(gr.hier_block2):
+class hier_block_with_message_inout(gr.hier_block):
 
     def __init__(self):
-        gr.hier_block2.__init__(self,
+        gr.hier_block.__init__(self,
             "hier_block_with_message_inout",
             gr.io_signature(0, 0, 0),  # Input signature
             gr.io_signature(0, 0, 0))  # Output signature
@@ -86,7 +86,7 @@ class hier_block_with_message_inout(gr.hier_block2):
         self.msg_connect(self.output, "test", weakref.proxy(self), "test")
 
 
-class test_hier_block2_message_connections(gr_unittest.TestCase):
+class test_hier_block_message_connections(gr_unittest.TestCase):
 
     def setUp(self):
         self.tb = gr.top_block()
@@ -201,5 +201,5 @@ class test_hier_block2_message_connections(gr_unittest.TestCase):
         self.assert_has_num_subscriptions(hier.block, "test", 0)
 
 if __name__ == '__main__':
-    gr_unittest.run(test_hier_block2_message_connections,
-                    "test_hier_block2_message_connections.xml")
+    gr_unittest.run(test_hier_block_message_connections,
+                    "test_hier_block_message_connections.xml")

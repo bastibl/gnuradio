@@ -63,11 +63,11 @@ def multiply_conjugate_cc(N):
         return tb
 
     except AttributeError:
-        class s(gr.hier_block2):
+        class s(gr.hier_block):
             def __init__(self):
-                gr.hier_block2.__init__(self, "s",
-                                        gr.io_signature(2, 2, gr.sizeof_gr_complex),
-                                        gr.io_signature(1, 1, gr.sizeof_gr_complex))
+                gr.hier_block.__init__(self, "s",
+                                       gr.io_signature(2, 2, gr.sizeof_gr_complex),
+                                       gr.io_signature(1, 1, gr.sizeof_gr_complex))
                 conj = blocks.conjugate_cc()
                 mult = blocks.multiply_cc()
                 self.connect((self,0), (mult,0))

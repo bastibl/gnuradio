@@ -59,7 +59,7 @@ _def_omega_relative_limit = 0.005
 #                              GFSK modulator
 # /////////////////////////////////////////////////////////////////////////////
 
-class gfsk_mod(gr.hier_block2):
+class gfsk_mod(gr.hier_block):
 
     def __init__(self,
                  samples_per_symbol=_def_samples_per_symbol,
@@ -81,9 +81,9 @@ class gfsk_mod(gr.hier_block2):
             debug: Print modualtion data to files? (bool)
         """
 
-        gr.hier_block2.__init__(self, "gfsk_mod",
-                                gr.io_signature(1, 1, gr.sizeof_char),       # Input signature
-                                gr.io_signature(1, 1, gr.sizeof_gr_complex)) # Output signature
+        gr.hier_block.__init__(self, "gfsk_mod",
+                               gr.io_signature(1, 1, gr.sizeof_char),       # Input signature
+                               gr.io_signature(1, 1, gr.sizeof_gr_complex)) # Output signature
 
         samples_per_symbol = int(samples_per_symbol)
         self._samples_per_symbol = samples_per_symbol
@@ -171,7 +171,7 @@ class gfsk_mod(gr.hier_block2):
 #                            GFSK demodulator
 # /////////////////////////////////////////////////////////////////////////////
 
-class gfsk_demod(gr.hier_block2):
+class gfsk_demod(gr.hier_block):
 
     def __init__(self,
                  samples_per_symbol=_def_samples_per_symbol,
@@ -204,9 +204,9 @@ class gfsk_demod(gr.hier_block2):
             float:
         """
 
-        gr.hier_block2.__init__(self, "gfsk_demod",
-                                gr.io_signature(1, 1, gr.sizeof_gr_complex), # Input signature
-                                gr.io_signature(1, 1, gr.sizeof_char))       # Output signature
+        gr.hier_block.__init__(self, "gfsk_demod",
+                               gr.io_signature(1, 1, gr.sizeof_gr_complex), # Input signature
+                               gr.io_signature(1, 1, gr.sizeof_char))       # Output signature
 
         self._samples_per_symbol = samples_per_symbol
         self._gain_mu = gain_mu

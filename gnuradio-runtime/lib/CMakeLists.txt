@@ -62,7 +62,7 @@ add_library(gnuradio-runtime
   feval.cc
   flat_flowgraph.cc
   flowgraph.cc
-  hier_block2.cc
+  hier_block.cc
   high_res_timer.cc
   io_signature.cc
   local_sighandler.cc

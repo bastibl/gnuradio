@@ -51,7 +51,7 @@ ${class_name}_sptr make_${class_name}();
 % if generate_options == 'no_gui':
 class ${class_name} {
 % elif generate_options.startswith('hb'):
-class ${class_name} : public hier_block2 {
+class ${class_name} : public hier_block {
 % elif generate_options == 'qt_gui':
 class ${class_name} : public QWidget {
     Q_OBJECT
@@ -118,7 +118,7 @@ public:
     % endif
 </%def>\
 
-${class_name}::${class_name} (${param_str}) : hier_block2("${title}",
+${class_name}::${class_name} (${param_str}) : hier_block("${title}",
         ${make_io_sig(in_sigs)},
         ${make_io_sig(out_sigs)}
         ) {

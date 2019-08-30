@@ -45,7 +45,7 @@
 #include <gnuradio/constants.h>
 #include <gnuradio/endianness.h>
 #include <gnuradio/feval.h>
-#include <gnuradio/hier_block2.h>
+#include <gnuradio/hier_block.h>
 #include <gnuradio/io_signature.h>
 #include <gnuradio/messages/msg_queue.h>
 #include <gnuradio/prefs.h>
@@ -76,7 +76,7 @@
 %include "buffer.i"
 %include "constants.i"
 %include "feval.i"
-%include "hier_block2.i"
+%include "hier_block.i"
 %include "io_signature.i"
 %include "msg_queue.i"
 %include "prefs.i"

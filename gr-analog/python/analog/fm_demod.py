@@ -30,7 +30,7 @@ from math import pi
 from . import analog_swig as analog
 
 
-class fm_demod_cf(gr.hier_block2):
+class fm_demod_cf(gr.hier_block):
     """
     Generalized FM demodulation block with deemphasis and audio
     filtering.
@@ -51,9 +51,9 @@ class fm_demod_cf(gr.hier_block2):
     """
     def __init__(self, channel_rate, audio_decim, deviation,
                  audio_pass, audio_stop, gain=1.0, tau=75e-6):
-        gr.hier_block2.__init__(self, "fm_demod_cf",
-                                gr.io_signature(1, 1, gr.sizeof_gr_complex),  # Input signature
-                                gr.io_signature(1, 1, gr.sizeof_float))       # Output signature
+        gr.hier_block.__init__(self, "fm_demod_cf",
+                               gr.io_signature(1, 1, gr.sizeof_gr_complex),  # Input signature
+                               gr.io_signature(1, 1, gr.sizeof_float))       # Output signature
 
         k = channel_rate / (2*pi*deviation)
         QUAD = analog.quadrature_demod_cf(k)

@@ -66,7 +66,7 @@ def design_filter(interpolation, decimation, fractional_bw):
 
 
 
-class _rational_resampler_base(gr.hier_block2):
+class _rational_resampler_base(gr.hier_block):
     """
     base class for all rational resampler variants.
     """
@@ -113,9 +113,9 @@ class _rational_resampler_base(gr.hier_block2):
             taps = design_filter(interpolation, decimation, fractional_bw)
 
         self.resampler = resampler_base(interpolation, decimation, taps)
-        gr.hier_block2.__init__(self, "rational_resampler",
-                                gr.io_signature(1, 1, self.resampler.input_signature().sizeof_stream_item(0)),
-                                gr.io_signature(1, 1, self.resampler.output_signature().sizeof_stream_item(0)))
+        gr.hier_block.__init__(self, "rational_resampler",
+                               gr.io_signature(1, 1, self.resampler.input_signature().sizeof_stream_item(0)),
+                               gr.io_signature(1, 1, self.resampler.output_signature().sizeof_stream_item(0)))
 
         self.connect(self, self.resampler, self)
 

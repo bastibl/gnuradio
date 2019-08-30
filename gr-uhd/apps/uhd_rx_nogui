@@ -77,7 +77,7 @@ DEMOD_PARAMS = {
 		'WFM' : (320e3, 320e3, 32e3, 80000, 115000, analog.demod_200kf3e_cf)
 	       }
 
-class uhd_src(gr.hier_block2):
+class uhd_src(gr.hier_block):
     """
     Create a UHD source object supplying complex floats.
 
@@ -87,7 +87,7 @@ class uhd_src(gr.hier_block2):
     the actual frequency.
     """
     def __init__(self, args, spec, antenna, samp_rate, gain=None, calibration=0.0):
-        gr.hier_block2.__init__(
+        gr.hier_block.__init__(
             self, "uhd_src",
             gr.io_signature(0, 0, 0),                    # Input signature
             gr.io_signature(1, 1, gr.sizeof_gr_complex)) # Output signature

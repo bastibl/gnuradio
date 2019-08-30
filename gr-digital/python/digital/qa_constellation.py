@@ -318,16 +318,16 @@ class test_constellation(gr_unittest.TestCase):
         self.assertFloatTuplesAlmostEqual(y_python_raw_calc, y_python_table, 0)
         self.assertFloatTuplesAlmostEqual(y_cpp_raw_calc, y_cpp_table, 0)
 
-class mod_demod(gr.hier_block2):
+class mod_demod(gr.hier_block):
     def __init__(self, constellation, differential, rotation):
         if constellation.arity() > 256:
             # If this becomes limiting some of the blocks should be generalised so
             # that they can work with shorts and ints as well as chars.
             raise ValueError("Constellation cannot contain more than 256 points.")
 
-        gr.hier_block2.__init__(self, "mod_demod",
-                                gr.io_signature(1, 1, gr.sizeof_char),       # Input signature
-                                gr.io_signature(1, 1, gr.sizeof_char))       # Output signature
+        gr.hier_block.__init__(self, "mod_demod",
+                               gr.io_signature(1, 1, gr.sizeof_char),       # Input signature
+                               gr.io_signature(1, 1, gr.sizeof_char))       # Output signature
 
         arity = constellation.arity()
 

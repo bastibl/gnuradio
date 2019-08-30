@@ -24,7 +24,7 @@
 #define INCLUDED_CHANNELS_CHANNEL_MODEL2_H
 
 #include <gnuradio/channels/api.h>
-#include <gnuradio/hier_block2.h>
+#include <gnuradio/hier_block.h>
 #include <gnuradio/types.h>
 
 namespace gr {
@@ -68,7 +68,7 @@ namespace channels {
  * timing offsets are required, it is easier and less expensive to
  * use gr::channels::channel_model.
  */
-class CHANNELS_API channel_model2 : virtual public hier_block2
+class CHANNELS_API channel_model2 : virtual public hier_block
 {
 public:
     // gr::channels::channel_model2::sptr

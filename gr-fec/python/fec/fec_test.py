@@ -36,14 +36,14 @@ else:
 from .extended_encoder import extended_encoder
 from .extended_decoder import extended_decoder
 
-class fec_test(gr.hier_block2):
+class fec_test(gr.hier_block):
 
     def __init__(self, generic_encoder=0, generic_decoder=0, esno=0,
                  samp_rate=3200000, threading="capillary", puncpat='11',
                  seed=0):
-        gr.hier_block2.__init__(self, "fec_test",
-                                gr.io_signature(1, 1, gr.sizeof_char*1),
-                                gr.io_signature(2, 2, gr.sizeof_char*1))
+        gr.hier_block.__init__(self, "fec_test",
+                               gr.io_signature(1, 1, gr.sizeof_char*1),
+                               gr.io_signature(2, 2, gr.sizeof_char*1))
 
         self.generic_encoder = generic_encoder
         self.generic_decoder = generic_decoder

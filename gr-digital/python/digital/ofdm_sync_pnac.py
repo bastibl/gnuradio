@@ -27,7 +27,7 @@ from __future__ import unicode_literals
 from gnuradio import gr, blocks, filter
 
 
-class ofdm_sync_pnac(gr.hier_block2):
+class ofdm_sync_pnac(gr.hier_block):
     def __init__(self, fft_length, cp_length, kstime, logging=False):
         """
         OFDM synchronization using PN Correlation and initial cross-correlation:
@@ -48,9 +48,9 @@ class ofdm_sync_pnac(gr.hier_block2):
         when an integer offset is introduced. Another thing to look at.
         """
 
-        gr.hier_block2.__init__(self, "ofdm_sync_pnac",
-                                gr.io_signature(1, 1, gr.sizeof_gr_complex), # Input signature
-                                gr.io_signature2(2, 2, gr.sizeof_float, gr.sizeof_char)) # Output signature
+        gr.hier_block.__init__(self, "ofdm_sync_pnac",
+                               gr.io_signature(1, 1, gr.sizeof_gr_complex), # Input signature
+                               gr.io_signature2(2, 2, gr.sizeof_float, gr.sizeof_char)) # Output signature
 
         self.input = blocks.add_const_cc(0)
 

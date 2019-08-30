@@ -24,7 +24,7 @@ from gnuradio import gr
 from gnuradio import blocks
 from gnuradio import filter
 
-class am_demod_cf(gr.hier_block2):
+class am_demod_cf(gr.hier_block):
     """
     Generalized AM demodulation block with audio filtering.
 
@@ -40,9 +40,9 @@ class am_demod_cf(gr.hier_block2):
         audio_stop: audio low pass filter stop frequency (float)
     """
     def __init__(self, channel_rate, audio_decim, audio_pass, audio_stop):
-        gr.hier_block2.__init__(self, "am_demod_cf",
-                                gr.io_signature(1, 1, gr.sizeof_gr_complex), # Input signature
-                                gr.io_signature(1, 1, gr.sizeof_float))      # Input signature
+        gr.hier_block.__init__(self, "am_demod_cf",
+                               gr.io_signature(1, 1, gr.sizeof_gr_complex), # Input signature
+                               gr.io_signature(1, 1, gr.sizeof_float))      # Input signature
 
         MAG = blocks.complex_to_mag()
         DCR = blocks.add_const_ff(-1.0)

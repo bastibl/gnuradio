@@ -20,36 +20,36 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#ifndef INCLUDED_GR_RUNTIME_HIER_BLOCK2_H
-#define INCLUDED_GR_RUNTIME_HIER_BLOCK2_H
+#ifndef INCLUDED_GR_RUNTIME_HIER_BLOCK_H
+#define INCLUDED_GR_RUNTIME_HIER_BLOCK_H
 
 #include <gnuradio/api.h>
 #include <gnuradio/basic_block.h>
-#include <gnuradio/flowgraph.h>
 #include <gnuradio/block.h>
+#include <gnuradio/flowgraph.h>
 
 namespace gr {
 
 /*!
- * \brief Hierarchical container class for gr::block's and gr::hier_block2's
+ * \brief Hierarchical container class for gr::block's and gr::hier_block's
  * \ingroup container_blk
  * \ingroup base_blk
  */
-class GR_RUNTIME_API hier_block2 : public basic_block
+class GR_RUNTIME_API hier_block : public basic_block
 {
 public:
-    typedef boost::shared_ptr<hier_block2> sptr;
+    typedef boost::shared_ptr<hier_block> sptr;
     static sptr make(const std::string& name,
                      gr::io_signature::sptr input_signature,
                      gr::io_signature::sptr output_signature);
 
 protected:
-    hier_block2(const std::string& name,
-                gr::io_signature::sptr input_signature,
-                gr::io_signature::sptr output_signature);
+    hier_block(const std::string& name,
+               gr::io_signature::sptr input_signature,
+               gr::io_signature::sptr output_signature);
 
 public:
-    virtual ~hier_block2();
+    virtual ~hier_block();
 
     /*!
      * \brief Return an object, representing the current block, which
@@ -176,14 +176,14 @@ public:
     void message_port_register_hier_out(pmt::pmt_t port_id);
 
     /*!
-     * \brief Set the affinity of all blocks in hier_block2 to processor core \p n.
+     * \brief Set the affinity of all blocks in hier_block to processor core \p n.
      *
      * \param mask a vector of ints of the core numbers available to this block.
      */
     void set_processor_affinity(const std::vector<int>& mask);
 
     /*!
-     * \brief Remove processor affinity for all blocks in hier_block2.
+     * \brief Remove processor affinity for all blocks in hier_block.
      */
     void unset_processor_affinity();
 
@@ -191,8 +191,8 @@ public:
      * \brief Get the current processor affinity.
      *
      * \details This returns the processor affinity value for the first
-     * block in the hier_block2's list of blocks with the assumption
-     * that they have always only been set through the hier_block2's
+     * block in the hier_block's list of blocks with the assumption
+     * that they have always only been set through the hier_block's
      * interface. If any block has been individually set, then this
      * call could be misleading.
      */
@@ -267,11 +267,11 @@ protected:
     void flatten_aux(flat_flowgraph_sptr sfg) const;
 };
 
-inline hier_block2_sptr cast_to_hier_block2_sptr(basic_block::sptr block)
+inline hier_block_sptr cast_to_hier_block_sptr(basic_block::sptr block)
 {
-    return boost::dynamic_pointer_cast<hier_block2, basic_block>(block);
+    return boost::dynamic_pointer_cast<hier_block, basic_block>(block);
 }
 
 } /* namespace gr */
 
-#endif /* INCLUDED_GR_RUNTIME_HIER_BLOCK2_H */
+#endif /* INCLUDED_GR_RUNTIME_HIER_BLOCK_H */

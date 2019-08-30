@@ -28,7 +28,7 @@ import math
 import cmath
 
 
-class fm_deemph(gr.hier_block2):
+class fm_deemph(gr.hier_block):
     r"""
     FM Deemphasis IIR filter
     
@@ -108,9 +108,9 @@ class fm_deemph(gr.hier_block2):
     """
 
     def __init__(self, fs, tau=75e-6):
-        gr.hier_block2.__init__(self, "fm_deemph",
-                                gr.io_signature(1, 1, gr.sizeof_float),  # Input signature
-                                gr.io_signature(1, 1, gr.sizeof_float))  # Output signature
+        gr.hier_block.__init__(self, "fm_deemph",
+                               gr.io_signature(1, 1, gr.sizeof_float),  # Input signature
+                               gr.io_signature(1, 1, gr.sizeof_float))  # Output signature
 
         # Digital corner frequency
         w_c = 1.0 / tau
@@ -142,7 +142,7 @@ class fm_deemph(gr.hier_block2):
 
 
 
-class fm_preemph(gr.hier_block2):
+class fm_preemph(gr.hier_block):
     r"""
     FM Preemphasis IIR filter.
     
@@ -256,9 +256,9 @@ class fm_preemph(gr.hier_block2):
     1996, pp 573-583
     """
     def __init__(self, fs, tau=75e-6, fh=-1.0):
-        gr.hier_block2.__init__(self, "fm_preemph",
-                                gr.io_signature(1, 1, gr.sizeof_float),  # Input signature
-                                gr.io_signature(1, 1, gr.sizeof_float))  # Output signature
+        gr.hier_block.__init__(self, "fm_preemph",
+                               gr.io_signature(1, 1, gr.sizeof_float),  # Input signature
+                               gr.io_signature(1, 1, gr.sizeof_float))  # Output signature
 
         # Set fh to something sensible, if needed.
         # N.B. fh == fs/2.0 or fh == 0.0 results in a pole on the unit circle

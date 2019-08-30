@@ -22,14 +22,14 @@
 import time
 
 from gnuradio import gr_unittest, blocks, gr, analog
-from gnuradio.gr.hier_block2 import _multiple_endpoints, _optional_endpoints
+from gnuradio.gr.hier_block import _multiple_endpoints, _optional_endpoints
 import pmt
 
 
-class test_hblk(gr.hier_block2):
+class test_hblk(gr.hier_block):
     def __init__(self, io_sig=1*[gr.sizeof_gr_complex], ndebug=2):
         # parent constructor
-        gr.hier_block2.__init__(self,
+        gr.hier_block.__init__(self,
             "test_hblk",
             gr.io_signature(len(io_sig), len(io_sig), io_sig[0]),
             gr.io_signature(0,0,0))
@@ -50,7 +50,7 @@ class test_hblk(gr.hier_block2):
             self.msg_connect( self, "msg_in", blk, "print" )
 
 
-class test_hier_block2(gr_unittest.TestCase):
+class test_hier_block(gr_unittest.TestCase):
 
     def setUp(self):
         self.call_log = []
@@ -141,4 +141,4 @@ class test_hier_block2(gr_unittest.TestCase):
         tb.wait()
 
 if __name__ == '__main__':
-    gr_unittest.run(test_hier_block2, "test_hier_block2.xml")
+    gr_unittest.run(test_hier_block, "test_hier_block.xml")

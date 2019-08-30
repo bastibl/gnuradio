@@ -24,7 +24,7 @@
 #define INCLUDED_CHANNELS_CHANNEL_MODEL_H
 
 #include <gnuradio/channels/api.h>
-#include <gnuradio/hier_block2.h>
+#include <gnuradio/hier_block.h>
 #include <gnuradio/types.h>
 
 namespace gr {
@@ -52,7 +52,7 @@ namespace channels {
  * To simulate a channel with time-variant channel, use
  * gr::channels::channel_model2.
  */
-class CHANNELS_API channel_model : virtual public hier_block2
+class CHANNELS_API channel_model : virtual public hier_block
 {
 public:
     // gr::channels::channel_model::sptr

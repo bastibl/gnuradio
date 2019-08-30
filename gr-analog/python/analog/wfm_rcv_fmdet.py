@@ -33,7 +33,7 @@ from . import analog_swig as analog
 from .fm_emph import fm_deemph
 
 
-class wfm_rcv_fmdet(gr.hier_block2):
+class wfm_rcv_fmdet(gr.hier_block):
     def __init__ (self, demod_rate, audio_decimation):
         """
         Hierarchical block for demodulating a broadcast FM signal.
@@ -46,9 +46,9 @@ class wfm_rcv_fmdet(gr.hier_block2):
             demod_rate: input sample rate of complex baseband input. (float)
             audio_decimation: how much to decimate demod_rate to get to audio. (integer)
         """
-        gr.hier_block2.__init__(self, "wfm_rcv_fmdet",
-                                gr.io_signature(1, 1, gr.sizeof_gr_complex), # Input signature
-                                gr.io_signature(2, 2, gr.sizeof_float))      # Output signature
+        gr.hier_block.__init__(self, "wfm_rcv_fmdet",
+                               gr.io_signature(1, 1, gr.sizeof_gr_complex), # Input signature
+                               gr.io_signature(2, 2, gr.sizeof_float))      # Output signature
         lowfreq = -125e3 / demod_rate
         highfreq = 125e3 / demod_rate
         audio_rate = demod_rate / audio_decimation
@@ -225,7 +225,7 @@ class wfm_rcv_fmdet(gr.hier_block2):
             self.connect(self.Make_Left , self.deemph_Left, (self, 0))
             self.connect(self.Make_Right, self.deemph_Right, (self, 1))
 
-        # NOTE: mono support will require variable number of outputs in hier_block2s
+        # NOTE: mono support will require variable number of outputs in hier_blocks
         # See ticket:174 in Trac database
         #else:
         #    self.connect (self.fm_demod, self.audio_filter, self)

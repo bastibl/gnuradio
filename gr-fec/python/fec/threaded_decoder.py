@@ -25,9 +25,9 @@ from gnuradio import gr, blocks
 from . import fec_swig as fec
 
 
-class threaded_decoder(gr.hier_block2):
+class threaded_decoder(gr.hier_block):
     def __init__(self, decoder_list_0, input_size, output_size):
-        gr.hier_block2.__init__(
+        gr.hier_block.__init__(
             self, "Threaded Decoder",
             gr.io_signature(1, 1, input_size*1),
             gr.io_signature(1, 1, output_size*1))

@@ -25,10 +25,10 @@ import math
 from gnuradio import gr
 from gnuradio import blocks
 
-class ofdm_sync_fixed(gr.hier_block2):
+class ofdm_sync_fixed(gr.hier_block):
     def __init__(self, fft_length, cp_length, nsymbols, freq_offset, logging=False):
 
-        gr.hier_block2.__init__(self, "ofdm_sync_fixed",
+        gr.hier_block.__init__(self, "ofdm_sync_fixed",
 				gr.io_signature(1, 1, gr.sizeof_gr_complex), # Input signature
 				gr.io_signature2(2, 2, gr.sizeof_float, gr.sizeof_char)) # Output signature
 

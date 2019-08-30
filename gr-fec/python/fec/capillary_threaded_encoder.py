@@ -29,11 +29,11 @@ from gnuradio import gr, blocks
 from . import fec_swig as fec
 
 
-class capillary_threaded_encoder(gr.hier_block2):
+class capillary_threaded_encoder(gr.hier_block):
     def __init__(self, encoder_list_0, input_size=gr.sizeof_char, output_size=gr.sizeof_char):
-        gr.hier_block2.__init__(self, "Capillary Threaded Encoder",
-                                gr.io_signature(1, 1, input_size),
-                                gr.io_signature(1, 1, output_size))
+        gr.hier_block.__init__(self, "Capillary Threaded Encoder",
+                               gr.io_signature(1, 1, input_size),
+                               gr.io_signature(1, 1, output_size))
 
         self.encoder_list_0 = encoder_list_0
 

@@ -12,10 +12,10 @@ from gnuradio import gr
 from gnuradio.filter import firdes
 import math
 
-class distortion_3_gen(gr.hier_block2):
+class distortion_3_gen(gr.hier_block):
 
     def __init__(self, beta=0):
-        gr.hier_block2.__init__(
+        gr.hier_block.__init__(
             self, "Third Order Distortion",
             gr.io_signature(1, 1, gr.sizeof_gr_complex*1),
             gr.io_signature(1, 1, gr.sizeof_gr_complex*1),

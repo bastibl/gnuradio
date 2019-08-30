@@ -65,7 +65,7 @@ namespace filter {
  * gr::blocks::vector_to_streams block to handle the conversion
  * and passing <EM>M</EM> streams out.
  *
- * The input and output formatting is done using a hier_block2 called
+ * The input and output formatting is done using a hier_block called
  * pfb_channelizer_ccf. This can take in a single stream and outputs
  * <EM>M</EM> streams based on the behavior described above.
  *

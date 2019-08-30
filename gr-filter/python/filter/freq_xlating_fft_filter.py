@@ -33,10 +33,10 @@ from .filter_swig import fft_filter_ccc
 __all__ = [ 'freq_xlating_fft_filter_ccc' ]
 
 
-class freq_xlating_fft_filter_ccc(gr.hier_block2):
+class freq_xlating_fft_filter_ccc(gr.hier_block):
 
     def __init__(self, decim, taps, center_freq, samp_rate):
-        gr.hier_block2.__init__(
+        gr.hier_block.__init__(
             self,
             'freq_xlating_fft_filter_ccc',
             gr.io_signature(1, 1, gr.sizeof_gr_complex),

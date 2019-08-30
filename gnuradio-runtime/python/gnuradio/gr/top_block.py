@@ -29,7 +29,7 @@ from .runtime_swig import (top_block_make,
 
 import threading
 
-from .hier_block2 import hier_block2
+from .hier_block import hier_block
 
 class _top_block_waiter(threading.Thread):
     """
@@ -88,7 +88,7 @@ class _top_block_waiter(threading.Thread):
 # to release the Python global interpreter lock before calling the actual
 # method in gr_top_block
 #
-class top_block(hier_block2):
+class top_block(hier_block):
     """
     Top-level hierarchical block representing a flow-graph.
 
@@ -100,7 +100,7 @@ class top_block(hier_block2):
         """
         Create a top block with a given name.
         """
-        # not calling hier_block2.__init__, we set our own _impl
+        # not calling hier_block.__init__, we set our own _impl
         self._impl = top_block_make(name)
         self.handle_sigint = True
 

@@ -26,11 +26,11 @@ from gnuradio import gr
 from gnuradio import blocks
 from gnuradio import filter
 
-class standard_squelch(gr.hier_block2):
+class standard_squelch(gr.hier_block):
     def __init__(self, audio_rate):
-        gr.hier_block2.__init__(self, "standard_squelch",
-                                gr.io_signature(1, 1, gr.sizeof_float), # Input signature
-                                gr.io_signature(1, 1, gr.sizeof_float)) # Output signature
+        gr.hier_block.__init__(self, "standard_squelch",
+                               gr.io_signature(1, 1, gr.sizeof_float), # Input signature
+                               gr.io_signature(1, 1, gr.sizeof_float)) # Output signature
 
         self.input_node = blocks.add_const_ff(0)          # FIXME kludge
 

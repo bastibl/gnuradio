@@ -11,10 +11,10 @@ from gnuradio import blocks
 from gnuradio import gr
 from gnuradio.filter import firdes
 
-class quantizer(gr.hier_block2):
+class quantizer(gr.hier_block):
 
     def __init__(self, bits=16):
-        gr.hier_block2.__init__(
+        gr.hier_block.__init__(
             self, "Quantizer",
             gr.io_signature(1, 1, gr.sizeof_float*1),
             gr.io_signature(1, 1, gr.sizeof_float*1),

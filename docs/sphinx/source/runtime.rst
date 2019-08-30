@@ -9,7 +9,7 @@ gnuradio.gr
 .. autoclass:: gnuradio.gr.sync_decimator
 .. autoclass:: gnuradio.gr.sync_interpolator
 .. autoclass:: gnuradio.gr.tagged_stream_block
-.. autoclass:: gnuradio.gr.hier_block2
+.. autoclass:: gnuradio.gr.hier_block
 
 .. autofunction:: gnuradio.gr.high_res_timer_now
 .. autofunction:: gnuradio.gr.high_res_timer_now_perfmon

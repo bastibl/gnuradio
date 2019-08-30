@@ -57,11 +57,11 @@ FREQ_BW = 2*math.pi/100.0
 PHASE_BW = 2*math.pi/100.0
 
 
-class channel_model(gr.hier_block2):
+class channel_model(gr.hier_block):
     def __init__(self, noise_voltage, freq, timing):
-        gr.hier_block2.__init__(self, "channel_model",
-                                gr.io_signature(1, 1, gr.sizeof_gr_complex),
-                                gr.io_signature(1, 1, gr.sizeof_gr_complex))
+        gr.hier_block.__init__(self, "channel_model",
+                               gr.io_signature(1, 1, gr.sizeof_gr_complex),
+                               gr.io_signature(1, 1, gr.sizeof_gr_complex))
 
 
         timing_offset = filter.mmse_resampler_cc(0, timing)

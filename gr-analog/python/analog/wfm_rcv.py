@@ -31,7 +31,7 @@ from . import analog_swig as analog
 from .fm_emph import fm_deemph
 
 
-class wfm_rcv(gr.hier_block2):
+class wfm_rcv(gr.hier_block):
     def __init__ (self, quad_rate, audio_decimation):
         """
         Hierarchical block for demodulating a broadcast FM signal.
@@ -43,9 +43,9 @@ class wfm_rcv(gr.hier_block2):
             quad_rate: input sample rate of complex baseband input. (float)
             audio_decimation: how much to decimate quad_rate to get to audio. (integer)
         """
-        gr.hier_block2.__init__(self, "wfm_rcv",
-                                gr.io_signature(1, 1, gr.sizeof_gr_complex), # Input signature
-                                gr.io_signature(1, 1, gr.sizeof_float))      # Output signature
+        gr.hier_block.__init__(self, "wfm_rcv",
+                               gr.io_signature(1, 1, gr.sizeof_gr_complex), # Input signature
+                               gr.io_signature(1, 1, gr.sizeof_float))      # Output signature
 
         volume = 20.
 

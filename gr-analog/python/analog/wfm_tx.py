@@ -33,7 +33,7 @@ from . import analog_swig as analog
 from .fm_emph import fm_preemph
 
 
-class wfm_tx(gr.hier_block2):
+class wfm_tx(gr.hier_block):
     def __init__(self, audio_rate, quad_rate, tau=75e-6, max_dev=75e3, fh=-1.0):
         """
         Wide Band FM Transmitter.
@@ -50,9 +50,9 @@ class wfm_tx(gr.hier_block2):
 
         quad_rate must be an integer multiple of audio_rate.
         """
-        gr.hier_block2.__init__(self, "wfm_tx",
-                                gr.io_signature(1, 1, gr.sizeof_float),      # Input signature
-                                gr.io_signature(1, 1, gr.sizeof_gr_complex)) # Output signature
+        gr.hier_block.__init__(self, "wfm_tx",
+                               gr.io_signature(1, 1, gr.sizeof_float),      # Input signature
+                               gr.io_signature(1, 1, gr.sizeof_gr_complex)) # Output signature
 
         # FIXME audio_rate and quad_rate ought to be exact rationals
         audio_rate = int(audio_rate)

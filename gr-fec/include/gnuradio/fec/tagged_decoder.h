@@ -53,7 +53,7 @@ namespace fec {
  * the FECAPI, the decoder variable sets properties like the input
  * and output types and sizes and whether the output is packed or
  * unpacked bytes. The fec.extended_decoder uses this information
- * to set up an gr::hier_block2 structure to make sure the I/O to
+ * to set up an gr::hier_block structure to make sure the I/O to
  * the variable is handled consistently, such as to make sure all
  * inputs are floats with one soft symbol per item and the outputs
  * are unpacked bytes with the bit in the LSB.

@@ -21,10 +21,10 @@ from .iqbal_gen import *
 from .distortion_2_gen import *
 from .distortion_3_gen import *
 
-class impairments(gr.hier_block2):
+class impairments(gr.hier_block):
 
     def __init__(self, phase_noise_mag=0, magbal=0, phasebal=0, q_ofs=0, i_ofs=0, freq_offset=0, gamma=0, beta=0):
-        gr.hier_block2.__init__(
+        gr.hier_block.__init__(
             self, "Radio Impairments Model",
             gr.io_signature(1, 1, gr.sizeof_gr_complex*1),
             gr.io_signature(1, 1, gr.sizeof_gr_complex*1),

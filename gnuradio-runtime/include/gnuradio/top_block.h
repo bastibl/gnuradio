@@ -24,7 +24,7 @@
 #define INCLUDED_GR_TOP_BLOCK_H
 
 #include <gnuradio/api.h>
-#include <gnuradio/hier_block2.h>
+#include <gnuradio/hier_block.h>
 
 namespace gr {
 
@@ -32,7 +32,7 @@ namespace gr {
  *\brief Top-level hierarchical block representing a flowgraph
  * \ingroup container_blk
  */
-class GR_RUNTIME_API top_block : virtual public hier_block2
+class GR_RUNTIME_API top_block : virtual public hier_block
 {
 
 public:

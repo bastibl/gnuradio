@@ -22,7 +22,7 @@
 
 namespace gr {
 
-  class top_block : virtual public gr::hier_block2
+  class top_block : virtual public gr::hier_block
   {
   public:
     typedef boost::shared_ptr<top_block> sptr;

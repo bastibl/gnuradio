@@ -57,7 +57,7 @@ _def_log = False
 #                              CPM modulator
 # /////////////////////////////////////////////////////////////////////////////
 
-class cpm_mod(gr.hier_block2):
+class cpm_mod(gr.hier_block):
     """
     Hierarchical block for Continuous Phase modulation.
 
@@ -95,9 +95,9 @@ class cpm_mod(gr.hier_block2):
                  verbose=_def_verbose,
                  log=_def_log):
 
-        gr.hier_block2.__init__(self, "cpm_mod",
-                                gr.io_signature(1, 1, gr.sizeof_char),       # Input signature
-                                gr.io_signature(1, 1, gr.sizeof_gr_complex)) #  Output signature
+        gr.hier_block.__init__(self, "cpm_mod",
+                               gr.io_signature(1, 1, gr.sizeof_char),       # Input signature
+                               gr.io_signature(1, 1, gr.sizeof_gr_complex)) #  Output signature
 
         self._samples_per_symbol = samples_per_symbol
         self._bits_per_symbol = bits_per_symbol

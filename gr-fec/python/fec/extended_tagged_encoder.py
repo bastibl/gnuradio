@@ -31,11 +31,11 @@ from . import fec_swig as fec
 from .bitflip import read_bitlist
 
 
-class extended_tagged_encoder(gr.hier_block2):
+class extended_tagged_encoder(gr.hier_block):
     def __init__(self, encoder_obj_list, puncpat=None, lentagname=None, mtu=1500):
-        gr.hier_block2.__init__(self, "extended_tagged_encoder",
-                                gr.io_signature(1, 1, gr.sizeof_char),
-                                gr.io_signature(1, 1, gr.sizeof_char))
+        gr.hier_block.__init__(self, "extended_tagged_encoder",
+                               gr.io_signature(1, 1, gr.sizeof_char),
+                               gr.io_signature(1, 1, gr.sizeof_char))
 
         self.blocks=[]
         self.puncpat=puncpat

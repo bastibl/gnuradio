@@ -78,7 +78,7 @@ def add_common_options(parser):
 #                             Generic modulator
 # /////////////////////////////////////////////////////////////////////////////
 
-class generic_mod(gr.hier_block2):
+class generic_mod(gr.hier_block):
     """
     Hierarchical block for RRC-filtered differential generic modulation.
 
@@ -103,9 +103,9 @@ class generic_mod(gr.hier_block2):
                  verbose=_def_verbose,
                  log=_def_log):
 
-        gr.hier_block2.__init__(self, "generic_mod",
-                                gr.io_signature(1, 1, gr.sizeof_char),       # Input signature
-                                gr.io_signature(1, 1, gr.sizeof_gr_complex)) # Output signature
+        gr.hier_block.__init__(self, "generic_mod",
+                               gr.io_signature(1, 1, gr.sizeof_char),       # Input signature
+                               gr.io_signature(1, 1, gr.sizeof_gr_complex)) # Output signature
 
         self._constellation = constellation
         self._samples_per_symbol = samples_per_symbol
@@ -208,7 +208,7 @@ class generic_mod(gr.hier_block2):
 #      modulated signal.
 # /////////////////////////////////////////////////////////////////////////////
 
-class generic_demod(gr.hier_block2):
+class generic_demod(gr.hier_block):
     """
     Hierarchical block for RRC-filtered differential generic demodulation.
 
@@ -239,9 +239,9 @@ class generic_demod(gr.hier_block2):
                  verbose=_def_verbose,
                  log=_def_log):
 
-        gr.hier_block2.__init__(self, "generic_demod",
-                                gr.io_signature(1, 1, gr.sizeof_gr_complex), # Input signature
-                                gr.io_signature(1, 1, gr.sizeof_char))       # Output signature
+        gr.hier_block.__init__(self, "generic_demod",
+                               gr.io_signature(1, 1, gr.sizeof_gr_complex), # Input signature
+                               gr.io_signature(1, 1, gr.sizeof_char))       # Output signature
 
         self._constellation = constellation
         self._samples_per_symbol = samples_per_symbol

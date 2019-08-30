@@ -39,7 +39,7 @@ def _split_taps(taps, mpoints):
     return [tuple(x) for x in result]
 
 
-class synthesis_filterbank(gr.hier_block2):
+class synthesis_filterbank(gr.hier_block):
     """
     Uniformly modulated polyphase DFT filter bank: synthesis
 
@@ -88,9 +88,9 @@ class synthesis_filterbank(gr.hier_block2):
             utility.
         """
         item_size = gr.sizeof_gr_complex
-        gr.hier_block2.__init__(self, "synthesis_filterbank",
-                                gr.io_signature(mpoints, mpoints, item_size), # Input signature
-                                gr.io_signature(1, 1, item_size))             # Output signature
+        gr.hier_block.__init__(self, "synthesis_filterbank",
+                               gr.io_signature(mpoints, mpoints, item_size), # Input signature
+                               gr.io_signature(1, 1, item_size))             # Output signature
 
 
         if taps is None:
@@ -123,7 +123,7 @@ class synthesis_filterbank(gr.hier_block2):
 
             self.connect(self.ss2s, self)
 
-class analysis_filterbank(gr.hier_block2):
+class analysis_filterbank(gr.hier_block):
     """
     Uniformly modulated polyphase DFT filter bank: analysis
 
@@ -141,9 +141,9 @@ class analysis_filterbank(gr.hier_block2):
         Same channel to frequency mapping as described above.
         """
         item_size = gr.sizeof_gr_complex
-        gr.hier_block2.__init__(self, "analysis_filterbank",
-                                gr.io_signature(1, 1, item_size),             # Input signature
-                                gr.io_signature(mpoints, mpoints, item_size)) # Output signature
+        gr.hier_block.__init__(self, "analysis_filterbank",
+                               gr.io_signature(1, 1, item_size),             # Input signature
+                               gr.io_signature(mpoints, mpoints, item_size)) # Output signature
 
         if taps is None:
             taps = _generate_synthesis_taps(mpoints)

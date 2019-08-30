@@ -341,7 +341,7 @@ ${str_to_python_comment(license)}
         parenttype = 'gr.sync_block'
     else:
         parenttype = {
-            'hier': 'gr.hier_block2',
+            'hier': 'gr.hier_block',
             'interpolator': 'gr.interp_block',
             'decimator': 'gr.decim_block',
             'general': 'gr.basic_block'

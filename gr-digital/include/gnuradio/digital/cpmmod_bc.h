@@ -25,7 +25,7 @@
 
 #include <gnuradio/analog/cpm.h>
 #include <gnuradio/digital/api.h>
-#include <gnuradio/hier_block2.h>
+#include <gnuradio/hier_block.h>
 
 namespace gr {
 namespace digital {
@@ -46,7 +46,7 @@ namespace digital {
  * The modulator will silently accept any other inputs, though.
  * The output is the phase-modulated signal.
  */
-class DIGITAL_API cpmmod_bc : virtual public hier_block2
+class DIGITAL_API cpmmod_bc : virtual public hier_block
 {
 public:
     // gr::digital::cpmmod_bc::sptr

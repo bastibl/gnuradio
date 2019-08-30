@@ -10,7 +10,7 @@
         <username>777arc</username>
         <id>632</id>
       </contributor>
-      <comment>/* Setting Affinity for a gr::hier_block2 */</comment>
+      <comment>/* Setting Affinity for a gr::hier_block */</comment>
       <model>wikitext</model>
       <format>text/x-wiki</format>
       <text xml:space="preserve" bytes="4603">== Block Thread Affinity ==
@@ -73,20 +73,20 @@ When set before the flowgraph is started, the scheduler will set the
 thread's affinity when it is started. When already running, the
 block's affinity will be immediately set.
 
-=== Setting Affinity for a gr::hier_block2 ===
+=== Setting Affinity for a gr::hier_block ===
 
-A hierarchical block (gr::hier_block2) also has a concept of setting
+A hierarchical block (gr::hier_block) also has a concept of setting
 the block thread affinity. Because the hierarchical block itself does
 no work and just encapsulates a set of blocks, setting the
 hierarchical block's affinity individually sets all blocks inside it
 to that affinity setting.
 
-The gr::hier_block2 class supports the same API interface to the block
+The gr::hier_block class supports the same API interface to the block
 thread affinity:
 
-* gr::hier_block2::set_processor_affinity(const std::vector<int> &mask)
-* gr::hier_block2::unset_processor_affinity()
-* gr::hier_block2::processor_affinity()
+* gr::hier_block::set_processor_affinity(const std::vector<int> &mask)
+* gr::hier_block::unset_processor_affinity()
+* gr::hier_block::processor_affinity()
 
 Setting and unsetting the affinity does so recursively for every block
 in the hierarchical block. It is of course possible to individually set

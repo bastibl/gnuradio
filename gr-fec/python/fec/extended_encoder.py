@@ -31,11 +31,11 @@ from .capillary_threaded_encoder import capillary_threaded_encoder
 from .bitflip import read_bitlist
 
 
-class extended_encoder(gr.hier_block2):
+class extended_encoder(gr.hier_block):
     def __init__(self, encoder_obj_list, threading, puncpat=None):
-        gr.hier_block2.__init__(self, "extended_encoder",
-                                gr.io_signature(1, 1, gr.sizeof_char),
-                                gr.io_signature(1, 1, gr.sizeof_char))
+        gr.hier_block.__init__(self, "extended_encoder",
+                               gr.io_signature(1, 1, gr.sizeof_char),
+                               gr.io_signature(1, 1, gr.sizeof_char))
 
         self.blocks=[]
         self.puncpat=puncpat

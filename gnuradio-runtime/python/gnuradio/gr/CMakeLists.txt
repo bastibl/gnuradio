@@ -26,7 +26,7 @@ GR_PYTHON_INSTALL(FILES
     tag_utils.py
     packet_utils.py
     gateway.py
-    hier_block2.py
+    hier_block.py
     top_block.py
     pubsub.py
     DESTINATION ${GR_PYTHON_DIR}/gnuradio/gr

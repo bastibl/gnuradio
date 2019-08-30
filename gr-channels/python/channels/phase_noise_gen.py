@@ -13,10 +13,10 @@ from gnuradio import filter
 from gnuradio import gr
 from gnuradio.filter import firdes
 
-class phase_noise_gen(gr.hier_block2):
+class phase_noise_gen(gr.hier_block):
 
     def __init__(self, noise_mag=0, alpha=0.1):
-        gr.hier_block2.__init__(
+        gr.hier_block.__init__(
             self, "Phase Noise Generator",
             gr.io_signature(1, 1, gr.sizeof_gr_complex*1),
             gr.io_signature(1, 1, gr.sizeof_gr_complex*1),

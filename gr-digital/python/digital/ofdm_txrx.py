@@ -112,7 +112,7 @@ def _get_constellation(bps):
         print('Modulation not supported.')
         exit(1)
 
-class ofdm_tx(gr.hier_block2):
+class ofdm_tx(gr.hier_block):
     """Hierarchical block for OFDM modulation.
 
     The input is a byte stream (unsigned char) and the
@@ -151,7 +151,7 @@ class ofdm_tx(gr.hier_block2):
                  debug_log=False,
                  scramble_bits=False
                  ):
-        gr.hier_block2.__init__(self, "ofdm_tx",
+        gr.hier_block.__init__(self, "ofdm_tx",
                     gr.io_signature(1, 1, gr.sizeof_char),
                     gr.io_signature(1, 1, gr.sizeof_gr_complex))
         ### Param init / sanity check ########################################
@@ -258,7 +258,7 @@ class ofdm_tx(gr.hier_block2):
             self.connect(cyclic_prefixer, blocks.file_sink(gr.sizeof_gr_complex,           'tx-signal.dat'))
 
 
-class ofdm_rx(gr.hier_block2):
+class ofdm_rx(gr.hier_block):
     """Hierarchical block for OFDM demodulation.
 
     The input is a complex baseband signal (e.g. from a UHD source).
@@ -295,7 +295,7 @@ class ofdm_rx(gr.hier_block2):
                  debug_log=False,
                  scramble_bits=False
                  ):
-        gr.hier_block2.__init__(self, "ofdm_rx",
+        gr.hier_block.__init__(self, "ofdm_rx",
                     gr.io_signature(1, 1, gr.sizeof_gr_complex),
                     gr.io_signature(1, 1, gr.sizeof_char))
         ### Param init / sanity check ########################################

@@ -13,10 +13,10 @@ from gnuradio import filter
 from gnuradio import gr
 from gnuradio.filter import firdes
 
-class conj_fs_iqcorr(gr.hier_block2):
+class conj_fs_iqcorr(gr.hier_block):
 
     def __init__(self, delay=0, taps=[]):
-        gr.hier_block2.__init__(
+        gr.hier_block.__init__(
             self, "Conj FS IQBal",
             gr.io_signature(1, 1, gr.sizeof_gr_complex*1),
             gr.io_signature(1, 1, gr.sizeof_gr_complex*1),

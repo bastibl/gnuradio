@@ -32,7 +32,7 @@ from .fm_emph import fm_preemph
 from . import analog_swig as analog
 
 
-class nbfm_tx(gr.hier_block2):
+class nbfm_tx(gr.hier_block):
     """
     Narrow Band FM Transmitter.
 
@@ -49,9 +49,9 @@ class nbfm_tx(gr.hier_block2):
     quad_rate must be an integer multiple of audio_rate.
     """
     def __init__(self, audio_rate, quad_rate, tau=75e-6, max_dev=5e3, fh=-1.0):
-        gr.hier_block2.__init__(self, "nbfm_tx",
-                                gr.io_signature(1, 1, gr.sizeof_float),      # Input signature
-                                gr.io_signature(1, 1, gr.sizeof_gr_complex)) # Output signature
+        gr.hier_block.__init__(self, "nbfm_tx",
+                               gr.io_signature(1, 1, gr.sizeof_float),      # Input signature
+                               gr.io_signature(1, 1, gr.sizeof_gr_complex)) # Output signature
 
         # FIXME audio_rate and quad_rate ought to be exact rationals
         self._audio_rate = audio_rate = int(audio_rate)
@@ -91,11 +91,11 @@ class nbfm_tx(gr.hier_block2):
 
 
 
-class ctcss_gen_f(gr.hier_block2):
+class ctcss_gen_f(gr.hier_block):
     def __init__(self, sample_rate, tone_freq):
-        gr.hier_block2.__init__(self, "ctcss_gen_f",
-                                gr.io_signature(0, 0, 0),               # Input signature
-                                gr.io_signature(1, 1, gr.sizeof_float)) # Output signature
+        gr.hier_block.__init__(self, "ctcss_gen_f",
+                               gr.io_signature(0, 0, 0),               # Input signature
+                               gr.io_signature(1, 1, gr.sizeof_float)) # Output signature
 
         self.plgen = analog.sig_source_f(sample_rate, analog.GR_SIN_WAVE,
                                          tone_freq, 0.1, 0.0)

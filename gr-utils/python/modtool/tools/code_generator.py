@@ -40,7 +40,7 @@ GRTYPELIST = {
     'interpolator': 'sync_interpolator',
     'general': 'block',
     'tagged_stream': 'tagged_stream_block',
-    'hier': 'hier_block2',
+    'hier': 'hier_block',
     'noblock': ''
 }
 
