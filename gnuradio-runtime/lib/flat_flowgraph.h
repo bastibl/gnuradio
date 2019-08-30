@@ -87,6 +87,8 @@ public:
      */
     void enable_pc_rpc();
 
+    std::string dot_graph();
+
 private:
     flat_flowgraph();
 

@@ -475,6 +475,39 @@ void flat_flowgraph::replace_endpoint(const msg_endpoint& e,
     }
 }
 
+std::string flat_flowgraph::dot_graph()
+{
+    basic_block_vector_t blocks = calc_used_blocks();
+    edge_vector_t edges = edges();
+    msg_edge_vector_t msg_edges = msg_edges();
+
+    std::stringstream out;
+
+    out << "digraph flowgraph {" << std::endl;
+
+    // Define nodes and set labels
+    for (basic_block_viter_t block = blocks.begin(); block != blocks.end(); ++block) {
+        out << (*block)->unique_id() << " [ label=\"" << (*block)->alias() << "\" ]"
+            << std::endl;
+    }
+
+    // Define edges
+    for (edge_viter_t edge = edges.begin(); edge != edges.end(); ++edge) {
+        out << edge->src().block()->unique_id() << " -> "
+            << edge->dst().block()->unique_id() << std::endl;
+    }
+
+    for (msg_edge_viter_t edge = msg_edges.begin(); edge != msg_edges.end(); edge++) {
+        out << edge->src().block()->unique_id() << " -> "
+            << edge->dst().block()->unique_id() << " [color=blue]" << std::endl;
+    }
+
+    out << "}" << std::endl;
+
+    return out.str();
+}
+
+
 void flat_flowgraph::enable_pc_rpc()
 {
 #ifdef GR_PERFORMANCE_COUNTERS

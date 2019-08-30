@@ -198,7 +198,7 @@ flat_flowgraph_sptr top_block_impl::flatten() const
 
 std::string top_block_impl::dot_graph()
 {
-    return dot_graph_fg(flatten());
+    return flatten().dot_graph();
 }
 
 /*

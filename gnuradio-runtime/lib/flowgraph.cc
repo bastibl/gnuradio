@@ -343,36 +343,4 @@ void flowgraph::disconnect(const msg_endpoint& src, const msg_endpoint& dst)
     throw std::runtime_error("disconnect called on non-connected edge!");
 }
 
-std::string dot_graph_fg(flowgraph_sptr fg)
-{
-    basic_block_vector_t blocks = fg->calc_used_blocks();
-    edge_vector_t edges = fg->edges();
-    msg_edge_vector_t msg_edges = fg->msg_edges();
-
-    std::stringstream out;
-
-    out << "digraph flowgraph {" << std::endl;
-
-    // Define nodes and set labels
-    for (basic_block_viter_t block = blocks.begin(); block != blocks.end(); ++block) {
-        out << (*block)->unique_id() << " [ label=\"" << (*block)->alias() << "\" ]"
-            << std::endl;
-    }
-
-    // Define edges
-    for (edge_viter_t edge = edges.begin(); edge != edges.end(); ++edge) {
-        out << edge->src().block()->unique_id() << " -> "
-            << edge->dst().block()->unique_id() << std::endl;
-    }
-
-    for (msg_edge_viter_t edge = msg_edges.begin(); edge != msg_edges.end(); edge++) {
-        out << edge->src().block()->unique_id() << " -> "
-            << edge->dst().block()->unique_id() << " [color=blue]" << std::endl;
-    }
-
-    out << "}" << std::endl;
-
-    return out.str();
-}
-
 } /* namespace gr */
