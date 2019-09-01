@@ -427,21 +427,6 @@ void flat_flowgraph::clear_endpoint(const msg_endpoint& e, bool is_src)
     }
 }
 
-void flat_flowgraph::clear_hier()
-{
-    GR_LOG_DEBUG(d_debug_logger, "Clear_hier()");
-    for (size_t i = 0; i < d_msg_edges.size(); i++) {
-        GR_LOG_DEBUG(d_debug_logger,
-                     "edge: " + d_msg_edges[i].src().identifier() + "-->" +
-                         d_msg_edges[i].dst().identifier());
-        if (d_msg_edges[i].src().is_hier() || d_msg_edges[i].dst().is_hier()) {
-            GR_LOG_DEBUG(d_debug_logger, "is hier");
-            d_msg_edges.erase(d_msg_edges.begin() + i);
-            i--;
-        }
-    }
-}
-
 void flat_flowgraph::replace_endpoint(const msg_endpoint& e,
                                       const msg_endpoint& r,
                                       bool is_src)
@@ -478,8 +463,8 @@ void flat_flowgraph::replace_endpoint(const msg_endpoint& e,
 std::string flat_flowgraph::dot_graph()
 {
     basic_block_vector_t blocks = calc_used_blocks();
-    edge_vector_t edges = edges();
-    msg_edge_vector_t msg_edges = msg_edges();
+    edge_vector_t all_edges = edges();
+    msg_edge_vector_t all_msg_edges = msg_edges();
 
     std::stringstream out;
 
@@ -492,12 +477,12 @@ std::string flat_flowgraph::dot_graph()
     }
 
     // Define edges
-    for (edge_viter_t edge = edges.begin(); edge != edges.end(); ++edge) {
+    for (edge_viter_t edge = all_edges.begin(); edge != all_edges.end(); ++edge) {
         out << edge->src().block()->unique_id() << " -> "
             << edge->dst().block()->unique_id() << std::endl;
     }
 
-    for (msg_edge_viter_t edge = msg_edges.begin(); edge != msg_edges.end(); edge++) {
+    for (msg_edge_viter_t edge = all_msg_edges.begin(); edge != all_msg_edges.end(); edge++) {
         out << edge->src().block()->unique_id() << " -> "
             << edge->dst().block()->unique_id() << " [color=blue]" << std::endl;
     }

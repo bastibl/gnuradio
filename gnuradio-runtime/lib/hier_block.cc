@@ -44,8 +44,7 @@ hier_block::hier_block(const std::string& name,
                        gr::io_signature::sptr output_signature)
     : basic_block(name, input_signature, output_signature),
       d_fg(make_flowgraph()),
-      hier_message_ports_in(pmt::PMT_NIL),
-      hier_message_ports_out(pmt::PMT_NIL)
+      d_message_ports_in(pmt::PMT_NIL)
 {
     // This bit of magic ensures that self() works in the constructors of derived classes.
     gnuradio::detail::sptr_magic::create_and_stash_initial_sptr(this);
@@ -159,24 +158,11 @@ void hier_block::msg_connect(basic_block::sptr src,
         d_blocks.push_back(dst);
     }
 
-
-    bool hier_in = false, hier_out = false;
-    if (this == src.get()) {
-        hier_out = src->message_port_is_hier_in(srcport);
-    } else if (this == dst.get()) {
-        hier_in = dst->message_port_is_hier_out(dstport);
-        ;
-    } else {
-        hier_out = src->message_port_is_hier_out(srcport);
-        hier_in = dst->message_port_is_hier_in(dstport);
-    }
-
     // add edge for this message connection
     if (HIER_BLOCK_DEBUG)
-        std::cout << boost::format("msg_connect( (%s, %s, %d), (%s, %s, %d) )\n") % src %
-                         srcport % hier_out % dst % dstport % hier_in;
-    d_fg->connect(msg_endpoint(src, srcport, hier_out),
-                  msg_endpoint(dst, dstport, hier_in));
+        std::cout << boost::format("msg_connect( (%s, %s), (%s, %s) )\n") % src %
+                         srcport % dst % dstport;
+    d_fg->connect(msg_endpoint(src, srcport), msg_endpoint(dst, dstport));
 }
 
 void hier_block::msg_connect(basic_block::sptr src,
@@ -195,20 +181,7 @@ void hier_block::msg_disconnect(basic_block::sptr src,
     if (HIER_BLOCK_DEBUG)
         std::cout << "disconnecting message port..." << std::endl;
 
-    // remove edge for this message connection
-    bool hier_in = false, hier_out = false;
-    if (this == src.get()) {
-        hier_out = src->message_port_is_hier_in(srcport);
-    } else if (this == dst.get()) {
-        hier_in = dst->message_port_is_hier_out(dstport);
-        ;
-    } else {
-        hier_out = src->message_port_is_hier_out(srcport);
-        hier_in = dst->message_port_is_hier_in(dstport);
-    }
-
-    d_fg->disconnect(msg_endpoint(src, srcport, hier_out),
-                     msg_endpoint(dst, dstport, hier_in));
+    d_fg->disconnect(msg_endpoint(src, srcport), msg_endpoint(dst, dstport));
 
     hier_block_sptr src_block(cast_to_hier_block_sptr(src));
     hier_block_sptr dst_block(cast_to_hier_block_sptr(dst));
@@ -246,6 +219,31 @@ void hier_block::msg_disconnect(basic_block::sptr src,
                                 std::string dstport)
 {
     msg_disconnect(src, pmt::mp(srcport), dst, pmt::mp(dstport));
+}
+
+void hier_block::message_port_register_in(pmt::pmt_t port_id)
+{
+
+    if (pmt::list_has(d_message_ports_in, port_id))
+        throw std::invalid_argument("hier msg in port by this name already registered");
+
+    d_message_ports_in = pmt::list_add(d_message_ports_in, port_id);
+}
+
+pmt::pmt_t hier_block::message_ports_in()
+{
+    pmt::pmt_t port_names =
+        pmt::make_vector(pmt::length(d_message_ports_in), pmt::PMT_NIL);
+
+    for (size_t i = 0; i < pmt::length(d_message_ports_in); i++) {
+        pmt::vector_set(port_names, i, pmt::nth(i, d_message_ports_in));
+    }
+    return port_names;
+}
+
+void hier_block::post(pmt::pmt_t which_port, pmt::pmt_t msg)
+{
+    throw std::runtime_error("not implemented yet");
 }
 
 void hier_block::disconnect(basic_block::sptr block)
@@ -679,19 +677,18 @@ void hier_block::flatten_aux(flat_flowgraph_sptr sfg) const
     std::vector<std::pair<msg_endpoint, bool>> resolved_endpoints;
     for (q = msg_edges.begin(); q != msg_edges.end(); q++) {
         if (HIER_BLOCK_DEBUG)
-            std::cout << boost::format(
-                             " flattening edge ( %s, %s, %d) -> ( %s, %s, %d)\n") %
-                             q->src().block() % q->src().port() % q->src().is_hier() %
-                             q->dst().block() % q->dst().port() % q->dst().is_hier();
+            std::cout << boost::format(" flattening edge ( %s, %s) -> ( %s, %s)\n") %
+                             q->src().block() % q->src().port() % q->dst().block() %
+                             q->dst().port();
 
 
-        if (q->src().is_hier() && q->src().block().get() == this) {
+        if (q->src().block().get() == this) {
             // connection into this block ..
             if (HIER_BLOCK_DEBUG)
                 std::cout << "hier incoming port: " << q->src() << std::endl;
             sfg->replace_endpoint(q->src(), q->dst(), false);
             resolved_endpoints.push_back(std::pair<msg_endpoint, bool>(q->src(), false));
-        } else if (q->dst().is_hier() && q->dst().block().get() == this) {
+        } else if (q->dst().block().get() == this) {
             // connection out of this block
             if (HIER_BLOCK_DEBUG)
                 std::cout << "hier outgoing port: " << q->dst() << std::endl;
@@ -715,18 +712,6 @@ void hier_block::flatten_aux(flat_flowgraph_sptr sfg) const
                       << ") " << std::endl;
         sfg->clear_endpoint((*it).first, (*it).second);
     }
-
-    /*
-    // connect primitive edges in the new fg
-    for(q = msg_edges.begin(); q != msg_edges.end(); q++) {
-      if((!q->src().is_hier()) && (!q->dst().is_hier())) {
-        sfg->connect(q->src(), q->dst());
-      }
-      else {
-        std::cout << "not connecting hier connection!" << std::endl;
-      }
-    }
-    */
 
     // Construct unique list of blocks used either in edges, inputs,
     // outputs, or by themselves.  I still hate STL.
@@ -887,46 +872,6 @@ void hier_block::set_min_output_buffer(size_t port, int min_output_buffer)
     else {
         d_min_output_buffer[port] = min_output_buffer;
     }
-}
-
-bool hier_block::has_msg_port(pmt::pmt_t which_port)
-{
-    return message_port_is_hier(which_port) || basic_block::has_msg_port(which_port);
-}
-
-bool hier_block::message_port_is_hier(pmt::pmt_t port_id)
-{
-    return message_port_is_hier_in(port_id) || message_port_is_hier_out(port_id);
-}
-
-bool hier_block::message_port_is_hier_in(pmt::pmt_t port_id)
-{
-    return pmt::list_has(hier_message_ports_in, port_id);
-}
-
-bool hier_block::message_port_is_hier_out(pmt::pmt_t port_id)
-{
-    return pmt::list_has(hier_message_ports_out, port_id);
-}
-
-void hier_block::message_port_register_hier_in(pmt::pmt_t port_id)
-{
-    if (pmt::list_has(hier_message_ports_in, port_id))
-        throw std::invalid_argument("hier msg in port by this name already registered");
-    if (msg_queue.find(port_id) != msg_queue.end())
-        throw std::invalid_argument(
-            "block already has a primitive input port by this name");
-    hier_message_ports_in = pmt::list_add(hier_message_ports_in, port_id);
-}
-
-void hier_block::message_port_register_hier_out(pmt::pmt_t port_id)
-{
-    if (pmt::list_has(hier_message_ports_out, port_id))
-        throw std::invalid_argument("hier msg out port by this name already registered");
-    if (pmt::dict_has_key(d_message_subscribers, port_id))
-        throw std::invalid_argument(
-            "block already has a primitive output port by this name");
-    hier_message_ports_out = pmt::list_add(hier_message_ports_out, port_id);
 }
 
 bool hier_block::all_min_output_buffer_p() const

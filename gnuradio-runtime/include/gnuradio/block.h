@@ -26,6 +26,7 @@
 #include <gnuradio/api.h>
 #include <gnuradio/basic_block.h>
 #include <gnuradio/logger.h>
+#include <gnuradio/messages/msg_accepter.h>
 #include <gnuradio/tags.h>
 #ifdef GR_MPLIB_MPIR
 #include <mpirxx.h>
@@ -674,17 +675,17 @@ public:
      *
      * \param mask a vector of ints of the core numbers available to this block.
      */
-    void set_processor_affinity(const std::vector<int>& mask);
+    void set_processor_affinity(const std::vector<int>& mask) override;
 
     /*!
      * \brief Remove processor affinity to a specific core.
      */
-    void unset_processor_affinity();
+    void unset_processor_affinity() override;
 
     /*!
      * \brief Get the current processor affinity.
      */
-    std::vector<int> processor_affinity() { return d_affinity; }
+    std::vector<int> processor_affinity() override { return d_affinity; }
 
     /*!
      * \brief Get the current thread priority in use
@@ -727,12 +728,12 @@ public:
      * \li fatal
      * \li emerg
      */
-    void set_log_level(std::string level);
+    void set_log_level(std::string level) override;
 
     /*!
      * \brief Get the logger's output level
      */
-    std::string log_level();
+    std::string log_level() override;
 
     /*!
      * \brief returns true when execution has completed due to a message connection
@@ -762,7 +763,10 @@ private:
     bool d_finished;    // true if msg ports think we are finished
 
 protected:
+    friend class thread_body;
+
     block(void) {} // allows pure virtual interface sub-classes
+
     block(const std::string& name,
           gr::io_signature::sptr input_signature,
           gr::io_signature::sptr output_signature);
@@ -929,6 +933,7 @@ protected:
      * Used by calling gr::thread::scoped_lock l(d_setlock);
      */
     gr::thread::mutex d_setlock;
+    gr::thread::mutex d_mutex;
 
     /*! Used by blocks to access the logger system.
      */
@@ -946,9 +951,129 @@ protected:
      */
     const pmt::pmt_t d_system_port;
 
+    typedef boost::function<void(pmt::pmt_t)> msg_handler_t;
+
+    std::map<pmt::pmt_t, msg_handler_t, pmt::comparator> d_msg_handlers;
+
+    typedef std::deque<pmt::pmt_t> msg_queue_t;
+    typedef std::map<pmt::pmt_t, msg_queue_t, pmt::comparator> msg_queue_map_t;
+    std::map<pmt::pmt_t, boost::shared_ptr<boost::condition_variable>, pmt::comparator>
+        d_msg_queue_ready;
+
+    msg_queue_map_t d_msg_queue;
+
+    /*
+     * This function is called by the runtime system to dispatch messages.
+     *
+     * The thread-safety guarantees mentioned in set_msg_handler are
+     * implemented by the callers of this method.
+     */
+    virtual void dispatch_msg(pmt::pmt_t which_port, pmt::pmt_t msg)
+    {
+        // AA Update this
+        if (has_msg_handler(which_port)) {   // Is there a handler?
+            d_msg_handlers[which_port](msg); // Yes, invoke it.
+        }
+    }
+
+
 public:
     block_detail_sptr detail() const { return d_detail; }
     void set_detail(block_detail_sptr detail) { d_detail = detail; }
+
+    void message_port_register_in(pmt::pmt_t port_id) override;
+    /*!
+     * \brief Get input message port names.
+     *
+     * Returns the available input message ports for a block. The
+     * return object is a PMT vector that is filled with PMT symbols.
+     */
+    pmt::pmt_t message_ports_in() override;
+
+
+    void message_port_pub(pmt::pmt_t port_id, pmt::pmt_t msg);
+
+    /*!
+     * \brief Set the callback that is fired when messages are available.
+     *
+     * \p msg_handler can be any kind of function pointer or function object
+     * that has the signature:
+     * <pre>
+     *    void msg_handler(pmt::pmt msg);
+     * </pre>
+     *
+     * (You may want to use boost::bind to massage your callable into
+     * the correct form.  See gr::blocks::nop for an example that sets
+     * up a class method as the callback.)
+     *
+     * Blocks that desire to handle messages must call this method in
+     * their constructors to register the handler that will be invoked
+     * when messages are available.
+     *
+     * If the block inherits from block, the runtime system will
+     * ensure that msg_handler is called in a thread-safe manner, such
+     * that work and msg_handler will never be called concurrently.
+     * This allows msg_handler to update state variables without
+     * having to worry about thread-safety issues with work,
+     * general_work or another invocation of msg_handler.
+     *
+     * If the block inherits from hier_block, the runtime system
+     * will ensure that no reentrant calls are made to msg_handler.
+     */
+    template <typename T>
+    void set_msg_handler(pmt::pmt_t which_port, T msg_handler)
+    {
+        if (d_msg_queue.find(which_port) == d_msg_queue.end()) {
+            throw std::runtime_error(
+                "attempt to set_msg_handler() on bad input message port!");
+        }
+        d_msg_handlers[which_port] = msg_handler_t(msg_handler);
+    }
+
+    /*!
+     * \brief Tests if there is a handler attached to port \p which_port
+     */
+    virtual bool has_msg_handler(pmt::pmt_t which_port)
+    {
+        return (d_msg_handlers.find(which_port) != d_msg_handlers.end());
+    }
+
+
+    //! How many messages in the queue?
+    size_t nmsgs(pmt::pmt_t which_port)
+    {
+        if (d_msg_queue.find(which_port) == d_msg_queue.end())
+            throw std::runtime_error("port does not exist!");
+        return d_msg_queue[which_port].size();
+    }
+
+    //| Acquires and release the mutex
+    void insert_tail(pmt::pmt_t which_port, pmt::pmt_t msg);
+    /*!
+     * \returns returns pmt at head of queue or pmt::pmt_t() if empty.
+     */
+    pmt::pmt_t delete_head_nowait(pmt::pmt_t which_port);
+
+    void erase_msg(pmt::pmt_t which_port, msg_queue_t::iterator it)
+    {
+        d_msg_queue[which_port].erase(it);
+    }
+
+    //! is the queue empty?
+    bool empty_p(pmt::pmt_t which_port)
+    {
+        if (d_msg_queue.find(which_port) == d_msg_queue.end())
+            throw std::runtime_error("port does not exist!");
+        return d_msg_queue[which_port].empty();
+    }
+    bool empty_p()
+    {
+        bool rv = true;
+        BOOST_FOREACH (msg_queue_map_t::value_type& i, d_msg_queue) {
+            rv &= d_msg_queue[i.first].empty();
+        }
+        return rv;
+    }
 
     /*! \brief Tell msg neighbors we are finished
      */
@@ -959,6 +1084,11 @@ public:
     void clear_finished() { d_finished = false; }
 
     std::string identifier() const;
+
+    /*!
+     * Accept msg, place in queue, arrange for thread to be awakened if it's not already.
+     */
+    virtual void post(pmt::pmt_t which_port, pmt::pmt_t msg) override;
 };
 
 typedef std::vector<block_sptr> block_vector_t;

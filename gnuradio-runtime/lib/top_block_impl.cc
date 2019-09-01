@@ -185,9 +185,6 @@ flat_flowgraph_sptr top_block_impl::flatten() const
     flat_flowgraph_sptr new_ffg = make_flat_flowgraph();
     flatten_aux(new_ffg);
 
-    // prune any remaining hier connections
-    new_ffg->clear_hier();
-
     // print all primitive connections at exit
     std::cout << "flatten_aux finished in top_block" << std::endl;
     new_ffg->dump();
@@ -198,7 +195,7 @@ flat_flowgraph_sptr top_block_impl::flatten() const
 
 std::string top_block_impl::dot_graph()
 {
-    return flatten().dot_graph();
+    return flatten()->dot_graph();
 }
 
 /*
@@ -217,6 +214,22 @@ void top_block_impl::restart()
     // Create a new scheduler to execute it
     d_scheduler = scheduler::make(d_ffg, d_max_noutput_items);
     d_retry_wait = true;
+}
+
+std::string top_block_impl::edge_list()
+{
+    if (d_ffg)
+        return d_ffg->edge_list();
+    else
+        return "";
+}
+
+std::string top_block_impl::msg_edge_list()
+{
+    if (d_ffg)
+        return d_ffg->msg_edge_list();
+    else
+        return "";
 }
 
 void top_block_impl::dump()

@@ -54,7 +54,7 @@ class hier_block_with_message_output(gr.hier_block):
             "hier_block_with_message_output",
             gr.io_signature(0, 0, 0),  # Input signature
             gr.io_signature(0, 0, 0))  # Output signature
-        self.message_port_register_hier_out("test")
+        self.message_port_register_out("test")
         self.block = block_with_message_output()
         self.msg_connect(self.block, "test", self, "test")
 
@@ -66,7 +66,7 @@ class hier_block_with_message_input(gr.hier_block):
             "hier_block_with_message_output",
             gr.io_signature(0, 0, 0),  # Input signature
             gr.io_signature(0, 0, 0))  # Output signature
-        self.message_port_register_hier_in("test")
+        self.message_port_register_in("test")
         self.block = block_with_message_input()
         self.msg_connect(self, "test", self.block, "test")
 
@@ -78,8 +78,8 @@ class hier_block_with_message_inout(gr.hier_block):
             "hier_block_with_message_inout",
             gr.io_signature(0, 0, 0),  # Input signature
             gr.io_signature(0, 0, 0))  # Output signature
-        self.message_port_register_hier_in("test")
-        self.message_port_register_hier_out("test")
+        self.message_port_register_in("test")
+        self.message_port_register_out("test")
         self.input = block_with_message_input()
         self.msg_connect(self, "test", self.input, "test")
         self.output = block_with_message_output()

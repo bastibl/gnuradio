@@ -120,7 +120,7 @@ void thread_body::execute_block(block_sptr block,
         d->clear_changed();
 
         // handle any queued up messages
-        BOOST_FOREACH (basic_block::msg_queue_map_t::value_type& i, block->msg_queue) {
+        BOOST_FOREACH (block::msg_queue_map_t::value_type& i, block->d_msg_queue) {
             // Check if we have a message handler attached before getting
             // any messages. This is mostly a protection for the unknown
             // startup sequence of the threads.

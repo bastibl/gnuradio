@@ -41,6 +41,7 @@ private:
 
 protected:
     sync_decimator(void) {} // allows pure virtual interface sub-classes
+
     sync_decimator(const std::string& name,
                    gr::io_signature::sptr input_signature,
                    gr::io_signature::sptr output_signature,

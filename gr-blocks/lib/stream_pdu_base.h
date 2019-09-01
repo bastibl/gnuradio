@@ -23,7 +23,7 @@
 #ifndef INCLUDED_STREAM_PDU_BASE_H
 #define INCLUDED_STREAM_PDU_BASE_H
 
-#include <gnuradio/basic_block.h>
+#include <gnuradio/block.h>
 #include <gnuradio/thread/thread.h>
 #include <pmt/pmt.h>
 
@@ -46,12 +46,12 @@ protected:
     gr::thread::thread d_thread;
 
     pmt::pmt_t d_port;
-    basic_block* d_blk;
+    block* d_blk;
 
     void run();
     void send(pmt::pmt_t msg);
     bool wait_ready();
-    void start_rxthread(basic_block* blk, pmt::pmt_t rxport);
+    void start_rxthread(block* blk, pmt::pmt_t rxport);
     void stop_rxthread();
 };
 

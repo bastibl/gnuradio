@@ -76,7 +76,7 @@ void tcp_connection::send(pmt::pmt_t vector)
     }
 }
 
-void tcp_connection::start(gr::basic_block* block)
+void tcp_connection::start(gr::block* block)
 {
     d_block = block;
     d_socket.set_option(boost::asio::ip::tcp::no_delay(d_no_delay));

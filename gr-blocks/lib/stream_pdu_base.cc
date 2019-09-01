@@ -46,7 +46,7 @@ stream_pdu_base::stream_pdu_base(int MTU) : d_fd(-1), d_started(false), d_finish
 
 stream_pdu_base::~stream_pdu_base() { stop_rxthread(); }
 
-void stream_pdu_base::start_rxthread(basic_block* blk, pmt::pmt_t port)
+void stream_pdu_base::start_rxthread(block* blk, pmt::pmt_t port)
 {
     d_blk = blk;
     d_port = port;

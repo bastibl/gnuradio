@@ -28,8 +28,8 @@
 %rename(primitive_disconnect) gr::hier_block::disconnect;
 %rename(primitive_msg_connect) gr::hier_block::msg_connect;
 %rename(primitive_msg_disconnect) gr::hier_block::msg_disconnect;
-%rename(primitive_message_port_register_hier_in) gr::hier_block::message_port_register_hier_in;
-%rename(primitive_message_port_register_hier_out) gr::hier_block::message_port_register_hier_out;
+%rename(primitive_message_port_register_in) gr::hier_block::message_port_register_in;
+%rename(primitive_message_port_register_out) gr::hier_block::message_port_register_out;
 
 namespace gr {
   class hier_block : public gr::basic_block
@@ -73,8 +73,8 @@ namespace gr {
       noexcept(false);
     void disconnect_all();
 
-    void message_port_register_hier_in(pmt::pmt_t port_id);
-    void message_port_register_hier_out(pmt::pmt_t port_id);
+    void message_port_register_in(pmt::pmt_t port_id);
+    void message_port_register_out(pmt::pmt_t port_id);
 
     void set_processor_affinity(const std::vector<int> &mask);
     void unset_processor_affinity();

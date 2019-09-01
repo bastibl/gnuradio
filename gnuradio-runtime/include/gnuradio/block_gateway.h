@@ -263,7 +263,7 @@ public:
     /* Message passing interface */
     void block__message_port_register_in(pmt::pmt_t port_id)
     {
-        gr::basic_block::message_port_register_in(port_id);
+        gr::block::message_port_register_in(port_id);
     }
 
     void block__message_port_register_out(pmt::pmt_t port_id)
@@ -273,7 +273,7 @@ public:
 
     void block__message_port_pub(pmt::pmt_t port_id, pmt::pmt_t msg)
     {
-        gr::basic_block::message_port_pub(port_id, msg);
+        gr::block::message_port_pub(port_id, msg);
     }
 
     void block__message_port_sub(pmt::pmt_t port_id, pmt::pmt_t target)
@@ -291,13 +291,13 @@ public:
         return gr::basic_block::message_subscribers(which_port);
     }
 
-    pmt::pmt_t block__message_ports_in() { return gr::basic_block::message_ports_in(); }
+    pmt::pmt_t block__message_ports_in() { return gr::block::message_ports_in(); }
 
     pmt::pmt_t block__message_ports_out() { return gr::basic_block::message_ports_out(); }
 
     void set_msg_handler_feval(pmt::pmt_t which_port, gr::feval_p* msg_handler)
     {
-        if (msg_queue.find(which_port) == msg_queue.end()) {
+        if (d_msg_queue.find(which_port) == d_msg_queue.end()) {
             throw std::runtime_error(
                 "attempt to set_msg_handler_feval() on bad input message port!");
         }
@@ -313,7 +313,7 @@ protected:
         if (d_msg_handlers_feval.find(which_port) != d_msg_handlers_feval.end()) {
             return true;
         } else {
-            return gr::basic_block::has_msg_handler(which_port);
+            return gr::block::has_msg_handler(which_port);
         }
     }
 
@@ -324,7 +324,7 @@ protected:
             d_msg_handlers_feval[which_port]->calleval(msg); // Yes, invoke it.
         } else {
             // Pass to generic dispatcher if not found
-            gr::basic_block::dispatch_msg(which_port, msg);
+            gr::block::dispatch_msg(which_port, msg);
         }
     }
 };

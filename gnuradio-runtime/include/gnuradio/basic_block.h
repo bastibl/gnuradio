@@ -25,10 +25,10 @@
 
 #include <gnuradio/api.h>
 #include <gnuradio/io_signature.h>
-#include <gnuradio/messages/msg_accepter.h>
 #include <gnuradio/runtime_types.h>
 #include <gnuradio/sptr_magic.h>
 #include <gnuradio/thread/thread.h>
+#include <pmt/pmt.h>
 #include <boost/enable_shared_from_this.hpp>
 #include <boost/foreach.hpp>
 #include <boost/function.hpp>
@@ -41,7 +41,6 @@
 #ifdef GR_CTRLPORT
 class rpcbasic_base;
 typedef boost::shared_ptr<rpcbasic_base> rpcbasic_sptr;
-//#include <gnuradio/rpcregisterhelpers.h>
 #endif
 
 namespace gr {
@@ -63,85 +62,11 @@ class GR_RUNTIME_API basic_block : public messages::msg_accepter,
 public:
     typedef boost::shared_ptr<basic_block> sptr;
 
-private:
-    typedef boost::function<void(pmt::pmt_t)> msg_handler_t;
-    typedef std::map<pmt::pmt_t, msg_handler_t, pmt::comparator> d_msg_handlers_t;
-    d_msg_handlers_t d_msg_handlers;
-
-    typedef std::deque<pmt::pmt_t> msg_queue_t;
-    typedef std::map<pmt::pmt_t, msg_queue_t, pmt::comparator> msg_queue_map_t;
-    typedef std::map<pmt::pmt_t, msg_queue_t, pmt::comparator>::iterator
-        msg_queue_map_itr;
-    std::map<pmt::pmt_t, boost::shared_ptr<boost::condition_variable>, pmt::comparator>
-        msg_queue_ready;
-
-    gr::thread::mutex mutex; //< protects all vars
-
-protected:
-    friend class flowgraph;
-    friend class flat_flowgraph; // TODO: will be redundant
-    friend class thread_body;
-
-    std::string d_name;
-    gr::io_signature::sptr d_input_signature;
-    gr::io_signature::sptr d_output_signature;
-    long d_unique_id;
-    long d_symbolic_id;
-    std::string d_symbol_name;
-    std::string d_symbol_alias;
-    bool d_rpc_set;
-
-    msg_queue_map_t msg_queue;
-    std::vector<rpcbasic_sptr> d_rpc_vars; // container for all RPC variables
-
-    basic_block(void) {} // allows pure virtual interface sub-classes
-
-    //! Protected constructor prevents instantiation by non-derived classes
-    basic_block(const std::string& name,
-                gr::io_signature::sptr input_signature,
-                gr::io_signature::sptr output_signature);
-
-    //! may only be called during constructor
-    void set_input_signature(gr::io_signature::sptr iosig) { d_input_signature = iosig; }
-
-    //! may only be called during constructor
-    void set_output_signature(gr::io_signature::sptr iosig)
-    {
-        d_output_signature = iosig;
-    }
-
-    /*!
-     * \brief Tests if there is a handler attached to port \p which_port
-     */
-    virtual bool has_msg_handler(pmt::pmt_t which_port)
-    {
-        return (d_msg_handlers.find(which_port) != d_msg_handlers.end());
-    }
-
-    /*
-     * This function is called by the runtime system to dispatch messages.
-     *
-     * The thread-safety guarantees mentioned in set_msg_handler are
-     * implemented by the callers of this method.
-     */
-    virtual void dispatch_msg(pmt::pmt_t which_port, pmt::pmt_t msg)
-    {
-        // AA Update this
-        if (has_msg_handler(which_port)) {   // Is there a handler?
-            d_msg_handlers[which_port](msg); // Yes, invoke it.
-        }
-    }
-
-    // Message passing interface
-    pmt::pmt_t d_message_subscribers;
-
-public:
-    pmt::pmt_t message_subscribers(pmt::pmt_t port);
     virtual ~basic_block();
     long unique_id() const { return d_unique_id; }
     long symbolic_id() const { return d_symbolic_id; }
 
-    /*! The name of the block */
+    /*! Name of the block type (not the instance) */
     std::string name() const { return d_name; }
 
     /*!
@@ -182,35 +107,20 @@ public:
     void set_block_alias(std::string name);
 
     // ** Message passing interface **
-    void message_port_register_in(pmt::pmt_t port_id);
-    void message_port_register_out(pmt::pmt_t port_id);
-    void message_port_pub(pmt::pmt_t port_id, pmt::pmt_t msg);
-    void message_port_sub(pmt::pmt_t port_id, pmt::pmt_t target);
-    void message_port_unsub(pmt::pmt_t port_id, pmt::pmt_t target);
 
-    virtual bool message_port_is_hier(pmt::pmt_t port_id)
-    {
-        (void)port_id;
-        return false;
-    }
-    virtual bool message_port_is_hier_in(pmt::pmt_t port_id)
-    {
-        (void)port_id;
-        return false;
-    }
-    virtual bool message_port_is_hier_out(pmt::pmt_t port_id)
-    {
-        (void)port_id;
-        return false;
-    }
-
+    virtual void message_port_register_in(pmt::pmt_t port_id) = 0;
     /*!
      * \brief Get input message port names.
      *
      * Returns the available input message ports for a block. The
      * return object is a PMT vector that is filled with PMT symbols.
      */
-    pmt::pmt_t message_ports_in();
+    virtual pmt::pmt_t message_ports_in() = 0;
+
+    void message_port_register_out(pmt::pmt_t port_id);
+    void message_port_sub(pmt::pmt_t port_id, pmt::pmt_t target);
+    void message_port_unsub(pmt::pmt_t port_id, pmt::pmt_t target);
+    pmt::pmt_t message_subscribers(pmt::pmt_t port);
 
     /*!
      * \brief Get output message port names.
@@ -219,79 +129,6 @@ public:
      * return object is a PMT vector that is filled with PMT symbols.
      */
     pmt::pmt_t message_ports_out();
-
-    /*!
-     * Accept msg, place in queue, arrange for thread to be awakened if it's not already.
-     */
-    virtual void post(pmt::pmt_t which_port, pmt::pmt_t msg);
-
-    //! is the queue empty?
-    bool empty_p(pmt::pmt_t which_port)
-    {
-        if (msg_queue.find(which_port) == msg_queue.end())
-            throw std::runtime_error("port does not exist!");
-        return msg_queue[which_port].empty();
-    }
-    bool empty_p()
-    {
-        bool rv = true;
-        BOOST_FOREACH (msg_queue_map_t::value_type& i, msg_queue) {
-            rv &= msg_queue[i.first].empty();
-        }
-        return rv;
-    }
-
-    //! are all msg ports with handlers empty?
-    bool empty_handled_p(pmt::pmt_t which_port)
-    {
-        return (empty_p(which_port) || !has_msg_handler(which_port));
-    }
-    bool empty_handled_p()
-    {
-        bool rv = true;
-        BOOST_FOREACH (msg_queue_map_t::value_type& i, msg_queue) {
-            rv &= empty_handled_p(i.first);
-        }
-        return rv;
-    }
-
-    //! How many messages in the queue?
-    size_t nmsgs(pmt::pmt_t which_port)
-    {
-        if (msg_queue.find(which_port) == msg_queue.end())
-            throw std::runtime_error("port does not exist!");
-        return msg_queue[which_port].size();
-    }
-
-    //| Acquires and release the mutex
-    void insert_tail(pmt::pmt_t which_port, pmt::pmt_t msg);
-    /*!
-     * \returns returns pmt at head of queue or pmt::pmt_t() if empty.
-     */
-    pmt::pmt_t delete_head_nowait(pmt::pmt_t which_port);
-
-    msg_queue_t::iterator get_iterator(pmt::pmt_t which_port)
-    {
-        return msg_queue[which_port].begin();
-    }
-
-    void erase_msg(pmt::pmt_t which_port, msg_queue_t::iterator it)
-    {
-        msg_queue[which_port].erase(it);
-    }
-
-    virtual bool has_msg_port(pmt::pmt_t which_port)
-    {
-        if (msg_queue.find(which_port) != msg_queue.end()) {
-            return true;
-        }
-        if (pmt::dict_has_key(d_message_subscribers, which_port)) {
-            return true;
-        }
-        return false;
-    }
-
-    const msg_queue_map_t& get_msg_map(void) const { return msg_queue; }
 
 #ifdef GR_CTRLPORT
     /*!
@@ -345,49 +182,7 @@ public:
      * This check is in addition to the constraints specified by the
      * input and output gr::io_signatures.
      */
-    virtual bool check_topology(int ninputs, int noutputs)
-    {
-        (void)ninputs;
-        (void)noutputs;
-        return true;
-    }
-
-    /*!
-     * \brief Set the callback that is fired when messages are available.
-     *
-     * \p msg_handler can be any kind of function pointer or function object
-     * that has the signature:
-     * <pre>
-     *    void msg_handler(pmt::pmt msg);
-     * </pre>
-     *
-     * (You may want to use boost::bind to massage your callable into
-     * the correct form.  See gr::blocks::nop for an example that sets
-     * up a class method as the callback.)
-     *
-     * Blocks that desire to handle messages must call this method in
-     * their constructors to register the handler that will be invoked
-     * when messages are available.
-     *
-     * If the block inherits from block, the runtime system will
-     * ensure that msg_handler is called in a thread-safe manner, such
-     * that work and msg_handler will never be called concurrently.
-     * This allows msg_handler to update state variables without
-     * having to worry about thread-safety issues with work,
-     * general_work or another invocation of msg_handler.
-     *
-     * If the block inherits from hier_block, the runtime system
-     * will ensure that no reentrant calls are made to msg_handler.
-     */
-    template <typename T>
-    void set_msg_handler(pmt::pmt_t which_port, T msg_handler)
-    {
-        if (msg_queue.find(which_port) == msg_queue.end()) {
-            throw std::runtime_error(
-                "attempt to set_msg_handler() on bad input message port!");
-        }
-        d_msg_handlers[which_port] = msg_handler_t(msg_handler);
-    }
+    virtual bool check_topology(int /*ninputs*/, int /*noutputs*/) { return true; }
 
     virtual void set_processor_affinity(const std::vector<int>& mask) = 0;
 
@@ -398,6 +193,37 @@ public:
     virtual void set_log_level(std::string level) = 0;
 
     virtual std::string log_level() = 0;
+
+protected:
+    //! Protected constructor prevents instantiation by non-derived classes
+     basic_block(void) {} // allows pure virtual interface sub-classes
+
+    basic_block(const std::string& name,
+                gr::io_signature::sptr input_signature,
+                gr::io_signature::sptr output_signature);
+
+    //! may only be called during constructor
+    void set_input_signature(gr::io_signature::sptr iosig) { d_input_signature = iosig; }
+
+    //! may only be called during constructor
+    void set_output_signature(gr::io_signature::sptr iosig)
+    {
+        d_output_signature = iosig;
+    }
+
+    gr::io_signature::sptr d_input_signature;
+    gr::io_signature::sptr d_output_signature;
+
+    std::string d_name;
+    long d_unique_id;
+    long d_symbolic_id;
+    std::string d_symbol_name;
+    std::string d_symbol_alias;
+
+    bool d_rpc_set;
+    std::vector<rpcbasic_sptr> d_rpc_vars; // container for all RPC variables
+
+    pmt::pmt_t d_message_subscribers;
 };
 
 inline bool operator<(basic_block::sptr lhs, basic_block::sptr rhs)
@@ -407,8 +233,6 @@ inline bool operator<(basic_block::sptr lhs, basic_block::sptr rhs)
 
 typedef std::vector<basic_block::sptr> basic_block_vector_t;
 typedef std::vector<basic_block::sptr>::iterator basic_block_viter_t;
-
-GR_RUNTIME_API long basic_block_ncurrently_allocated();
 
 inline std::ostream& operator<<(std::ostream& os, basic_block::sptr basic_block)
 {

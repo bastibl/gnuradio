@@ -128,23 +128,6 @@ void flowgraph::check_valid_port(gr::io_signature::sptr sig, int port)
     }
 }
 
-void flowgraph::check_valid_port(const msg_endpoint& e)
-{
-    if (FLOWGRAPH_DEBUG)
-        std::cout << "check_valid_port( " << e.block() << ", " << e.port() << ")\n";
-
-    if (!e.block()->has_msg_port(e.port())) {
-        const gr::basic_block::msg_queue_map_t& msg_map = e.block()->get_msg_map();
-        std::cout << "Could not find port: " << e.port() << " in:" << std::endl;
-        for (gr::basic_block::msg_queue_map_t::const_iterator it = msg_map.begin();
-             it != msg_map.end();
-             ++it)
-            std::cout << it->first << std::endl;
-        std::cout << std::endl;
-        throw std::invalid_argument("invalid msg port in connect() or disconnect()");
-    }
-}
-
 void flowgraph::check_dst_not_used(const endpoint& dst)
 {
     // A destination is in use if it is already on the edge list
@@ -320,8 +303,6 @@ edge flowgraph::calc_upstream_edge(basic_block::sptr block, int port)
 
 void flowgraph::connect(const msg_endpoint& src, const msg_endpoint& dst)
 {
-    check_valid_port(src);
-    check_valid_port(dst);
     for (msg_edge_viter_t p = d_msg_edges.begin(); p != d_msg_edges.end(); p++) {
         if (p->src() == src && p->dst() == dst) {
             throw std::runtime_error("connect called on already connected edge!");
@@ -332,8 +313,6 @@ void flowgraph::connect(const msg_endpoint& src, const msg_endpoint& dst)
 
 void flowgraph::disconnect(const msg_endpoint& src, const msg_endpoint& dst)
 {
-    check_valid_port(src);
-    check_valid_port(dst);
     for (msg_edge_viter_t p = d_msg_edges.begin(); p != d_msg_edges.end(); p++) {
         if (p->src() == src && p->dst() == dst) {
             d_msg_edges.erase(p);

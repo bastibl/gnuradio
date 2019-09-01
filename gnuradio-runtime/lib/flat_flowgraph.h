@@ -77,11 +77,6 @@ public:
     void clear_endpoint(const msg_endpoint& e, bool is_src);
 
     /*!
-     * remove remainin hier message connections (non primitive)
-     */
-    void clear_hier();
-
-    /*!
      * Enables export of perf. counters to ControlPort on all blocks in
      * the flowgraph.
      */

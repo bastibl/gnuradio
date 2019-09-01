@@ -30,30 +30,22 @@
 namespace gr {
 
 static long s_next_id = 0;
-static long s_ncurrently_allocated = 0;
-
-long basic_block_ncurrently_allocated() { return s_ncurrently_allocated; }
 
 basic_block::basic_block(const std::string& name,
                          io_signature::sptr input_signature,
                          io_signature::sptr output_signature)
-    : d_name(name),
-      d_input_signature(input_signature),
+    : d_input_signature(input_signature),
       d_output_signature(output_signature),
+      d_name(name),
       d_unique_id(s_next_id++),
       d_symbolic_id(global_block_registry.block_register(this)),
       d_symbol_name(global_block_registry.register_symbolic_name(this)),
       d_rpc_set(false),
       d_message_subscribers(pmt::make_dict())
 {
-    s_ncurrently_allocated++;
 }
 
-basic_block::~basic_block()
-{
-    s_ncurrently_allocated--;
-    global_block_registry.block_unregister(this);
-}
+basic_block::~basic_block() { global_block_registry.block_unregister(this); }
 
 basic_block::sptr basic_block::to_basic_block() { return shared_from_this(); }
 
@@ -73,28 +65,6 @@ void basic_block::set_block_alias(std::string name)
 }
 
 // ** Message passing interface **
-
-//  - register a new input message port
-void basic_block::message_port_register_in(pmt::pmt_t port_id)
-{
-    if (!pmt::is_symbol(port_id)) {
-        throw std::runtime_error("message_port_register_in: bad port id");
-    }
-    msg_queue[port_id] = msg_queue_t();
-    msg_queue_ready[port_id] =
-        boost::shared_ptr<boost::condition_variable>(new boost::condition_variable());
-}
-
-pmt::pmt_t basic_block::message_ports_in()
-{
-    pmt::pmt_t port_names = pmt::make_vector(msg_queue.size(), pmt::PMT_NIL);
-    msg_queue_map_itr itr = msg_queue.begin();
-    for (size_t i = 0; i < msg_queue.size(); i++) {
-        pmt::vector_set(port_names, i, (*itr).first);
-        itr++;
-    }
-    return port_names;
-}
 
 //  - register a new output message port
 void basic_block::message_port_register_out(pmt::pmt_t port_id)
@@ -117,27 +87,6 @@ pmt::pmt_t basic_block::message_ports_out()
         pmt::vector_set(port_names, i, pmt::nth(i, keys));
     }
     return port_names;
-}
-
-//  - publish a message on a message port
-void basic_block::message_port_pub(pmt::pmt_t port_id, pmt::pmt_t msg)
-{
-    if (!pmt::dict_has_key(d_message_subscribers, port_id)) {
-        throw std::runtime_error("port does not exist");
-    }
-
-    pmt::pmt_t currlist = pmt::dict_ref(d_message_subscribers, port_id, pmt::PMT_NIL);
-    // iterate through subscribers on port
-    while (pmt::is_pair(currlist)) {
-        pmt::pmt_t target = pmt::car(currlist);
-
-        pmt::pmt_t block = pmt::car(target);
-        pmt::pmt_t port = pmt::cdr(target);
-
-        currlist = pmt::cdr(currlist);
-        basic_block::sptr blk = global_block_registry.block_lookup(block);
-        blk->post(port, msg);
-    }
 }
 
 //  - subscribe to a message port
@@ -172,46 +121,9 @@ void basic_block::message_port_unsub(pmt::pmt_t port_id, pmt::pmt_t target)
         pmt::dict_add(d_message_subscribers, port_id, pmt::list_rm(currlist, target));
 }
 
-void basic_block::post(pmt::pmt_t which_port, pmt::pmt_t msg)
-{
-    insert_tail(which_port, msg);
-}
-
-void basic_block::insert_tail(pmt::pmt_t which_port, pmt::pmt_t msg)
-{
-    gr::thread::scoped_lock guard(mutex);
-
-    if ((msg_queue.find(which_port) == msg_queue.end()) ||
-        (msg_queue_ready.find(which_port) == msg_queue_ready.end())) {
-        std::cout << "target port = " << pmt::symbol_to_string(which_port) << std::endl;
-        throw std::runtime_error("attempted to insert_tail on invalid queue!");
-    }
-
-    msg_queue[which_port].push_back(msg);
-    msg_queue_ready[which_port]->notify_one();
-
-    // wake up thread if BLKD_IN or BLKD_OUT
-    global_block_registry.notify_blk(alias());
-}
-
-pmt::pmt_t basic_block::delete_head_nowait(pmt::pmt_t which_port)
-{
-    gr::thread::scoped_lock guard(mutex);
-
-    if (empty_p(which_port)) {
-        return pmt::pmt_t();
-    }
-
-    pmt::pmt_t m(msg_queue[which_port].front());
-    msg_queue[which_port].pop_front();
-
-    return m;
-}
-
 pmt::pmt_t basic_block::message_subscribers(pmt::pmt_t port)
 {
     return pmt::dict_ref(d_message_subscribers, port, pmt::PMT_NIL);
 }
-
 
 } /* namespace gr */

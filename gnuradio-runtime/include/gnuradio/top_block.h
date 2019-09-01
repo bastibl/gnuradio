@@ -109,6 +109,12 @@ public:
 
     virtual std::string dot_graph() = 0;
 
+    // Return a string list of edges
+    virtual std::string edge_list() = 0;
+
+    // Return a string list of msg edges
+    virtual std::string msg_edge_list() = 0;
+
     /*!
      * Displays flattened flowgraph edges and block connectivity
      */

@@ -43,7 +43,7 @@ namespace gr {
     gr::io_signature::sptr output_signature() const;
     long unique_id() const;
     gr::basic_block::sptr to_basic_block();
-    bool check_topology(int ninputs, int noutputs);
+    virtual bool check_topology(int ninputs, int noutputs);
     std::string alias();
     void set_block_alias(std::string name);
     virtual void post(pmt::pmt_t which_port, pmt::pmt_t msg);
@@ -51,9 +51,6 @@ namespace gr {
     pmt::pmt_t message_ports_out();
     pmt::pmt_t message_subscribers(pmt::pmt_t which_port);
   };
-
-  %rename(block_ncurrently_allocated) basic_block_ncurrently_allocated;
-  long basic_block_ncurrently_allocated();
 }
 
 %template(basic_block_sptr) boost::shared_ptr<gr::basic_block>;

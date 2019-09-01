@@ -34,7 +34,7 @@ class test_hblk(gr.hier_block):
             gr.io_signature(len(io_sig), len(io_sig), io_sig[0]),
             gr.io_signature(0,0,0))
 
-        self.message_port_register_hier_in("msg_in");
+        self.message_port_register_in("msg_in");
 
         # Internal Stream Blocks
         self.vsnk = blocks.vector_sink_c()

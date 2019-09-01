@@ -38,6 +38,7 @@ class GR_RUNTIME_API sync_block : public block
 {
 protected:
     sync_block(void) {} // allows pure virtual interface sub-classes
+
     sync_block(const std::string& name,
                gr::io_signature::sptr input_signature,
                gr::io_signature::sptr output_signature);

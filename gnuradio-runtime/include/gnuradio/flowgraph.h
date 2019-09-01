@@ -67,20 +67,16 @@ class GR_RUNTIME_API msg_endpoint
 private:
     basic_block::sptr d_basic_block;
     pmt::pmt_t d_port;
-    bool d_is_hier;
 
 public:
     msg_endpoint() : d_basic_block(), d_port(pmt::PMT_NIL) {}
-    msg_endpoint(basic_block::sptr block, pmt::pmt_t port, bool is_hier = false)
+    msg_endpoint(basic_block::sptr block, pmt::pmt_t port)
     {
         d_basic_block = block;
         d_port = port;
-        d_is_hier = is_hier;
     }
     basic_block::sptr block() const { return d_basic_block; }
     pmt::pmt_t port() const { return d_port; }
-    bool is_hier() const { return d_is_hier; }
-    void set_hier(bool h) { d_is_hier = h; }
     std::string identifier() const
     {
         return d_basic_block->alias() + ":" + pmt::symbol_to_string(d_port);
@@ -259,7 +255,6 @@ protected:
 
 private:
     void check_valid_port(gr::io_signature::sptr sig, int port);
-    void check_valid_port(const msg_endpoint& e);
     void check_dst_not_used(const endpoint& dst);
     void check_type_match(const endpoint& src, const endpoint& dst);
     edge_vector_t calc_connections(basic_block::sptr block,

@@ -43,37 +43,43 @@ public:
     top_block_impl(const std::string& name);
     virtual ~top_block_impl();
 
-    void run(int max_noutput_items = 100000000);
+    void run(int max_noutput_items = 100000000) override;
 
     // Create and start scheduler threads
-    void start(int max_noutput_items = 100000000);
+    void start(int max_noutput_items = 100000000) override;
 
     // Signal scheduler threads to stop
-    void stop();
+    void stop() override;
 
     // Wait for scheduler threads to exit
-    void wait();
+    void wait() override;
 
     // Lock the top block to allow reconfiguration
-    void lock();
+    void lock() override;
 
     // Unlock the top block at end of reconfiguration
-    void unlock();
+    void unlock() override;
+
+    // Return a string list of edges
+    std::string edge_list() override;
+
+    // Return a string list of msg edges
+    std::string msg_edge_list() override;
 
     // Dump the flowgraph to stdout
-    void dump();
+    void dump() override;
 
     // Get the number of max noutput_items in the flowgraph
-    int max_noutput_items();
+    int max_noutput_items() override;
 
     // Set the maximum number of noutput_items in the flowgraph
-    void set_max_noutput_items(int nmax);
+    void set_max_noutput_items(int nmax) override;
 
-    void setup_rpc();
+    void setup_rpc() override;
 
-    flat_flowgraph_sptr flatten() const;
+    flat_flowgraph_sptr flatten() const override;
 
-    std::string dot_graph();
+    std::string dot_graph() override;
 
 protected:
     enum tb_state { IDLE, RUNNING };

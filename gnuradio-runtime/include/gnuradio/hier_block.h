@@ -43,12 +43,6 @@ public:
                      gr::io_signature::sptr input_signature,
                      gr::io_signature::sptr output_signature);
 
-protected:
-    hier_block(const std::string& name,
-               gr::io_signature::sptr input_signature,
-               gr::io_signature::sptr output_signature);
-
-public:
     virtual ~hier_block();
 
     /*!
@@ -80,6 +74,12 @@ public:
      */
     void
     connect(basic_block::sptr src, int src_port, basic_block::sptr dst, int dst_port);
+
+
+    void message_port_register_in(pmt::pmt_t port_id) override;
+    pmt::pmt_t message_ports_in() override;
+
+    void post(pmt::pmt_t which_port, pmt::pmt_t msg) override;
 
     /*!
      * \brief Add gr-blocks or hierarchical blocks to internal graph
@@ -163,29 +163,17 @@ public:
      */
     void set_min_output_buffer(size_t port, int min_output_buffer);
 
-    bool has_msg_port(pmt::pmt_t which_port);
-
-    bool message_port_is_hier(pmt::pmt_t port_id);
-
-    bool message_port_is_hier_in(pmt::pmt_t port_id);
-
-    bool message_port_is_hier_out(pmt::pmt_t port_id);
-
-    void message_port_register_hier_in(pmt::pmt_t port_id);
-
-    void message_port_register_hier_out(pmt::pmt_t port_id);
-
     /*!
      * \brief Set the affinity of all blocks in hier_block to processor core \p n.
      *
      * \param mask a vector of ints of the core numbers available to this block.
      */
-    void set_processor_affinity(const std::vector<int>& mask);
+    void set_processor_affinity(const std::vector<int>& mask) override;
 
     /*!
      * \brief Remove processor affinity for all blocks in hier_block.
      */
-    void unset_processor_affinity();
+    void unset_processor_affinity() override;
 
     /*!
      * \brief Get the current processor affinity.
@@ -196,7 +184,7 @@ public:
      * interface. If any block has been individually set, then this
      * call could be misleading.
      */
-    std::vector<int> processor_affinity();
+    std::vector<int> processor_affinity() override;
 
     /*!
      * \brief Set the logger's output level.
@@ -216,12 +204,12 @@ public:
      * \li fatal
      * \li emerg
      */
-    void set_log_level(std::string level);
+    void set_log_level(std::string level) override;
 
     /*!
      * \brief Get the logger's output level
      */
-    std::string log_level();
+    std::string log_level() override;
 
     /*!
      * \brief Get if all block min buffers should be set.
@@ -239,6 +227,13 @@ public:
      */
     bool all_max_output_buffer_p() const;
 
+protected:
+    hier_block(const std::string& name,
+               gr::io_signature::sptr input_signature,
+               gr::io_signature::sptr output_signature);
+
+    void flatten_aux(flat_flowgraph_sptr sfg) const;
+
 private:
     // Track output buffer min/max settings
     std::vector<size_t> d_max_output_buffer;
@@ -251,20 +246,16 @@ private:
     endpoint_vector_t d_outputs; // Single internal endpoint per external output
     basic_block_vector_t d_blocks;
 
+    pmt::pmt_t d_message_ports_in;
+
     void refresh_io_signature();
     void connect_input(int my_port, int port, basic_block::sptr block);
     void connect_output(int my_port, int port, basic_block::sptr block);
     void disconnect_input(int my_port, int port, basic_block::sptr block);
     void disconnect_output(int my_port, int port, basic_block::sptr block);
 
-    pmt::pmt_t hier_message_ports_in;
-    pmt::pmt_t hier_message_ports_out;
-
     endpoint_vector_t resolve_port(int port, bool is_input);
     endpoint_vector_t resolve_endpoint(const endpoint& endp, bool is_input) const;
-
-protected:
-    void flatten_aux(flat_flowgraph_sptr sfg) const;
 };
 
 inline hier_block_sptr cast_to_hier_block_sptr(basic_block::sptr block)
