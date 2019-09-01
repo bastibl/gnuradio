@@ -29,17 +29,14 @@
 
 namespace gr {
 
-static long s_next_id = 0;
-
 basic_block::basic_block(const std::string& name,
                          io_signature::sptr input_signature,
                          io_signature::sptr output_signature)
     : d_input_signature(input_signature),
       d_output_signature(output_signature),
       d_name(name),
-      d_unique_id(s_next_id++),
-      d_symbolic_id(global_block_registry.block_register(this)),
-      d_symbol_name(global_block_registry.register_symbolic_name(this)),
+      d_unique_id(global_block_registry.block_register(this)),
+      d_unique_name((boost::format("%1%%2%") % d_name % d_unique_id).str()),
       d_rpc_set(false),
       d_message_subscribers(pmt::make_dict())
 {
@@ -51,17 +48,10 @@ basic_block::sptr basic_block::to_basic_block() { return shared_from_this(); }
 
 void basic_block::set_block_alias(std::string name)
 {
-    // Only keep one alias'd name around for each block. If we don't
-    // have an alias, add it; if we do, update the entry in the
-    // registry.
-    if (alias_set())
-        global_block_registry.update_symbolic_name(this, name);
-    else
-        global_block_registry.register_symbolic_name(this, name);
+    global_block_registry.update_alias(this, name);
 
-    // set the block's alias
-    d_symbol_alias = name;
-    update_logger_alias(symbol_name(), d_symbol_alias);
+    d_alias = name;
+    update_logger_alias(unique_name(), d_alias);
 }
 
 // ** Message passing interface **

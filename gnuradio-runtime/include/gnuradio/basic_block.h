@@ -64,21 +64,10 @@ public:
 
     virtual ~basic_block();
     long unique_id() const { return d_unique_id; }
-    long symbolic_id() const { return d_symbolic_id; }
+    std::string unique_name() const { return d_unique_name; }
 
-    /*! Name of the block type (not the instance) */
+    /*! Name of the block as defined in constructor */
     std::string name() const { return d_name; }
-
-    /*!
-     * The sybolic name of the block, which is used in the
-     * block_registry. The name is assigned by the block's constructor
-     * and never changes during the life of the block.
-     */
-    std::string symbol_name() const { return d_symbol_name; }
-    std::string identifier() const
-    {
-        return this->name() + "(" + std::to_string(this->unique_id()) + ")";
-    }
 
     gr::io_signature::sptr input_signature() const { return d_input_signature; }
     gr::io_signature::sptr output_signature() const { return d_output_signature; }
@@ -87,12 +76,12 @@ public:
     /*!
      * True if the block has an alias (see set_block_alias).
      */
-    bool alias_set() const { return !d_symbol_alias.empty(); }
+    bool alias_set() const { return !d_alias.empty(); }
 
     /*!
      * Returns the block's alias as a string.
      */
-    std::string alias() const { return alias_set() ? d_symbol_alias : symbol_name(); }
+    std::string alias() const { return alias_set() ? d_alias : d_unique_name; }
 
     /*!
      * Returns the block's alias as PMT.
@@ -216,9 +205,8 @@ protected:
 
     std::string d_name;
     long d_unique_id;
-    long d_symbolic_id;
-    std::string d_symbol_name;
-    std::string d_symbol_alias;
+    std::string d_unique_name;
+    std::string d_alias;
 
     bool d_rpc_set;
     std::vector<rpcbasic_sptr> d_rpc_vars; // container for all RPC variables
@@ -236,7 +224,7 @@ typedef std::vector<basic_block::sptr>::iterator basic_block_viter_t;
 
 inline std::ostream& operator<<(std::ostream& os, basic_block::sptr basic_block)
 {
-    os << basic_block->identifier();
+    os << basic_block->unique_name();
     return os;
 }
 

@@ -42,24 +42,21 @@ public:
     long block_register(basic_block* block);
     void block_unregister(basic_block* block);
 
-    std::string register_symbolic_name(basic_block* block);
-    void register_symbolic_name(basic_block* block, std::string name);
-    void update_symbolic_name(basic_block* block, std::string name);
-
+    void update_alias(basic_block* block, std::string name);
     basic_block::sptr block_lookup(pmt::pmt_t symbol);
 
-    void register_primitive(std::string blk, gr::block* ref);
-    void unregister_primitive(std::string blk);
-    void notify_blk(std::string blk);
+    void register_primitive(long id, gr::block* ref);
+    void unregister_primitive(long id);
+    void notify_blk(long id);
 
 private:
-    // typedef std::map< long, basic_block::sptr >   blocksubmap_t;
-    typedef std::map<long, basic_block*> blocksubmap_t;
-    typedef std::map<std::string, blocksubmap_t> blockmap_t;
+    std::map<long, basic_block*> d_id_map;
+    std::map<std::string, basic_block*> d_name_map;
+    std::map<std::string, basic_block*> d_alias_map;
 
-    blockmap_t d_map;
-    pmt::pmt_t d_ref_map;
-    std::map<std::string, block*> primitive_map;
+    long d_seq_nr;
+
+    std::map<long, block*> primitive_map;
     gr::thread::mutex d_mutex;
 };
 

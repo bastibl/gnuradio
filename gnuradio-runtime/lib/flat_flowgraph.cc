@@ -90,14 +90,14 @@ block_detail_sptr flat_flowgraph::allocate_block_detail(basic_block::sptr block)
              block->alias())
                 .str());
 
-    GR_LOG_DEBUG(d_debug_logger, "Creating block detail for " + block->identifier());
+    GR_LOG_DEBUG(d_debug_logger, "Creating block detail for " + block->alias());
 
     for (int i = 0; i < noutputs; i++) {
         grblock->expand_minmax_buffer(i);
 
         buffer_sptr buffer = allocate_buffer(block, i);
         GR_LOG_DEBUG(d_debug_logger,
-                     "Allocated buffer for output " + block->identifier() + " " +
+                     "Allocated buffer for output " + block->alias() + " " +
                          std::to_string(i));
         detail->set_output(i, buffer);
 
@@ -229,12 +229,12 @@ void flat_flowgraph::merge_connections(flat_flowgraph_sptr old_ffg)
 
         if (!block->detail()) {
             GR_LOG_DEBUG(d_debug_logger,
-                         "merge: allocating new detail for block " + block->identifier());
+                         "merge: allocating new detail for block " + block->alias());
             block->set_detail(allocate_block_detail(block));
         } else {
             GR_LOG_DEBUG(d_debug_logger,
                          "merge: reusing original detail for block " +
-                             block->identifier());
+                             block->alias());
         }
     }
 
@@ -266,7 +266,7 @@ void flat_flowgraph::merge_connections(flat_flowgraph_sptr old_ffg)
     for (basic_block_viter_t p = d_blocks.begin(); p != d_blocks.end(); p++) {
         block_sptr block = cast_to_block_sptr(*p);
 
-        GR_LOG_DEBUG(d_debug_logger, "merge: merging " + block->identifier() + "...");
+        GR_LOG_DEBUG(d_debug_logger, "merge: merging " + block->alias() + "...");
 
         if (old_ffg->has_block_p(*p)) {
             // Block exists in old flow graph
@@ -277,7 +277,7 @@ void flat_flowgraph::merge_connections(flat_flowgraph_sptr old_ffg)
             int ninputs = calc_used_ports(block, true).size(); // Might be different now
             for (int i = 0; i < ninputs; i++) {
                 GR_LOG_DEBUG(d_debug_logger,
-                             "Checking input " + block->identifier() + ":" +
+                             "Checking input " + block->alias() + ":" +
                                  std::to_string(i) + "...");
                 edge edge = calc_upstream_edge(*p, i);
 

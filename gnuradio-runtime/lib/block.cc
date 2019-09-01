@@ -59,14 +59,14 @@ block::block(const std::string& name,
       d_pmt_done(pmt::intern("done")),
       d_system_port(pmt::intern("system"))
 {
-    global_block_registry.register_primitive(alias(), this);
+    global_block_registry.register_primitive(unique_id(), this);
     message_port_register_in(d_system_port);
     set_msg_handler(d_system_port, boost::bind(&block::system_handler, this, _1));
 
-    configure_default_loggers(d_logger, d_debug_logger, symbol_name());
+    configure_default_loggers(d_logger, d_debug_logger, unique_name());
 }
 
-block::~block() { global_block_registry.unregister_primitive(symbol_name()); }
+block::~block() { global_block_registry.unregister_primitive(unique_id()); }
 
 unsigned block::history() const { return d_history; }
 
@@ -612,7 +612,7 @@ void block::system_handler(pmt::pmt_t msg)
     pmt::pmt_t op = pmt::car(msg);
     if (pmt::eqv(op, d_pmt_done)) {
         d_finished = pmt::to_long(pmt::cdr(msg));
-        global_block_registry.notify_blk(alias());
+        global_block_registry.notify_blk(unique_id());
     } else {
         std::cout << "WARNING: bad message op on system port!\n";
         pmt::print(msg);
@@ -702,7 +702,7 @@ void block::insert_tail(pmt::pmt_t which_port, pmt::pmt_t msg)
     d_msg_queue_ready[which_port]->notify_one();
 
     // wake up thread if BLKD_IN or BLKD_OUT
-    global_block_registry.notify_blk(alias());
+    global_block_registry.notify_blk(unique_id());
 }
 
 pmt::pmt_t block::delete_head_nowait(pmt::pmt_t which_port)

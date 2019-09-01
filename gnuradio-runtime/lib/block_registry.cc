@@ -30,111 +30,92 @@ gr::block_registry global_block_registry;
 
 namespace gr {
 
-block_registry::block_registry() { d_ref_map = pmt::make_dict(); }
+block_registry::block_registry() : d_seq_nr(0) {}
 
 long block_registry::block_register(basic_block* block)
 {
     gr::thread::scoped_lock guard(d_mutex);
 
-    if (d_map.find(block->name()) == d_map.end()) {
-        d_map[block->name()] = blocksubmap_t();
-        d_map[block->name()][0] = block;
-        return 0;
-    } else {
-        for (size_t i = 0; i <= d_map[block->name()].size(); i++) {
-            if (d_map[block->name()].find(i) == d_map[block->name()].end()) {
-                d_map[block->name()][i] = block;
-                return i;
-            }
-        }
-    }
-    throw std::runtime_error("should not reach this");
+    long id = d_seq_nr++;
+
+    d_id_map[id] = block;
+    d_name_map[(boost::format("%1%%2%") % block->name() % id).str()] = block;
+
+    return id;
 }
 
 void block_registry::block_unregister(basic_block* block)
 {
     gr::thread::scoped_lock guard(d_mutex);
 
-    d_map[block->name()].erase(d_map[block->name()].find(block->symbolic_id()));
-    d_ref_map = pmt::dict_delete(d_ref_map, pmt::intern(block->symbol_name()));
+    d_id_map.erase(block->unique_id());
+    d_name_map.erase(block->unique_name());
+
     if (block->alias_set()) {
-        d_ref_map = pmt::dict_delete(d_ref_map, pmt::intern(block->alias()));
+        d_alias_map.erase(block->alias());
     }
 }
 
-std::string block_registry::register_symbolic_name(basic_block* block)
-{
-    std::stringstream ss;
-    ss << block->name() << block->symbolic_id();
-    // std::cout << "register_symbolic_name: " << ss.str() << std::endl;
-    register_symbolic_name(block, ss.str());
-    return ss.str();
-}
-
-void block_registry::register_symbolic_name(basic_block* block, std::string name)
+void block_registry::update_alias(basic_block* block, std::string name)
 {
     gr::thread::scoped_lock guard(d_mutex);
 
-    if (pmt::dict_has_key(d_ref_map, pmt::intern(name))) {
-        throw std::runtime_error("symbol already exists, can not re-use!");
-    }
-    d_ref_map = pmt::dict_add(d_ref_map, pmt::intern(name), pmt::make_any(block));
-}
-
-void block_registry::update_symbolic_name(basic_block* block, std::string name)
-{
-    gr::thread::scoped_lock guard(d_mutex);
-
-    if (pmt::dict_has_key(d_ref_map, pmt::intern(name))) {
-        throw std::runtime_error("symbol already exists, can not re-use!");
-    }
-
-    // If we don't already have an alias, don't try and delete it.
-    if (block->alias_set()) {
-        // And make sure that the registry has the alias key.
-        // We test both in case the block's and registry ever get out of sync.
-        if (pmt::dict_has_key(d_ref_map, block->alias_pmt())) {
-            d_ref_map = pmt::dict_delete(d_ref_map, block->alias_pmt());
+    for (auto it = d_alias_map.begin(); it != d_alias_map.end(); it++) {
+        if (it->second == block) {
+            d_alias_map.erase(it->first);
+            break;
         }
     }
-    d_ref_map = pmt::dict_add(d_ref_map, pmt::intern(name), pmt::make_any(block));
+
+    for (auto it = d_alias_map.begin(); it != d_alias_map.end(); it++) {
+        if (it->first == name) {
+            throw std::runtime_error("symbol already exists, can not re-use!");
+        }
+    }
+
+    d_alias_map[name] = block;
 }
 
 basic_block::sptr block_registry::block_lookup(pmt::pmt_t symbol)
 {
     gr::thread::scoped_lock guard(d_mutex);
 
-    pmt::pmt_t ref = pmt::dict_ref(d_ref_map, symbol, pmt::PMT_NIL);
-    if (pmt::eq(ref, pmt::PMT_NIL)) {
+    std::string name = pmt::symbol_to_string(symbol);
+
+    if (d_name_map.find(name) != d_name_map.end()) {
+        return d_name_map[name]->shared_from_this();
+    }
+
+    if (d_alias_map.find(name) == d_alias_map.end()) {
         throw std::runtime_error("block lookup failed! block not found!");
     }
-    basic_block* blk = boost::any_cast<basic_block*>(pmt::any_ref(ref));
-    return blk->shared_from_this();
+
+    return d_alias_map[name]->shared_from_this();
 }
 
-void block_registry::register_primitive(std::string blk, block* ref)
+void block_registry::register_primitive(long id, block* ref)
 {
     gr::thread::scoped_lock guard(d_mutex);
 
-    primitive_map[blk] = ref;
+    primitive_map[id] = ref;
 }
 
-void block_registry::unregister_primitive(std::string blk)
+void block_registry::unregister_primitive(long id)
 {
     gr::thread::scoped_lock guard(d_mutex);
 
-    primitive_map.erase(primitive_map.find(blk));
+    primitive_map.erase(primitive_map.find(id));
 }
 
-void block_registry::notify_blk(std::string blk)
+void block_registry::notify_blk(long id)
 {
     gr::thread::scoped_lock guard(d_mutex);
 
-    if (primitive_map.find(blk) == primitive_map.end()) {
+    if (primitive_map.find(id) == primitive_map.end()) {
         return;
     }
-    if (primitive_map[blk]->detail().get())
-        primitive_map[blk]->detail()->notify_msg();
+    if (primitive_map[id]->detail().get())
+        primitive_map[id]->detail()->notify_msg();
 }
 
 } /* namespace gr */

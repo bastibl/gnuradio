@@ -38,10 +38,10 @@ namespace gr {
 
     virtual ~basic_block();
     std::string name() const;
-    std::string symbol_name() const;
+    long unique_id() const;
+    std::string unique_name() const;
     gr::io_signature::sptr input_signature() const;
     gr::io_signature::sptr output_signature() const;
-    long unique_id() const;
     gr::basic_block::sptr to_basic_block();
     virtual bool check_topology(int ninputs, int noutputs);
     std::string alias();
