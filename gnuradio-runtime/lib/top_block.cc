@@ -20,9 +20,8 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#include "flat_flowgraph.h"
-#include "scheduler.h"
-#include "top_block_impl.h"
+#include <gnuradio/flat_flowgraph.h>
+#include <gnuradio/top_block.h>
 #include <gnuradio/prefs.h>
 #include <gnuradio/top_block.h>
 #ifdef GR_CTRLPORT
@@ -40,11 +39,10 @@ namespace gr {
 
 top_block::sptr top_block::make(const std::string& name)
 {
-    return gnuradio::get_initial_sptr(new top_block_impl(name));
+    return gnuradio::get_initial_sptr(new top_block(name));
 }
 
-
-top_block_impl::top_block_impl(const std::string& name)
+top_block::top_block(const std::string& name)
     : hier_block(name, io_signature::make(0, 0, 0), io_signature::make(0, 0, 0)),
       d_ffg(),
       d_state(IDLE),
@@ -53,7 +51,7 @@ top_block_impl::top_block_impl(const std::string& name)
 {
 }
 
-top_block_impl::~top_block_impl()
+top_block::~top_block()
 {
     stop();
     wait();
@@ -63,7 +61,7 @@ top_block_impl::~top_block_impl()
     }
 }
 
-void top_block_impl::start(int max_noutput_items)
+void top_block::start(int max_noutput_items)
 {
     gr::thread::scoped_lock l(d_mutex);
 
@@ -110,7 +108,7 @@ void top_block_impl::start(int max_noutput_items)
     }
 }
 
-void top_block_impl::stop()
+void top_block::stop()
 {
     gr::thread::scoped_lock lock(d_mutex);
 
@@ -120,7 +118,7 @@ void top_block_impl::stop()
     d_state = IDLE;
 }
 
-void top_block_impl::wait()
+void top_block::wait()
 {
     do {
         wait_for_jobs();
@@ -139,14 +137,14 @@ void top_block_impl::wait()
     } while (true);
 }
 
-void top_block_impl::run(int max_noutput_items)
+void top_block::run(int max_noutput_items)
 {
     start(max_noutput_items);
     wait();
 }
 
 
-void top_block_impl::wait_for_jobs()
+void top_block::wait_for_jobs()
 {
     if (d_scheduler)
         d_scheduler->wait();
@@ -154,7 +152,7 @@ void top_block_impl::wait_for_jobs()
 
 // N.B. lock() and unlock() cannot be called from a flow graph
 // thread or deadlock will occur when reconfiguration happens
-void top_block_impl::lock()
+void top_block::lock()
 {
     gr::thread::scoped_lock lock(d_mutex);
     if (d_scheduler)
@@ -162,7 +160,7 @@ void top_block_impl::lock()
     d_lock_count++;
 }
 
-void top_block_impl::unlock()
+void top_block::unlock()
 {
     gr::thread::scoped_lock lock(d_mutex);
 
@@ -180,7 +178,7 @@ void top_block_impl::unlock()
 }
 
 
-flat_flowgraph_sptr top_block_impl::flatten() const
+flat_flowgraph_sptr top_block::flatten() const
 {
     flat_flowgraph_sptr new_ffg = make_flat_flowgraph();
     flatten_aux(new_ffg);
@@ -193,7 +191,7 @@ flat_flowgraph_sptr top_block_impl::flatten() const
 }
 
 
-std::string top_block_impl::dot_graph()
+std::string top_block::dot_graph()
 {
     return flatten()->dot_graph();
 }
@@ -201,7 +199,7 @@ std::string top_block_impl::dot_graph()
 /*
  * restart is called with d_mutex held
  */
-void top_block_impl::restart()
+void top_block::restart()
 {
     wait_for_jobs();
 
@@ -216,7 +214,7 @@ void top_block_impl::restart()
     d_retry_wait = true;
 }
 
-std::string top_block_impl::edge_list()
+std::string top_block::edge_list()
 {
     if (d_ffg)
         return d_ffg->edge_list();
@@ -224,7 +222,7 @@ std::string top_block_impl::edge_list()
         return "";
 }
 
-std::string top_block_impl::msg_edge_list()
+std::string top_block::msg_edge_list()
 {
     if (d_ffg)
         return d_ffg->msg_edge_list();
@@ -232,17 +230,17 @@ std::string top_block_impl::msg_edge_list()
         return "";
 }
 
-void top_block_impl::dump()
+void top_block::dump()
 {
     if (d_ffg)
         d_ffg->dump();
 }
 
-int top_block_impl::max_noutput_items() { return d_max_noutput_items; }
+int top_block::max_noutput_items() { return d_max_noutput_items; }
 
-void top_block_impl::set_max_noutput_items(int nmax) { d_max_noutput_items = nmax; }
+void top_block::set_max_noutput_items(int nmax) { d_max_noutput_items = nmax; }
 
-void top_block_impl::setup_rpc()
+void top_block::setup_rpc()
 {
 #ifdef GR_CTRLPORT
     if (is_rpc_set())

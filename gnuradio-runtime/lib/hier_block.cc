@@ -20,7 +20,7 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#include "flat_flowgraph.h"
+#include <gnuradio/flat_flowgraph.h>
 #include <gnuradio/flowgraph.h>
 #include <gnuradio/hier_block.h>
 #include <gnuradio/io_signature.h>

@@ -36,6 +36,7 @@ install(FILES
   endianness.h
   expj.h
   feval.h
+  flat_flowgraph.h
   flowgraph.h
   fxpt.h
   fxpt_nco.h
@@ -56,6 +57,7 @@ install(FILES
   tags.h
   tagged_stream_block.h
   top_block.h
+  scheduler.h
   sincos.h
   sptr_magic.h
   sync_block.h

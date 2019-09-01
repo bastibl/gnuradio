@@ -19,8 +19,8 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-#include "scheduler.h"
 #include "thread_body.h"
+#include <gnuradio/scheduler.h>
 #include <gnuradio/block_detail.h>
 
 namespace gr {

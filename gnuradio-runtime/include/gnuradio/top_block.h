@@ -25,6 +25,7 @@
 
 #include <gnuradio/api.h>
 #include <gnuradio/hier_block.h>
+#include <gnuradio/scheduler.h>
 
 namespace gr {
 
@@ -32,13 +33,15 @@ namespace gr {
  *\brief Top-level hierarchical block representing a flowgraph
  * \ingroup container_blk
  */
-class GR_RUNTIME_API top_block : virtual public hier_block
+class GR_RUNTIME_API top_block : public hier_block
 {
 
 public:
 
     typedef boost::shared_ptr<top_block> sptr;
     static sptr make(const std::string& name);
+
+    virtual ~top_block();
 
     /*!
      * \brief The simple interface to running a flowgraph.
@@ -50,7 +53,7 @@ public:
      * allowed for any block in the flowgraph. This passes through to
      * the start function; see that function for more details.
      */
-    virtual void run(int max_noutput_items = 100000000) = 0;
+    virtual void run(int max_noutput_items = 100000000);
 
     /*!
      * Start the contained flowgraph. Creates one or more threads to
@@ -64,14 +67,14 @@ public:
      * maximum. Use this to adjust the maximum latency a flowgraph can
      * exhibit.
      */
-    virtual void start(int max_noutput_items = 100000000) = 0;
+    virtual void start(int max_noutput_items = 100000000);
 
     /*!
      * Stop the running flowgraph. Notifies each thread created by the
      * scheduler to shutdown, then returns to caller. Calling stop()
      * on a top_block that is already stopped IS NOT an error.
      */
-    virtual void stop() = 0;
+    virtual void stop();
 
     /*!
      * Wait for a flowgraph to complete. Flowgraphs complete when
@@ -81,7 +84,7 @@ public:
      * on a top_block that is not running IS NOT an error (wait
      * returns w/o blocking).
      */
-    virtual void wait() = 0;
+    virtual void wait();
 
     /*!
      * Lock a flowgraph in preparation for reconfiguration. When an
@@ -92,7 +95,7 @@ public:
      * thread (E.g., block::work method) or deadlock will occur
      * when reconfiguration happens.
      */
-    virtual void lock() = 0;
+    virtual void lock();
 
     /*!
      * Unlock a flowgraph in preparation for reconfiguration. When an
@@ -103,30 +106,49 @@ public:
      * (E.g., block::work method) or deadlock will occur when
      * reconfiguration happens.
      */
-    virtual void unlock() = 0;
+    virtual void unlock();
 
-    virtual flat_flowgraph_sptr flatten() const = 0;
-
-    virtual std::string dot_graph() = 0;
+    virtual flat_flowgraph_sptr flatten() const;
 
     // Return a string list of edges
-    virtual std::string edge_list() = 0;
+    virtual std::string edge_list();
 
     // Return a string list of msg edges
-    virtual std::string msg_edge_list() = 0;
+    virtual std::string msg_edge_list();
 
     /*!
      * Displays flattened flowgraph edges and block connectivity
      */
-    virtual void dump() = 0;
+    virtual void dump();
 
     //! Get the number of max noutput_items in the flowgraph
-    virtual int max_noutput_items() = 0;
+    virtual int max_noutput_items();
 
     //! Set the maximum number of noutput_items in the flowgraph
-    virtual void set_max_noutput_items(int nmax) = 0;
+    virtual void set_max_noutput_items(int nmax);
 
-    virtual void setup_rpc() = 0;
+    virtual void setup_rpc();
+
+    virtual std::string dot_graph();
+
+protected:
+    top_block(const std::string& name);
+
+    enum tb_state { IDLE, RUNNING };
+
+    flat_flowgraph_sptr d_ffg;
+    scheduler::sptr d_scheduler;
+
+    gr::thread::mutex d_mutex; // protects d_state and d_lock_count
+    tb_state d_state;
+    int d_lock_count;
+    bool d_retry_wait;
+    boost::condition_variable d_lock_cond;
+    int d_max_noutput_items;
+
+private:
+    void restart();
+    void wait_for_jobs();
 };
 
 } // namespace gr
