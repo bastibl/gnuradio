@@ -91,6 +91,7 @@ namespace filter {
 class FILTER_API pfb_decimator_ccf : virtual public sync_block
 {
 public:
+    virtual ~pfb_decimator_ccf() {};
     // gr::filter::pfb_decimator_ccf::sptr
     typedef boost::shared_ptr<pfb_decimator_ccf> sptr;
 

@@ -45,7 +45,8 @@ flat_flowgraph::flat_flowgraph()
     configure_default_loggers(d_logger, d_debug_logger, "flat_flowgraph");
 }
 
-flat_flowgraph::~flat_flowgraph() {
+flat_flowgraph::~flat_flowgraph()
+{
 
     basic_block_vector_t used_blocks = calc_used_blocks();
     block_vector_t blocks = flat_flowgraph::make_block_vector(used_blocks);
@@ -97,12 +98,12 @@ void flat_flowgraph::setup_connections(int max_noutput_items)
 }
 
 block_executor_sptr flat_flowgraph::allocate_block_executor(block_sptr block,
-                                                          int max_noutput_items)
+                                                            int max_noutput_items)
 {
     int ninputs = calc_used_ports(block, true).size();
     int noutputs = calc_used_ports(block, false).size();
     block_executor_sptr executor =
-        make_block_executor(block, ninputs, noutputs, max_noutput_items);
+        make_block_executor(block, ninputs, noutputs);
 
     block_sptr grblock = cast_to_block_sptr(block);
     if (!grblock)
@@ -112,6 +113,8 @@ block_executor_sptr flat_flowgraph::allocate_block_executor(block_sptr block,
                 .str());
 
     GR_LOG_DEBUG(d_debug_logger, "Creating block executor for " + block->alias());
+
+    int max_items = max_noutput_items;
 
     for (int i = 0; i < noutputs; i++) {
         grblock->expand_minmax_buffer(i);
@@ -131,6 +134,13 @@ block_executor_sptr flat_flowgraph::allocate_block_executor(block_sptr block,
                             grblock->alias() % buffer->bufsize() %
                             grblock->max_output_buffer(i));
         grblock->set_max_output_buffer(i, buffer->bufsize());
+
+        max_items = std::min(max_items, buffer->bufsize());
+    }
+
+    executor->set_max_noutput_items(max_items);
+    if(!grblock->is_set_max_noutput_items()) {
+        grblock->set_max_noutput_items(max_items);
     }
 
     return executor;
@@ -193,12 +203,6 @@ buffer_sptr flat_flowgraph::allocate_buffer(block_sptr grblock, int port)
         b = make_buffer(nitems, item_size, grblock);
     }
 
-    // Set the max noutput items size here to make sure it's always
-    // set in the block and available in the start() method.
-    // But don't overwrite if the user has set this externally.
-    if (!grblock->is_set_max_noutput_items())
-        grblock->set_max_noutput_items(nitems);
-
     return b;
 }
 
@@ -226,10 +230,10 @@ void flat_flowgraph::connect_block_inputs(block_sptr grblock)
                          (*e).identifier());
 
         executor->set_input(dst_port,
-                          buffer_add_reader(src_buffer,
-                                            grblock->history() - 1,
-                                            grblock,
-                                            grblock->sample_delay(src_port)));
+                            buffer_add_reader(src_buffer,
+                                              grblock->history() - 1,
+                                              grblock,
+                                              grblock->sample_delay(src_port)));
     }
 }
 

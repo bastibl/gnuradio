@@ -55,6 +55,7 @@ void thread_body::run_thread(block_sptr block, gr::thread::barrier_sptr start_sy
 void thread_body::execute_block(block_sptr block, gr::thread::barrier_sptr start_sync)
 {
     block_executor_sptr executor = block->executor();
+    executor->start();
 
 #if defined(_MSC_VER) || defined(__MINGW32__)
 #include <windows.h>

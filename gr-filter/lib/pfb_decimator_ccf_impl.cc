@@ -75,7 +75,11 @@ pfb_decimator_ccf_impl::pfb_decimator_ccf_impl(unsigned int decim,
 bool pfb_decimator_ccf_impl::start()
 {
     if (d_use_fft_filters) {
+
         d_tmp = fft::malloc_complex(max_noutput_items() * d_rate);
+        if(!d_tmp) {
+            return false;
+        }
     }
 
     return block::start();
@@ -85,12 +89,21 @@ bool pfb_decimator_ccf_impl::stop()
 {
     if ((d_use_fft_filters) && (d_tmp)) {
         fft::free(d_tmp);
+        d_tmp = nullptr;
     }
 
     return block::stop();
 }
 
-pfb_decimator_ccf_impl::~pfb_decimator_ccf_impl() { delete[] d_rotator; }
+pfb_decimator_ccf_impl::~pfb_decimator_ccf_impl()
+{
+    if ((d_use_fft_filters) && (d_tmp)) {
+        fft::free(d_tmp);
+        d_tmp = nullptr;
+    }
+
+    delete[] d_rotator;
+}
 
 void pfb_decimator_ccf_impl::set_taps(const std::vector<float>& taps)
 {

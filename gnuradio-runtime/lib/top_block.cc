@@ -184,8 +184,8 @@ flat_flowgraph_sptr top_block::flatten() const
     flatten_aux(new_ffg);
 
     // print all primitive connections at exit
-    std::cout << "flatten_aux finished in top_block" << std::endl;
-    new_ffg->dump();
+    // std::cout << "flatten_aux finished in top_block" << std::endl;
+    // new_ffg->dump();
 
     return new_ffg;
 }

@@ -35,8 +35,7 @@ namespace gr {
 typedef boost::shared_ptr<block_executor> block_executor_sptr;
 GR_RUNTIME_API block_executor_sptr make_block_executor(block_sptr block,
                                                        unsigned int ninputs,
-                                                       unsigned int noutputs,
-                                                       int max_noutput_items = 100000);
+                                                       unsigned int noutputs);
 
 /*!
  * \brief Manage the execution of a single block.
@@ -49,8 +48,7 @@ public:
     friend class thread_body;
     friend GR_RUNTIME_API block_executor_sptr make_block_executor(block_sptr block,
                                                                   unsigned int ninputs,
-                                                                  unsigned int noutputs,
-                                                                  int max_noutput_items);
+                                                                  unsigned int noutputs);
 
     virtual ~block_executor();
 
@@ -66,6 +64,7 @@ public:
      * \brief Run one iteration.
      */
     state run_one_iteration();
+    void start();
 
     int ninputs() const { return d_ninputs; }
     int noutputs() const { return d_noutputs; }
@@ -288,12 +287,11 @@ public:
 
     int consumed() const;
 
+    void set_max_noutput_items(int items) { d_max_noutput_items = items; }
+
 
 protected:
-    block_executor(block_sptr block,
-                   unsigned int ninputs,
-                   unsigned int noutputs,
-                   int max_noutput_items);
+    block_executor(block_sptr block, unsigned int ninputs, unsigned int noutputs);
 
     block_sptr d_block; // The block we're trying to run
     std::ofstream* d_log;

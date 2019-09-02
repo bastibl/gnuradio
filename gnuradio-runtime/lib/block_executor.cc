@@ -50,11 +50,10 @@ namespace gr {
 
 block_executor_sptr make_block_executor(block_sptr block,
                                         unsigned int ninputs,
-                                        unsigned int noutputs,
-                                        int max_noutput_items)
+                                        unsigned int noutputs)
 {
     return block_executor_sptr(
-        new block_executor(block, ninputs, noutputs, max_noutput_items));
+        new block_executor(block, ninputs, noutputs));
 }
 
 inline static unsigned int round_up(unsigned int n, unsigned int multiple)
@@ -225,11 +224,10 @@ bool block_executor::propagate_tags(block::tag_propagation_policy_t policy,
 
 block_executor::block_executor(block_sptr block,
                                unsigned int ninputs,
-                               unsigned int noutputs,
-                               int max_noutput_items)
+                               unsigned int noutputs)
     : d_block(block),
       d_log(0),
-      d_max_noutput_items(max_noutput_items),
+      d_max_noutput_items(0),
       d_produce_or(0),
       d_input_changed(false),
       d_output_changed(false),
@@ -256,7 +254,9 @@ block_executor::block_executor(block_sptr block,
       d_var_work_time(0),
       d_avg_throughput(0),
       d_pc_counter(0)
-{
+{}
+
+void block_executor::start() {
     d_pc_start_time = gr::high_res_timer_now();
 
     if (ENABLE_LOGGING) {
