@@ -1,6 +1,6 @@
 /* -*- c++ -*- */
 /*
- * Copyright 2004,2009,2010,2013 Free Software Foundation, Inc.
+ * Copyright 2004,2008,2013 Free Software Foundation, Inc.
  *
  * This file is part of GNU Radio
  *
@@ -12,7 +12,7 @@
  * GNU Radio is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more detail.
+ * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
  * along with GNU Radio; see the file COPYING.  If not, write to
@@ -20,31 +20,52 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#ifndef INCLUDED_GR_RUNTIME_BLOCK_DETAIL_H
-#define INCLUDED_GR_RUNTIME_BLOCK_DETAIL_H
+#ifndef INCLUDED_GR_RUNTIME_BLOCK_EXECUTOR_H
+#define INCLUDED_GR_RUNTIME_BLOCK_EXECUTOR_H
 
 #include <gnuradio/api.h>
+#include <gnuradio/block.h>
 #include <gnuradio/high_res_timer.h>
 #include <gnuradio/runtime_types.h>
 #include <gnuradio/tags.h>
-#include <gnuradio/thread/thread.h>
-#include <stdexcept>
+#include <fstream>
 
 namespace gr {
 
+typedef boost::shared_ptr<block_executor> block_executor_sptr;
+GR_RUNTIME_API block_executor_sptr make_block_executor(block_sptr block,
+                                                       unsigned int ninputs,
+                                                       unsigned int noutputs,
+                                                       int max_noutput_items = 100000);
+
 /*!
- * \brief Implementation details to support the signal processing abstraction
+ * \brief Manage the execution of a single block.
  * \ingroup internal
- *
- * This class contains implementation detail that should be "out of
- * sight" of almost all users of GNU Radio.  This decoupling also
- * means that we can make changes to the guts without having to
- * recompile everything.
  */
-class GR_RUNTIME_API block_detail
+class GR_RUNTIME_API block_executor
 {
+
 public:
-    ~block_detail();
+    friend class thread_body;
+    friend GR_RUNTIME_API block_executor_sptr make_block_executor(block_sptr block,
+                                                                  unsigned int ninputs,
+                                                                  unsigned int noutputs,
+                                                                  int max_noutput_items);
+
+    virtual ~block_executor();
+
+    enum state {
+        READY,           // We made progress; everything's cool.
+        READY_NO_OUTPUT, // We consumed some input, but produced no output.
+        BLKD_IN,         // no progress; we're blocked waiting for input data.
+        BLKD_OUT,        // no progress; we're blocked waiting for output buffer space.
+        DONE,            // we're done; don't call me again.
+    };
+
+    /*
+     * \brief Run one iteration.
+     */
+    state run_one_iteration();
 
     int ninputs() const { return d_ninputs; }
     int noutputs() const { return d_noutputs; }
@@ -58,7 +79,7 @@ public:
     buffer_reader_sptr input(unsigned int which)
     {
         if (which >= d_ninputs)
-            throw std::invalid_argument("block_detail::input");
+            throw std::invalid_argument("block_executor::input");
         return d_input[which];
     }
 
@@ -66,7 +87,7 @@ public:
     buffer_sptr output(unsigned int which)
     {
         if (which >= d_noutputs)
-            throw std::invalid_argument("block_detail::output");
+            throw std::invalid_argument("block_executor::output");
         return d_output[which];
     }
 
@@ -204,16 +225,6 @@ public:
      */
     int set_thread_priority(int priority);
 
-    bool threaded;                  // set if thread is currently running.
-    gr::thread::gr_thread_t thread; // portable thread handle
-
-    gr::thread::mutex mutex; //< protects all vars
-
-    bool input_changed;
-    gr::thread::condition_variable input_cond;
-    bool output_changed;
-    gr::thread::condition_variable output_cond;
-
     //! Called by us to tell all our upstream blocks that their output
     //! may have changed.
     void notify_upstream();
@@ -228,19 +239,19 @@ public:
     //! Called by pmt msg posters
     void notify_msg()
     {
-        gr::thread::scoped_lock guard(mutex);
-        input_changed = true;
-        input_cond.notify_one();
-        output_changed = true;
-        output_cond.notify_one();
+        gr::thread::scoped_lock guard(d_mutex);
+        d_input_changed = true;
+        d_input_cond.notify_one();
+        d_output_changed = true;
+        d_output_cond.notify_one();
     }
 
     //! Called by us
     void clear_changed()
     {
-        gr::thread::scoped_lock guard(mutex);
-        input_changed = false;
-        output_changed = false;
+        gr::thread::scoped_lock guard(d_mutex);
+        d_input_changed = false;
+        d_output_changed = false;
     }
 
     void start_perf_counters();
@@ -275,13 +286,55 @@ public:
 
     float pc_work_time_total();
 
-    int d_produce_or;
-
     int consumed() const;
 
-    // ----------------------------------------------------------------------------
+
+protected:
+    block_executor(block_sptr block,
+                   unsigned int ninputs,
+                   unsigned int noutputs,
+                   int max_noutput_items);
+
+    block_sptr d_block; // The block we're trying to run
+    std::ofstream* d_log;
+    int d_max_noutput_items;
+    int d_produce_or;
+
+    // These are allocated here so we don't have to on each iteration
+    gr_vector_int d_ninput_items_required;
+    gr_vector_int d_ninput_items;
+    gr_vector_const_void_star d_input_items;
+    std::vector<bool> d_input_done;
+    gr_vector_void_star d_output_items;
+    std::vector<uint64_t> d_start_nitems_read; // stores where tag counts are before work
+    std::vector<tag_t> d_returned_tags;
+
+#ifdef GR_PERFORMANCE_COUNTERS
+    bool d_use_pc;
+#endif /* GR_PERFORMANCE_COUNTERS */
 
 private:
+    int min_available_space(int output_multiple, int min_noutput_items);
+
+    bool propagate_tags(block::tag_propagation_policy_t policy,
+                        const std::vector<uint64_t>& start_nitems_read,
+                        double rrate,
+                        mpq_class& mp_rrate,
+                        bool use_fp_rrate,
+                        std::vector<tag_t>& rtags,
+                        long block_id);
+
+    bool d_threaded;                  // set if thread is currently running.
+    gr::thread::gr_thread_t d_thread; // portable thread handle
+
+    gr::thread::mutex d_mutex; //< protects all vars
+
+    bool d_input_changed;
+    gr::thread::condition_variable d_input_cond;
+    bool d_output_changed;
+    gr::thread::condition_variable d_output_cond;
+
+
     unsigned int d_ninputs;
     unsigned int d_noutputs;
     std::vector<buffer_reader_sptr> d_input;
@@ -313,33 +366,23 @@ private:
     float d_avg_throughput;
     float d_pc_counter;
 
-    block_detail(unsigned int ninputs, unsigned int noutputs);
-
     //! Used by notify_downstream
     void set_input_changed()
     {
-        gr::thread::scoped_lock guard(mutex);
-        input_changed = true;
-        input_cond.notify_one();
+        gr::thread::scoped_lock guard(d_mutex);
+        d_input_changed = true;
+        d_input_cond.notify_one();
     }
 
     //! Used by notify_upstream
     void set_output_changed()
     {
-        gr::thread::scoped_lock guard(mutex);
-        output_changed = true;
-        output_cond.notify_one();
+        gr::thread::scoped_lock guard(d_mutex);
+        d_output_changed = true;
+        d_output_cond.notify_one();
     }
-
-    friend GR_RUNTIME_API block_detail_sptr make_block_detail(unsigned int ninputs,
-                                                              unsigned int noutputs);
 };
-
-GR_RUNTIME_API block_detail_sptr make_block_detail(unsigned int ninputs,
-                                                   unsigned int noutputs);
-
-GR_RUNTIME_API long block_detail_ncurrently_allocated();
 
 } /* namespace gr */
 
-#endif /* INCLUDED_GR_RUNTIME_BLOCK_DETAIL_H */
+#endif /* INCLUDED_GR_RUNTIME_BLOCK_EXECUTOR_H */

@@ -19,9 +19,8 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-#include "block_executor.h"
 #include "thread_body.h"
-#include <gnuradio/block_detail.h>
+#include <gnuradio/block_executor.h>
 #include <gnuradio/prefs.h>
 #include <pmt/pmt.h>
 #include <boost/foreach.hpp>
@@ -36,16 +35,14 @@
 namespace gr {
 
 
-void thread_body::run_thread(block_sptr block,
-                      gr::thread::barrier_sptr start_sync,
-                      int max_noutput_items)
+void thread_body::run_thread(block_sptr block, gr::thread::barrier_sptr start_sync)
 {
     mask_signals();
     std::string name(
         boost::str(boost::format("%s%d") % block->name() % block->unique_id()));
 
     try {
-        thread_body::execute_block(block, start_sync, max_noutput_items);
+        thread_body::execute_block(block, start_sync);
     } catch (boost::thread_interrupted const&) {
     } catch (std::exception const& e) {
         std::cerr << "thread[" << name << "]: " << e.what() << std::endl;
@@ -55,11 +52,9 @@ void thread_body::run_thread(block_sptr block,
     }
 }
 
-void thread_body::execute_block(block_sptr block,
-                          gr::thread::barrier_sptr start_sync,
-                          int max_noutput_items)
+void thread_body::execute_block(block_sptr block, gr::thread::barrier_sptr start_sync)
 {
-    block_executor executor(block, max_noutput_items);
+    block_executor_sptr executor = block->executor();
 
 #if defined(_MSC_VER) || defined(__MINGW32__)
 #include <windows.h>
@@ -72,12 +67,11 @@ void thread_body::execute_block(block_sptr block,
         boost::str(boost::format("%s%d") % block->name() % block->unique_id()));
 #endif
 
-    block_detail* d = block->detail().get();
     block_executor::state s;
     pmt::pmt_t msg;
 
-    d->threaded = true;
-    d->thread = gr::thread::get_current_thread_id();
+    executor->d_threaded = true;
+    executor->d_thread = gr::thread::get_current_thread_id();
 
     prefs* p = prefs::singleton();
     size_t max_nmsgs = static_cast<size_t>(p->get_long("DEFAULT", "max_messages", 100));
@@ -102,12 +96,12 @@ void thread_body::execute_block(block_sptr block,
 
     // Set thread affinity if it was set before fg was started.
     if (!block->processor_affinity().empty()) {
-        gr::thread::thread_bind_to_processor(d->thread, block->processor_affinity());
+        gr::thread::thread_bind_to_processor(executor->d_thread, block->processor_affinity());
     }
 
     // Set thread priority if it was set before fg was started
     if (block->thread_priority() > 0) {
-        gr::thread::set_thread_priority(d->thread, block->thread_priority());
+        gr::thread::set_thread_priority(executor->d_thread, block->thread_priority());
     }
 
     // make sure our block isnt finished
@@ -117,7 +111,7 @@ void thread_body::execute_block(block_sptr block,
     while (1) {
         boost::this_thread::interruption_point();
 
-        d->clear_changed();
+        executor->clear_changed();
 
         // handle any queued up messages
         BOOST_FOREACH (block::msg_queue_map_t::value_type& i, block->d_msg_queue) {
@@ -140,8 +134,8 @@ void thread_body::execute_block(block_sptr block,
         }
 
         // run one iteration if we are a connected stream block
-        if (d->noutputs() > 0 || d->ninputs() > 0) {
-            s = executor.run_one_iteration();
+        if (executor->noutputs() > 0 || executor->ninputs() > 0) {
+            s = executor->run_one_iteration();
         } else {
             s = block_executor::BLKD_IN;
             // a msg port only block wants to shutdown
@@ -152,43 +146,43 @@ void thread_body::execute_block(block_sptr block,
 
         if (block->finished() && s == block_executor::READY_NO_OUTPUT) {
             s = block_executor::DONE;
-            d->set_done(true);
+            executor->set_done(true);
         }
 
-        if (!d->ninputs() && s == block_executor::READY_NO_OUTPUT) {
+        if (!executor->ninputs() && s == block_executor::READY_NO_OUTPUT) {
             s = block_executor::BLKD_IN;
         }
 
         switch (s) {
         case block_executor::READY: // Tell neighbors we made progress.
-            d->notify_neighbors();
+            executor->notify_neighbors();
             break;
 
         case block_executor::READY_NO_OUTPUT: // Notify upstream only
-            d->notify_upstream();
+            executor->notify_upstream();
             break;
 
         case block_executor::DONE: // Game over.
             block->notify_msg_neighbors();
-            d->notify_neighbors();
+            executor->notify_neighbors();
             return;
 
         case block_executor::BLKD_IN: // Wait for input.
         {
-            gr::thread::scoped_lock guard(d->mutex);
+            gr::thread::scoped_lock guard(executor->d_mutex);
 
-            if (!d->input_changed) {
+            if (!executor->d_input_changed) {
                 boost::system_time const timeout =
                     boost::get_system_time() + boost::posix_time::milliseconds(250);
-                d->input_cond.timed_wait(guard, timeout);
+                executor->d_input_cond.timed_wait(guard, timeout);
             }
         } break;
 
         case block_executor::BLKD_OUT: // Wait for output buffer space.
         {
-            gr::thread::scoped_lock guard(d->mutex);
-            while (!d->output_changed) {
-                d->output_cond.wait(guard);
+            gr::thread::scoped_lock guard(executor->d_mutex);
+            while (!executor->d_output_changed) {
+                executor->d_output_cond.wait(guard);
             }
         } break;
 

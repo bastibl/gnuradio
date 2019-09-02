@@ -20,7 +20,7 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#include <gnuradio/block_detail.h>
+#include <gnuradio/block_executor.h>
 #include <gnuradio/buffer.h>
 #include <gnuradio/flat_flowgraph.h>
 #include <gnuradio/logger.h>
@@ -33,9 +33,7 @@
 namespace gr {
 
 // 32Kbyte buffer size between blocks
-#define GR_FIXED_BUFFER_SIZE (32 * (1L << 10))
-
-static const unsigned int s_fixed_buffer_size = GR_FIXED_BUFFER_SIZE;
+static const unsigned int s_fixed_buffer_size = 32 * (1L << 10);
 
 flat_flowgraph_sptr make_flat_flowgraph()
 {
@@ -47,21 +45,42 @@ flat_flowgraph::flat_flowgraph()
     configure_default_loggers(d_logger, d_debug_logger, "flat_flowgraph");
 }
 
-flat_flowgraph::~flat_flowgraph() {}
+flat_flowgraph::~flat_flowgraph() {
 
-void flat_flowgraph::setup_connections()
+    basic_block_vector_t used_blocks = calc_used_blocks();
+    block_vector_t blocks = flat_flowgraph::make_block_vector(used_blocks);
+
+    for (size_t i = 0; i < blocks.size(); i++) {
+        blocks[i]->set_executor(nullptr);
+    }
+}
+
+void flat_flowgraph::setup_connections(int max_noutput_items)
 {
     basic_block_vector_t blocks = calc_used_blocks();
 
-    // Assign block details to blocks
-    for (basic_block_viter_t p = blocks.begin(); p != blocks.end(); p++)
-        cast_to_block_sptr(*p)->set_detail(allocate_block_detail(*p));
+    // Assign block executor to blocks
+    for (basic_block_viter_t p = blocks.begin(); p != blocks.end(); p++) {
+
+        block_sptr b = cast_to_block_sptr(*p);
+
+        // If set, use internal value instead of global value
+        int block_max_noutput_items;
+        if (b->is_set_max_noutput_items()) {
+            block_max_noutput_items = b->max_noutput_items();
+        } else {
+            block_max_noutput_items = max_noutput_items;
+        }
+
+        b->set_executor(allocate_block_executor(b, block_max_noutput_items));
+    }
 
     // Connect inputs to outputs for each block
     for (basic_block_viter_t p = blocks.begin(); p != blocks.end(); p++) {
-        connect_block_inputs(*p);
 
         block_sptr block = cast_to_block_sptr(*p);
+
+        connect_block_inputs(block);
         block->set_unaligned(0);
         block->set_is_unaligned(false);
     }
@@ -77,20 +96,22 @@ void flat_flowgraph::setup_connections()
     }
 }
 
-block_detail_sptr flat_flowgraph::allocate_block_detail(basic_block::sptr block)
+block_executor_sptr flat_flowgraph::allocate_block_executor(block_sptr block,
+                                                          int max_noutput_items)
 {
     int ninputs = calc_used_ports(block, true).size();
     int noutputs = calc_used_ports(block, false).size();
-    block_detail_sptr detail = make_block_detail(ninputs, noutputs);
+    block_executor_sptr executor =
+        make_block_executor(block, ninputs, noutputs, max_noutput_items);
 
     block_sptr grblock = cast_to_block_sptr(block);
     if (!grblock)
         throw std::runtime_error(
-            (boost::format("allocate_block_detail found non-gr::block (%s)") %
+            (boost::format("allocate_block_executor found non-gr::block (%s)") %
              block->alias())
                 .str());
 
-    GR_LOG_DEBUG(d_debug_logger, "Creating block detail for " + block->alias());
+    GR_LOG_DEBUG(d_debug_logger, "Creating block executor for " + block->alias());
 
     for (int i = 0; i < noutputs; i++) {
         grblock->expand_minmax_buffer(i);
@@ -99,7 +120,7 @@ block_detail_sptr flat_flowgraph::allocate_block_detail(basic_block::sptr block)
         GR_LOG_DEBUG(d_debug_logger,
                      "Allocated buffer for output " + block->alias() + " " +
                          std::to_string(i));
-        detail->set_output(i, buffer);
+        executor->set_output(i, buffer);
 
         // Update the block's max_output_buffer based on what was actually allocated.
         if ((grblock->max_output_buffer(i) != buffer->bufsize()) &&
@@ -112,15 +133,12 @@ block_detail_sptr flat_flowgraph::allocate_block_detail(basic_block::sptr block)
         grblock->set_max_output_buffer(i, buffer->bufsize());
     }
 
-    return detail;
+    return executor;
 }
 
-buffer_sptr flat_flowgraph::allocate_buffer(basic_block::sptr block, int port)
+buffer_sptr flat_flowgraph::allocate_buffer(block_sptr grblock, int port)
 {
-    block_sptr grblock = cast_to_block_sptr(block);
-    if (!grblock)
-        throw std::runtime_error("allocate_buffer found non-gr::block");
-    int item_size = block->output_signature()->sizeof_stream_item(port);
+    int item_size = grblock->output_signature()->sizeof_stream_item(port);
 
     // *2 because we're now only filling them 1/2 way in order to
     // increase the available parallelism when using the TPB scheduler.
@@ -133,7 +151,7 @@ buffer_sptr flat_flowgraph::allocate_buffer(basic_block::sptr block, int port)
 
     // If any downstream blocks are decimators and/or have a large output_multiple,
     // ensure we have a buffer at least twice their decimation factor*output_multiple
-    basic_block_vector_t blocks = calc_downstream_blocks(block, port);
+    basic_block_vector_t blocks = calc_downstream_blocks(grblock, port);
 
     // limit buffer size if indicated
     if (grblock->max_output_buffer(port) > 0) {
@@ -184,15 +202,11 @@ buffer_sptr flat_flowgraph::allocate_buffer(basic_block::sptr block, int port)
     return b;
 }
 
-void flat_flowgraph::connect_block_inputs(basic_block::sptr block)
+void flat_flowgraph::connect_block_inputs(block_sptr grblock)
 {
-    block_sptr grblock = cast_to_block_sptr(block);
-    if (!grblock)
-        throw std::runtime_error("connect_block_inputs found non-gr::block");
-
-    // Get its detail and edges that feed into it
-    block_detail_sptr detail = grblock->detail();
-    edge_vector_t in_edges = calc_upstream_edges(block);
+    // Get its executor and edges that feed into it
+    block_executor_sptr executor = grblock->executor();
+    edge_vector_t in_edges = calc_upstream_edges(grblock);
 
     // For each edge that feeds into it
     for (edge_viter_t e = in_edges.begin(); e != in_edges.end(); e++) {
@@ -204,158 +218,18 @@ void flat_flowgraph::connect_block_inputs(basic_block::sptr block)
         block_sptr src_grblock = cast_to_block_sptr(src_block);
         if (!src_grblock)
             throw std::runtime_error("connect_block_inputs found non-gr::block");
-        buffer_sptr src_buffer = src_grblock->detail()->output(src_port);
+        buffer_sptr src_buffer = src_grblock->executor()->output(src_port);
 
 
         GR_LOG_DEBUG(d_debug_logger,
                      "Setting input " + std::to_string(dst_port) + " from edge " +
                          (*e).identifier());
 
-        detail->set_input(dst_port,
+        executor->set_input(dst_port,
                           buffer_add_reader(src_buffer,
                                             grblock->history() - 1,
                                             grblock,
                                             grblock->sample_delay(src_port)));
-    }
-}
-
-void flat_flowgraph::merge_connections(flat_flowgraph_sptr old_ffg)
-{
-    // Allocate block details if needed.  Only new blocks that aren't pruned out
-    // by flattening will need one; existing blocks still in the new flowgraph will
-    // already have one.
-    for (basic_block_viter_t p = d_blocks.begin(); p != d_blocks.end(); p++) {
-        block_sptr block = cast_to_block_sptr(*p);
-
-        if (!block->detail()) {
-            GR_LOG_DEBUG(d_debug_logger,
-                         "merge: allocating new detail for block " + block->alias());
-            block->set_detail(allocate_block_detail(block));
-        } else {
-            GR_LOG_DEBUG(d_debug_logger,
-                         "merge: reusing original detail for block " +
-                             block->alias());
-        }
-    }
-
-    // Calculate the old edges that will be going away, and clear the
-    // buffer readers on the RHS.
-    for (edge_viter_t old_edge = old_ffg->d_edges.begin();
-         old_edge != old_ffg->d_edges.end();
-         old_edge++) {
-        GR_LOG_DEBUG(d_debug_logger,
-                     "merge: testing old edge " + old_edge->identifier() + "...");
-
-        edge_viter_t new_edge;
-        for (new_edge = d_edges.begin(); new_edge != d_edges.end(); new_edge++)
-            if (new_edge->src() == old_edge->src() && new_edge->dst() == old_edge->dst())
-                break;
-
-        if (new_edge == d_edges.end()) { // not found in new edge list
-            GR_LOG_DEBUG(d_debug_logger, "not in new edge list");
-            // zero the buffer reader on RHS of old edge
-            block_sptr block(cast_to_block_sptr(old_edge->dst().block()));
-            int port = old_edge->dst().port();
-            block->detail()->set_input(port, buffer_reader_sptr());
-        } else {
-            GR_LOG_DEBUG(d_debug_logger, "found in new edge list");
-        }
-    }
-
-    // Now connect inputs to outputs, reusing old buffer readers if they exist
-    for (basic_block_viter_t p = d_blocks.begin(); p != d_blocks.end(); p++) {
-        block_sptr block = cast_to_block_sptr(*p);
-
-        GR_LOG_DEBUG(d_debug_logger, "merge: merging " + block->alias() + "...");
-
-        if (old_ffg->has_block_p(*p)) {
-            // Block exists in old flow graph
-            GR_LOG_DEBUG(d_debug_logger, "used in old flow graph")
-            block_detail_sptr detail = block->detail();
-
-            // Iterate through the inputs and see what needs to be done
-            int ninputs = calc_used_ports(block, true).size(); // Might be different now
-            for (int i = 0; i < ninputs; i++) {
-                GR_LOG_DEBUG(d_debug_logger,
-                             "Checking input " + block->alias() + ":" +
-                                 std::to_string(i) + "...");
-                edge edge = calc_upstream_edge(*p, i);
-
-                // Fish out old buffer reader and see if it matches correct buffer from
-                // edge list
-                block_sptr src_block = cast_to_block_sptr(edge.src().block());
-                block_detail_sptr src_detail = src_block->detail();
-                buffer_sptr src_buffer = src_detail->output(edge.src().port());
-                buffer_reader_sptr old_reader;
-                if (i < detail->ninputs()) // Don't exceed what the original detail has
-                    old_reader = detail->input(i);
-
-                // If there's a match, use it
-                if (old_reader && (src_buffer == old_reader->buffer())) {
-                    GR_LOG_DEBUG(d_debug_logger, "matched, reusing");
-                } else {
-                    GR_LOG_DEBUG(d_debug_logger, "needs a new reader");
-
-                    // Create new buffer reader and assign
-                    detail->set_input(
-                        i, buffer_add_reader(src_buffer, block->history() - 1, block));
-                }
-            }
-        } else {
-            // Block is new, it just needs buffer readers at this point
-            GR_LOG_DEBUG(d_debug_logger, "new block");
-            connect_block_inputs(block);
-
-            // Make sure all buffers are aligned
-            setup_buffer_alignment(block);
-        }
-
-        // Connect message ports connetions
-        for (msg_edge_viter_t i = d_msg_edges.begin(); i != d_msg_edges.end(); i++) {
-            GR_LOG_DEBUG(
-                d_debug_logger,
-                boost::format("flat_fg connecting msg primitives: (%s, %s)->(%s, %s)\n") %
-                    i->src().block() % i->src().port() % i->dst().block() %
-                    i->dst().port());
-            i->src().block()->message_port_sub(
-                i->src().port(),
-                pmt::cons(i->dst().block()->alias_pmt(), i->dst().port()));
-        }
-
-        // Now deal with the fact that the block details might have
-        // changed numbers of inputs and outputs vs. in the old
-        // flowgraph.
-
-        block->detail()->reset_nitem_counters();
-        block->detail()->clear_tags();
-    }
-}
-
-void flat_flowgraph::setup_buffer_alignment(block_sptr block)
-{
-    const int alignment = volk_get_alignment();
-    for (int i = 0; i < block->detail()->ninputs(); i++) {
-        void* r = (void*)block->detail()->input(i)->read_pointer();
-        uintptr_t ri = (uintptr_t)r % alignment;
-        // std::cerr << "reader: " << r << "  alignment: " << ri << std::endl;
-        if (ri != 0) {
-            size_t itemsize = block->detail()->input(i)->get_sizeof_item();
-            block->detail()->input(i)->update_read_pointer((alignment - ri) / itemsize);
-        }
-        block->set_unaligned(0);
-        block->set_is_unaligned(false);
-    }
-
-    for (int i = 0; i < block->detail()->noutputs(); i++) {
-        void* w = (void*)block->detail()->output(i)->write_pointer();
-        uintptr_t wi = (uintptr_t)w % alignment;
-        // std::cerr << "writer: " << w << "  alignment: " << wi << std::endl;
-        if (wi != 0) {
-            size_t itemsize = block->detail()->output(i)->get_sizeof_item();
-            block->detail()->output(i)->update_write_pointer((alignment - wi) / itemsize);
-        }
-        block->set_unaligned(0);
-        block->set_is_unaligned(false);
     }
 }
 
@@ -382,18 +256,18 @@ void flat_flowgraph::dump()
 
     for (basic_block_viter_t p = d_blocks.begin(); p != d_blocks.end(); p++) {
         std::cout << " block: " << (*p) << std::endl;
-        block_detail_sptr detail = cast_to_block_sptr(*p)->detail();
-        std::cout << "  detail @" << detail << ":" << std::endl;
+        block_executor_sptr executor = cast_to_block_sptr(*p)->executor();
+        std::cout << "  executor @" << executor << ":" << std::endl;
 
-        int ni = detail->ninputs();
-        int no = detail->noutputs();
+        int ni = executor->ninputs();
+        int no = executor->noutputs();
         for (int i = 0; i < no; i++) {
-            buffer_sptr buffer = detail->output(i);
+            buffer_sptr buffer = executor->output(i);
             std::cout << "   output " << i << ": " << buffer << std::endl;
         }
 
         for (int i = 0; i < ni; i++) {
-            buffer_reader_sptr reader = detail->input(i);
+            buffer_reader_sptr reader = executor->input(i);
             std::cout << "   reader " << i << ": " << reader
                       << " reading from buffer=" << reader->buffer() << std::endl;
         }
@@ -482,7 +356,8 @@ std::string flat_flowgraph::dot_graph()
             << edge->dst().block()->unique_id() << std::endl;
     }
 
-    for (msg_edge_viter_t edge = all_msg_edges.begin(); edge != all_msg_edges.end(); edge++) {
+    for (msg_edge_viter_t edge = all_msg_edges.begin(); edge != all_msg_edges.end();
+         edge++) {
         out << edge->src().block()->unique_id() << " -> "
             << edge->dst().block()->unique_id() << " [color=blue]" << std::endl;
     }

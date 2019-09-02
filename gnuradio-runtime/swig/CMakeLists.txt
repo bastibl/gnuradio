@@ -83,7 +83,6 @@ install(
     gnuradio.i
     basic_block.i
     block.i
-    block_detail.i
     block_gateway.i
     buffer.i
     constants.i

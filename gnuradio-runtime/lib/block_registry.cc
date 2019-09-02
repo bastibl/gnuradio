@@ -22,7 +22,7 @@
 
 #include <gnuradio/basic_block.h>
 #include <gnuradio/block.h>
-#include <gnuradio/block_detail.h>
+#include <gnuradio/block_executor.h>
 #include <gnuradio/block_registry.h>
 #include <stdio.h>
 
@@ -114,8 +114,8 @@ void block_registry::notify_blk(long id)
     if (primitive_map.find(id) == primitive_map.end()) {
         return;
     }
-    if (primitive_map[id]->detail().get())
-        primitive_map[id]->detail()->notify_msg();
+    if (primitive_map[id]->executor().get())
+        primitive_map[id]->executor()->notify_msg();
 }
 
 } /* namespace gr */

@@ -27,6 +27,7 @@
 #include <gnuradio/basic_block.h>
 #include <gnuradio/logger.h>
 #include <gnuradio/messages/msg_accepter.h>
+#include <gnuradio/runtime_types.h>
 #include <gnuradio/tags.h>
 #ifdef GR_MPLIB_MPIR
 #include <mpirxx.h>
@@ -747,7 +748,7 @@ private:
     bool d_is_unaligned;
     double d_relative_rate; // approx output_rate / input_rate
     mpq_class d_mp_relative_rate;
-    block_detail_sptr d_detail; // implementation details
+    block_executor_sptr d_executor;
     unsigned d_history;
     unsigned d_attr_delay; // the block's sample delay
     bool d_fixed_rate;
@@ -978,8 +979,8 @@ protected:
 
 
 public:
-    block_detail_sptr detail() const { return d_detail; }
-    void set_detail(block_detail_sptr detail) { d_detail = detail; }
+    block_executor_sptr executor() const { return d_executor; }
+    void set_executor(block_executor_sptr executor) { d_executor = executor; }
 
     void message_port_register_in(pmt::pmt_t port_id) override;
     /*!

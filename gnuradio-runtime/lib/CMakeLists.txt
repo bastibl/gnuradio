@@ -54,7 +54,6 @@ add_library(gnuradio-runtime
   ${CMAKE_CURRENT_BINARY_DIR}/constants.cc
   basic_block.cc
   block.cc
-  block_detail.cc
   block_executor.cc
   block_gateway_impl.cc
   block_registry.cc

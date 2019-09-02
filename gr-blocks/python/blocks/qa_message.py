@@ -29,7 +29,6 @@ import pmt
 
 def all_counts():
     return (gr.block_ncurrently_allocated(),
-            gr.block_detail_ncurrently_allocated(),
             gr.buffer_ncurrently_allocated(),
             gr.buffer_reader_ncurrently_allocated())
 

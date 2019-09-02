@@ -21,11 +21,10 @@
  */
 
 #include <gnuradio/block.h>
-#include <gnuradio/block_detail.h>
+#include <gnuradio/block_executor.h>
 #include <gnuradio/buffer.h>
 #include <gnuradio/prefs.h>
 #include <assert.h>
-#include <block_executor.h>
 #include <stdio.h>
 #include <boost/format.hpp>
 #include <boost/thread.hpp>
@@ -49,7 +48,14 @@ namespace gr {
     } while (0)
 #endif
 
-static int which_scheduler = 0;
+block_executor_sptr make_block_executor(block_sptr block,
+                                        unsigned int ninputs,
+                                        unsigned int noutputs,
+                                        int max_noutput_items)
+{
+    return block_executor_sptr(
+        new block_executor(block, ninputs, noutputs, max_noutput_items));
+}
 
 inline static unsigned int round_up(unsigned int n, unsigned int multiple)
 {
@@ -66,14 +72,13 @@ inline static unsigned int round_down(unsigned int n, unsigned int multiple)
 // buffers or -1 if we're output blocked and the output we're
 // blocked on is done.
 //
-static int
-min_available_space(block_detail* d, int output_multiple, int min_noutput_items)
+int block_executor::min_available_space(int output_multiple, int min_noutput_items)
 {
     int min_space = std::numeric_limits<int>::max();
     if (min_noutput_items == 0)
         min_noutput_items = 1;
-    for (int i = 0; i < d->noutputs(); i++) {
-        buffer_sptr out_buf = d->output(i);
+    for (int i = 0; i < noutputs(); i++) {
+        buffer_sptr out_buf = output(i);
         gr::thread::scoped_lock guard(*out_buf->mutex());
         int avail_n = round_down(out_buf->space_available(), output_multiple);
         int best_n = round_down(out_buf->bufsize() / 2, output_multiple);
@@ -91,20 +96,19 @@ min_available_space(block_detail* d, int output_multiple, int min_noutput_items)
     return min_space;
 }
 
-static bool propagate_tags(block::tag_propagation_policy_t policy,
-                           block_detail* d,
-                           const std::vector<uint64_t>& start_nitems_read,
-                           double rrate,
-                           mpq_class& mp_rrate,
-                           bool use_fp_rrate,
-                           std::vector<tag_t>& rtags,
-                           long block_id)
+bool block_executor::propagate_tags(block::tag_propagation_policy_t policy,
+                                    const std::vector<uint64_t>& start_nitems_read,
+                                    double rrate,
+                                    mpq_class& mp_rrate,
+                                    bool use_fp_rrate,
+                                    std::vector<tag_t>& rtags,
+                                    long block_id)
 {
     static const mpq_class one_half(1, 2);
 
     // Move tags downstream
     // if a sink, we don't need to move downstream
-    if (d->sink_p()) {
+    if (sink_p()) {
         return true;
     }
 
@@ -116,31 +120,30 @@ static bool propagate_tags(block::tag_propagation_policy_t policy,
         // every tag on every input propagates to everyone downstream
         std::vector<buffer_sptr> out_buf;
 
-        for (int i = 0; i < d->ninputs(); i++) {
-            d->get_tags_in_range(
-                rtags, i, start_nitems_read[i], d->nitems_read(i), block_id);
+        for (int i = 0; i < ninputs(); i++) {
+            get_tags_in_range(rtags, i, start_nitems_read[i], nitems_read(i), block_id);
 
             if (rtags.empty()) {
                 continue;
             }
 
             if (out_buf.empty()) {
-                out_buf.reserve(d->noutputs());
-                for (int o = 0; o < d->noutputs(); o++)
-                    out_buf.push_back(d->output(o));
+                out_buf.reserve(noutputs());
+                for (int o = 0; o < noutputs(); o++)
+                    out_buf.push_back(output(o));
             }
 
             std::vector<tag_t>::iterator t;
             if (rrate == 1.0) {
                 for (t = rtags.begin(); t != rtags.end(); t++) {
-                    for (int o = 0; o < d->noutputs(); o++)
+                    for (int o = 0; o < noutputs(); o++)
                         out_buf[o]->add_item_tag(*t);
                 }
             } else if (use_fp_rrate) {
                 for (t = rtags.begin(); t != rtags.end(); t++) {
                     tag_t new_tag = *t;
                     new_tag.offset = ((double)new_tag.offset * rrate) + 0.5;
-                    for (int o = 0; o < d->noutputs(); o++)
+                    for (int o = 0; o < noutputs(); o++)
                         out_buf[o]->add_item_tag(new_tag);
                 }
             } else {
@@ -156,7 +159,7 @@ static bool propagate_tags(block::tag_propagation_policy_t policy,
                                &new_tag.offset);
                     offset = offset * mp_rrate + one_half;
                     new_tag.offset = offset.get_ui();
-                    for (int o = 0; o < d->noutputs(); o++)
+                    for (int o = 0; o < noutputs(); o++)
                         out_buf[o]->add_item_tag(new_tag);
                 }
             }
@@ -164,20 +167,20 @@ static bool propagate_tags(block::tag_propagation_policy_t policy,
     } break;
     case block::TPP_ONE_TO_ONE:
         // tags from input i only go to output i
-        // this requires d->ninputs() == d->noutputs; this is checked when this
-        // type of tag-propagation system is selected in block_detail
-        if (d->ninputs() == d->noutputs()) {
+        // this requires ninputs() == noutputs; this is checked when this
+        // type of tag-propagation system is selected in block_executor
+        if (ninputs() == noutputs()) {
             buffer_sptr out_buf;
 
-            for (int i = 0; i < d->ninputs(); i++) {
-                d->get_tags_in_range(
-                    rtags, i, start_nitems_read[i], d->nitems_read(i), block_id);
+            for (int i = 0; i < ninputs(); i++) {
+                get_tags_in_range(
+                    rtags, i, start_nitems_read[i], nitems_read(i), block_id);
 
                 if (rtags.empty()) {
                     continue;
                 }
 
-                out_buf = d->output(i);
+                out_buf = output(i);
 
                 std::vector<tag_t>::iterator t;
                 if (rrate == 1.0) {
@@ -220,11 +223,44 @@ static bool propagate_tags(block::tag_propagation_policy_t policy,
     return true;
 }
 
-block_executor::block_executor(block_sptr block, int max_noutput_items)
-    : d_block(block), d_log(0), d_max_noutput_items(max_noutput_items)
+block_executor::block_executor(block_sptr block,
+                               unsigned int ninputs,
+                               unsigned int noutputs,
+                               int max_noutput_items)
+    : d_block(block),
+      d_log(0),
+      d_max_noutput_items(max_noutput_items),
+      d_produce_or(0),
+      d_input_changed(false),
+      d_output_changed(false),
+      d_ninputs(ninputs),
+      d_noutputs(noutputs),
+      d_input(ninputs),
+      d_output(noutputs),
+      d_done(false),
+      d_ins_noutput_items(0),
+      d_avg_noutput_items(0),
+      d_var_noutput_items(0),
+      d_total_noutput_items(0),
+      d_ins_nproduced(0),
+      d_avg_nproduced(0),
+      d_var_nproduced(0),
+      d_ins_input_buffers_full(ninputs, 0),
+      d_avg_input_buffers_full(ninputs, 0),
+      d_var_input_buffers_full(ninputs, 0),
+      d_ins_output_buffers_full(noutputs, 0),
+      d_avg_output_buffers_full(noutputs, 0),
+      d_var_output_buffers_full(noutputs, 0),
+      d_ins_work_time(0),
+      d_avg_work_time(0),
+      d_var_work_time(0),
+      d_avg_throughput(0),
+      d_pc_counter(0)
 {
+    d_pc_start_time = gr::high_res_timer_now();
+
     if (ENABLE_LOGGING) {
-        std::string name = str(boost::format("sst-%03d.log") % which_scheduler++);
+        std::string name = str(boost::format("scheduler.log"));
         d_log = new std::ofstream(name.c_str());
         std::unitbuf(*d_log); // make it unbuffered...
         *d_log << "block_executor: " << d_block << std::endl;
@@ -266,28 +302,26 @@ block_executor::state block_executor::run_one_iteration()
     int alignment_state = -1;
 
     block* m = d_block.get();
-    block_detail* d = m->detail().get();
 
     LOG(*d_log << std::endl << m);
 
     max_noutput_items = round_down(d_max_noutput_items, m->output_multiple());
 
-    if (d->done()) {
+    if (done()) {
         assert(0);
         return DONE;
     }
 
-    if (d->source_p()) {
+    if (source_p()) {
         d_ninput_items_required.resize(0);
         d_ninput_items.resize(0);
         d_input_items.resize(0);
         d_input_done.resize(0);
-        d_output_items.resize(d->noutputs());
+        d_output_items.resize(noutputs());
         d_start_nitems_read.resize(0);
 
         // determine the minimum available output space
-        noutput_items =
-            min_available_space(d, m->output_multiple(), m->min_noutput_items());
+        noutput_items = min_available_space(m->output_multiple(), m->min_noutput_items());
         noutput_items = std::min(noutput_items, max_noutput_items);
         LOG(*d_log << " source\n  noutput_items = " << noutput_items << std::endl);
         if (noutput_items == -1) // we're done
@@ -301,22 +335,22 @@ block_executor::state block_executor::run_one_iteration()
         goto setup_call_to_work; // jump to common code
     }
 
-    else if (d->sink_p()) {
-        d_ninput_items_required.resize(d->ninputs());
-        d_ninput_items.resize(d->ninputs());
-        d_input_items.resize(d->ninputs());
-        d_input_done.resize(d->ninputs());
+    else if (sink_p()) {
+        d_ninput_items_required.resize(ninputs());
+        d_ninput_items.resize(ninputs());
+        d_input_items.resize(ninputs());
+        d_input_done.resize(ninputs());
         d_output_items.resize(0);
-        d_start_nitems_read.resize(d->ninputs());
+        d_start_nitems_read.resize(ninputs());
         LOG(*d_log << " sink\n");
 
         max_items_avail = 0;
-        for (int i = 0; i < d->ninputs(); i++) {
+        for (int i = 0; i < ninputs(); i++) {
             {
                 /*
                  * Acquire the mutex and grab local copies of items_available and done.
                  */
-                buffer_reader_sptr in_buf = d->input(i);
+                buffer_reader_sptr in_buf = input(i);
                 gr::thread::scoped_lock guard(*in_buf->mutex());
                 d_ninput_items[i] = in_buf->items_available();
                 d_input_done[i] = in_buf->done();
@@ -350,20 +384,20 @@ block_executor::state block_executor::run_one_iteration()
 
     else {
         // do the regular thing
-        d_ninput_items_required.resize(d->ninputs());
-        d_ninput_items.resize(d->ninputs());
-        d_input_items.resize(d->ninputs());
-        d_input_done.resize(d->ninputs());
-        d_output_items.resize(d->noutputs());
-        d_start_nitems_read.resize(d->ninputs());
+        d_ninput_items_required.resize(ninputs());
+        d_ninput_items.resize(ninputs());
+        d_input_items.resize(ninputs());
+        d_input_done.resize(ninputs());
+        d_output_items.resize(noutputs());
+        d_start_nitems_read.resize(ninputs());
 
         max_items_avail = 0;
-        for (int i = 0; i < d->ninputs(); i++) {
+        for (int i = 0; i < ninputs(); i++) {
             {
                 /*
                  * Acquire the mutex and grab local copies of items_available and done.
                  */
-                buffer_reader_sptr in_buf = d->input(i);
+                buffer_reader_sptr in_buf = input(i);
                 gr::thread::scoped_lock guard(*in_buf->mutex());
                 d_ninput_items[i] = in_buf->items_available();
                 d_input_done[i] = in_buf->done();
@@ -372,8 +406,7 @@ block_executor::state block_executor::run_one_iteration()
         }
 
         // determine the minimum available output space
-        noutput_items =
-            min_available_space(d, m->output_multiple(), m->min_noutput_items());
+        noutput_items = min_available_space(m->output_multiple(), m->min_noutput_items());
         if (ENABLE_LOGGING) {
             *d_log << " regular ";
             *d_log << m->relative_rate_i() << ":" << m->relative_rate_d() << std::endl;
@@ -444,7 +477,7 @@ block_executor::state block_executor::run_one_iteration()
         // See if we've got sufficient input available and make sure we
         // didn't overflow on the input.
         int i;
-        for (i = 0; i < d->ninputs(); i++) {
+        for (i = 0; i < ninputs(); i++) {
             if (d_ninput_items_required[i] > d_ninput_items[i]) // not enough
                 break;
 
@@ -459,7 +492,7 @@ block_executor::state block_executor::run_one_iteration()
             }
         }
 
-        if (i < d->ninputs()) { // not enough input on input[i]
+        if (i < ninputs()) { // not enough input on input[i]
             // if we can, try reducing the size of our output request
             if (noutput_items > m->output_multiple()) {
                 noutput_items /= 2;
@@ -473,7 +506,7 @@ block_executor::state block_executor::run_one_iteration()
                 goto were_done;
 
             // Is it possible to ever fulfill this request?
-            buffer_reader_sptr in_buf = d->input(i);
+            buffer_reader_sptr in_buf = input(i);
             if (d_ninput_items_required[i] > in_buf->max_possible_items_available()) {
                 // Nope, never going to happen...
                 std::cerr
@@ -498,22 +531,22 @@ block_executor::state block_executor::run_one_iteration()
 
         // We've got enough data on each input to produce noutput_items.
         // Finish setting up the call to work.
-        for (int i = 0; i < d->ninputs(); i++)
-            d_input_items[i] = d->input(i)->read_pointer();
+        for (int i = 0; i < ninputs(); i++)
+            d_input_items[i] = input(i)->read_pointer();
 
     setup_call_to_work:
 
-        d->d_produce_or = 0;
-        for (int i = 0; i < d->noutputs(); i++)
-            d_output_items[i] = d->output(i)->write_pointer();
+        d_produce_or = 0;
+        for (int i = 0; i < noutputs(); i++)
+            d_output_items[i] = output(i)->write_pointer();
 
         // determine where to start looking for new tags
-        for (int i = 0; i < d->ninputs(); i++)
-            d_start_nitems_read[i] = d->nitems_read(i);
+        for (int i = 0; i < ninputs(); i++)
+            d_start_nitems_read[i] = nitems_read(i);
 
 #ifdef GR_PERFORMANCE_COUNTERS
         if (d_use_pc)
-            d->start_perf_counters();
+            start_perf_counters();
 #endif /* GR_PERFORMANCE_COUNTERS */
 
         // Do the actual work of the block
@@ -522,7 +555,7 @@ block_executor::state block_executor::run_one_iteration()
 
 #ifdef GR_PERFORMANCE_COUNTERS
         if (d_use_pc)
-            d->stop_perf_counters(noutput_items, n);
+            stop_perf_counters(noutput_items, n);
 #endif /* GR_PERFORMANCE_COUNTERS */
 
         LOG(*d_log << "  general_work: noutput_items = " << noutput_items
@@ -536,7 +569,6 @@ block_executor::state block_executor::run_one_iteration()
 
         // Now propagate the tags based on the new relative rate
         if (!propagate_tags(m->tag_propagation_policy(),
-                            d,
                             d_start_nitems_read,
                             m->relative_rate(),
                             m->mp_relative_rate(),
@@ -549,7 +581,7 @@ block_executor::state block_executor::run_one_iteration()
             goto were_done;
 
         if (n != block::WORK_CALLED_PRODUCE)
-            d->produce_each(n); // advance write pointers
+            produce_each(n); // advance write pointers
 
         // For some blocks that can change their produce/consume ratio
         // (the relative_rate), we might want to automatically update
@@ -559,11 +591,11 @@ block_executor::state block_executor::run_one_iteration()
             // rrate = ((double)(m->nitems_written(0))) / ((double)m->nitems_read(0));
             // if(rrate > 0.0)
             //  m->set_relative_rate(rrate);
-            if ((n > 0) && (d->consumed() > 0))
-                m->set_relative_rate((uint64_t)n, (uint64_t)d->consumed());
+            if ((n > 0) && (consumed() > 0))
+                m->set_relative_rate((uint64_t)n, (uint64_t)consumed());
         }
 
-        if (d->d_produce_or > 0) // block produced something
+        if (d_produce_or > 0) // block produced something
             return READY;
 
         // We didn't produce any output even though we called general_work.
@@ -571,7 +603,7 @@ block_executor::state block_executor::run_one_iteration()
 
         /*
         // If this is a source, it's broken.
-        if(d->source_p()) {
+        if(source_p()) {
           std::cerr << "block_executor: source " << m
                     << " produced no output.  We're marking it DONE.\n";
           // FIXME maybe we ought to raise an exception...
@@ -586,8 +618,429 @@ block_executor::state block_executor::run_one_iteration()
 
 were_done:
     LOG(*d_log << "  were_done\n");
-    d->set_done(true);
+    set_done(true);
     return DONE;
 }
+
+
+void block_executor::set_input(unsigned int which, buffer_reader_sptr reader)
+{
+    if (which >= d_ninputs)
+        throw std::invalid_argument("block_executor::set_input");
+
+    d_input[which] = reader;
+}
+
+void block_executor::set_output(unsigned int which, buffer_sptr buffer)
+{
+    if (which >= d_noutputs)
+        throw std::invalid_argument("block_executor::set_output");
+
+    d_output[which] = buffer;
+}
+
+void block_executor::set_done(bool done)
+{
+    d_done = done;
+    for (unsigned int i = 0; i < d_noutputs; i++)
+        d_output[i]->set_done(done);
+
+    for (unsigned int i = 0; i < d_ninputs; i++)
+        d_input[i]->set_done(done);
+}
+
+void block_executor::consume(int which_input, int how_many_items)
+{
+    d_consumed = how_many_items;
+    if (how_many_items > 0) {
+        input(which_input)->update_read_pointer(how_many_items);
+    }
+}
+
+int block_executor::consumed() const { return d_consumed; }
+
+void block_executor::consume_each(int how_many_items)
+{
+    d_consumed = how_many_items;
+    if (how_many_items > 0) {
+        for (int i = 0; i < ninputs(); i++) {
+            d_input[i]->update_read_pointer(how_many_items);
+        }
+    }
+}
+
+void block_executor::produce(int which_output, int how_many_items)
+{
+    if (how_many_items > 0) {
+        d_output[which_output]->update_write_pointer(how_many_items);
+        d_produce_or |= how_many_items;
+    }
+}
+
+void block_executor::produce_each(int how_many_items)
+{
+    if (how_many_items > 0) {
+        for (int i = 0; i < noutputs(); i++) {
+            d_output[i]->update_write_pointer(how_many_items);
+        }
+        d_produce_or |= how_many_items;
+    }
+}
+
+uint64_t block_executor::nitems_read(unsigned int which_input)
+{
+    if (which_input >= d_ninputs)
+        throw std::invalid_argument("block_executor::n_input_items");
+    return d_input[which_input]->nitems_read();
+}
+
+uint64_t block_executor::nitems_written(unsigned int which_output)
+{
+    if (which_output >= d_noutputs)
+        throw std::invalid_argument("block_executor::n_output_items");
+    return d_output[which_output]->nitems_written();
+}
+
+void block_executor::reset_nitem_counters()
+{
+    for (unsigned int i = 0; i < d_ninputs; i++) {
+        d_input[i]->reset_nitem_counter();
+    }
+    for (unsigned int o = 0; o < d_noutputs; o++) {
+        d_output[o]->reset_nitem_counter();
+    }
+}
+
+void block_executor::clear_tags()
+{
+    for (unsigned int i = 0; i < d_ninputs; i++) {
+        uint64_t max_time = 0xFFFFFFFFFFFFFFFF; // from now to the end of time
+        d_input[i]->buffer()->prune_tags(max_time);
+    }
+}
+
+void block_executor::add_item_tag(unsigned int which_output, const tag_t& tag)
+{
+    if (!pmt::is_symbol(tag.key)) {
+        throw pmt::wrong_type("block_executor::add_item_tag key", tag.key);
+    } else {
+        // Add tag to gr_buffer's deque tags
+        d_output[which_output]->add_item_tag(tag);
+    }
+}
+
+void block_executor::remove_item_tag(unsigned int which_input, const tag_t& tag, long id)
+{
+    if (!pmt::is_symbol(tag.key)) {
+        throw pmt::wrong_type("block_executor::add_item_tag key", tag.key);
+    } else {
+        // Add tag to gr_buffer's deque tags
+        d_input[which_input]->buffer()->remove_item_tag(tag, id);
+    }
+}
+
+void block_executor::get_tags_in_range(std::vector<tag_t>& v,
+                                       unsigned int which_input,
+                                       uint64_t abs_start,
+                                       uint64_t abs_end,
+                                       long id)
+{
+    // get from gr_buffer_reader's deque of tags
+    d_input[which_input]->get_tags_in_range(v, abs_start, abs_end, id);
+}
+
+void block_executor::get_tags_in_range(std::vector<tag_t>& v,
+                                       unsigned int which_input,
+                                       uint64_t abs_start,
+                                       uint64_t abs_end,
+                                       const pmt::pmt_t& key,
+                                       long id)
+{
+    std::vector<tag_t> found_items;
+
+    v.resize(0);
+
+    // get from gr_buffer_reader's deque of tags
+    d_input[which_input]->get_tags_in_range(found_items, abs_start, abs_end, id);
+
+    // Filter further by key name
+    pmt::pmt_t itemkey;
+    std::vector<tag_t>::iterator itr;
+    for (itr = found_items.begin(); itr != found_items.end(); itr++) {
+        itemkey = (*itr).key;
+        if (pmt::eqv(key, itemkey)) {
+            v.push_back(*itr);
+        }
+    }
+}
+
+void block_executor::set_processor_affinity(const std::vector<int>& mask)
+{
+    if (d_threaded) {
+        try {
+            gr::thread::thread_bind_to_processor(d_thread, mask);
+        } catch (std::runtime_error& e) {
+            std::cerr << "set_processor_affinity: invalid mask." << std::endl;
+        }
+    }
+}
+
+void block_executor::unset_processor_affinity()
+{
+    if (d_threaded) {
+        gr::thread::thread_unbind(d_thread);
+    }
+}
+
+int block_executor::thread_priority()
+{
+    if (d_threaded) {
+        return gr::thread::thread_priority(d_thread);
+    }
+    return -1;
+}
+
+int block_executor::set_thread_priority(int priority)
+{
+    if (d_threaded) {
+        return gr::thread::set_thread_priority(d_thread, priority);
+    }
+    return -1;
+}
+
+void block_executor::notify_upstream()
+{
+    // For each of our inputs, tell the guy upstream that we've
+    // consumed some input, and that he most likely has more output
+    // buffer space available.
+
+    for (size_t i = 0; i < d_input.size(); i++) {
+        // Can you say, "pointer chasing?"
+        d_input[i]->buffer()->link()->executor()->set_output_changed();
+    }
+}
+
+void block_executor::notify_downstream()
+{
+    // For each of our outputs, tell the guys downstream that they
+    // have new input available.
+
+    for (size_t i = 0; i < d_output.size(); i++) {
+        buffer_sptr buf = d_output[i];
+        for (size_t j = 0, k = buf->nreaders(); j < k; j++)
+            buf->reader(j)->link()->executor()->set_input_changed();
+    }
+}
+
+void block_executor::notify_neighbors()
+{
+    notify_downstream();
+    notify_upstream();
+}
+
+
+void block_executor::start_perf_counters()
+{
+    d_start_of_work = gr::high_res_timer_now_perfmon();
+}
+
+void block_executor::stop_perf_counters(int noutput_items, int nproduced)
+{
+    d_end_of_work = gr::high_res_timer_now_perfmon();
+    gr::high_res_timer_type diff = d_end_of_work - d_start_of_work;
+
+    if (d_pc_counter == 0) {
+        d_ins_work_time = diff;
+        d_avg_work_time = diff;
+        d_var_work_time = 0;
+        d_total_work_time = diff;
+        d_ins_nproduced = nproduced;
+        d_avg_nproduced = nproduced;
+        d_var_nproduced = 0;
+        d_ins_noutput_items = noutput_items;
+        d_avg_noutput_items = noutput_items;
+        d_var_noutput_items = 0;
+        d_total_noutput_items = noutput_items;
+        d_pc_start_time = (float)gr::high_res_timer_now();
+        for (size_t i = 0; i < d_input.size(); i++) {
+            buffer_reader_sptr in_buf = d_input[i];
+            gr::thread::scoped_lock guard(*in_buf->mutex());
+            float pfull = static_cast<float>(in_buf->items_available()) /
+                          static_cast<float>(in_buf->max_possible_items_available());
+            d_ins_input_buffers_full[i] = pfull;
+            d_avg_input_buffers_full[i] = pfull;
+            d_var_input_buffers_full[i] = 0;
+        }
+        for (size_t i = 0; i < d_output.size(); i++) {
+            buffer_sptr out_buf = d_output[i];
+            gr::thread::scoped_lock guard(*out_buf->mutex());
+            float pfull = 1.0f - static_cast<float>(out_buf->space_available()) /
+                                     static_cast<float>(out_buf->bufsize());
+            d_ins_output_buffers_full[i] = pfull;
+            d_avg_output_buffers_full[i] = pfull;
+            d_var_output_buffers_full[i] = 0;
+        }
+    } else {
+        float d = diff - d_avg_work_time;
+        d_ins_work_time = diff;
+        d_avg_work_time = d_avg_work_time + d / d_pc_counter;
+        d_var_work_time = d_var_work_time + d * d;
+        d_total_work_time += diff;
+
+        d = nproduced - d_avg_nproduced;
+        d_ins_nproduced = nproduced;
+        d_avg_nproduced = d_avg_nproduced + d / d_pc_counter;
+        d_var_nproduced = d_var_nproduced + d * d;
+
+        d = noutput_items - d_avg_noutput_items;
+        d_ins_noutput_items = noutput_items;
+        d_avg_noutput_items = d_avg_noutput_items + d / d_pc_counter;
+        d_var_noutput_items = d_var_noutput_items + d * d;
+        d_total_noutput_items += noutput_items;
+        d_pc_last_work_time = gr::high_res_timer_now();
+        float monitor_time = (float)(d_pc_last_work_time - d_pc_start_time) /
+                             (float)gr::high_res_timer_tps();
+        d_avg_throughput = d_total_noutput_items / monitor_time;
+
+        for (size_t i = 0; i < d_input.size(); i++) {
+            buffer_reader_sptr in_buf = d_input[i];
+            gr::thread::scoped_lock guard(*in_buf->mutex());
+            float pfull = static_cast<float>(in_buf->items_available()) /
+                          static_cast<float>(in_buf->max_possible_items_available());
+
+            d = pfull - d_avg_input_buffers_full[i];
+            d_ins_input_buffers_full[i] = pfull;
+            d_avg_input_buffers_full[i] = d_avg_input_buffers_full[i] + d / d_pc_counter;
+            d_var_input_buffers_full[i] = d_var_input_buffers_full[i] + d * d;
+        }
+
+        for (size_t i = 0; i < d_output.size(); i++) {
+            buffer_sptr out_buf = d_output[i];
+            gr::thread::scoped_lock guard(*out_buf->mutex());
+            float pfull = 1.0f - static_cast<float>(out_buf->space_available()) /
+                                     static_cast<float>(out_buf->bufsize());
+
+            d = pfull - d_avg_output_buffers_full[i];
+            d_ins_output_buffers_full[i] = pfull;
+            d_avg_output_buffers_full[i] =
+                d_avg_output_buffers_full[i] + d / d_pc_counter;
+            d_var_output_buffers_full[i] = d_var_output_buffers_full[i] + d * d;
+        }
+    }
+
+    d_pc_counter++;
+}
+
+void block_executor::reset_perf_counters() { d_pc_counter = 0; }
+
+float block_executor::pc_noutput_items() { return d_ins_noutput_items; }
+
+float block_executor::pc_nproduced() { return d_ins_nproduced; }
+
+float block_executor::pc_input_buffers_full(size_t which)
+{
+    if (which < d_ins_input_buffers_full.size())
+        return d_ins_input_buffers_full[which];
+    else
+        return 0;
+}
+
+std::vector<float> block_executor::pc_input_buffers_full()
+{
+    return d_ins_input_buffers_full;
+}
+
+float block_executor::pc_output_buffers_full(size_t which)
+{
+    if (which < d_ins_output_buffers_full.size())
+        return d_ins_output_buffers_full[which];
+    else
+        return 0;
+}
+
+std::vector<float> block_executor::pc_output_buffers_full()
+{
+    return d_ins_output_buffers_full;
+}
+
+float block_executor::pc_work_time() { return d_ins_work_time; }
+
+float block_executor::pc_noutput_items_avg() { return d_avg_noutput_items; }
+
+float block_executor::pc_nproduced_avg() { return d_avg_nproduced; }
+
+float block_executor::pc_input_buffers_full_avg(size_t which)
+{
+    if (which < d_avg_input_buffers_full.size())
+        return d_avg_input_buffers_full[which];
+    else
+        return 0;
+}
+
+std::vector<float> block_executor::pc_input_buffers_full_avg()
+{
+    return d_avg_input_buffers_full;
+}
+
+float block_executor::pc_output_buffers_full_avg(size_t which)
+{
+    if (which < d_avg_output_buffers_full.size())
+        return d_avg_output_buffers_full[which];
+    else
+        return 0;
+}
+
+std::vector<float> block_executor::pc_output_buffers_full_avg()
+{
+    return d_avg_output_buffers_full;
+}
+
+float block_executor::pc_work_time_avg() { return d_avg_work_time; }
+
+float block_executor::pc_noutput_items_var()
+{
+    return d_var_noutput_items / (d_pc_counter - 1);
+}
+
+float block_executor::pc_nproduced_var() { return d_var_nproduced / (d_pc_counter - 1); }
+
+float block_executor::pc_input_buffers_full_var(size_t which)
+{
+    if (which < d_avg_input_buffers_full.size())
+        return d_var_input_buffers_full[which] / (d_pc_counter - 1);
+    else
+        return 0;
+}
+
+std::vector<float> block_executor::pc_input_buffers_full_var()
+{
+    std::vector<float> var(d_avg_input_buffers_full.size(), 0);
+    for (size_t i = 0; i < d_avg_input_buffers_full.size(); i++)
+        var[i] = d_avg_input_buffers_full[i] / (d_pc_counter - 1);
+    return var;
+}
+
+float block_executor::pc_output_buffers_full_var(size_t which)
+{
+    if (which < d_avg_output_buffers_full.size())
+        return d_var_output_buffers_full[which] / (d_pc_counter - 1);
+    else
+        return 0;
+}
+
+std::vector<float> block_executor::pc_output_buffers_full_var()
+{
+    std::vector<float> var(d_avg_output_buffers_full.size(), 0);
+    for (size_t i = 0; i < d_avg_output_buffers_full.size(); i++)
+        var[i] = d_avg_output_buffers_full[i] / (d_pc_counter - 1);
+    return var;
+}
+
+float block_executor::pc_work_time_var() { return d_var_work_time / (d_pc_counter - 1); }
+
+float block_executor::pc_work_time_total() { return d_total_work_time; }
+
+float block_executor::pc_throughput_avg() { return d_avg_throughput; }
+
 
 } /* namespace gr */

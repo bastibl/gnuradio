@@ -40,7 +40,7 @@
 
 %{
 #include <gnuradio/block.h>
-#include <gnuradio/block_detail.h>
+#include <gnuradio/block_executor.h>
 #include <gnuradio/buffer.h>
 #include <gnuradio/constants.h>
 #include <gnuradio/endianness.h>
@@ -72,7 +72,6 @@
 %include <gnuradio/realtime.h>
 %include "basic_block.i"
 %include "block.i"
-%include "block_detail.i"
 %include "buffer.i"
 %include "constants.i"
 %include "feval.i"

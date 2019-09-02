@@ -21,7 +21,7 @@
  */
 
 #include <gnuradio/block.h>
-#include <gnuradio/block_detail.h>
+#include <gnuradio/block_executor.h>
 #include <gnuradio/block_registry.h>
 #include <gnuradio/buffer.h>
 #include <gnuradio/prefs.h>
@@ -75,10 +75,10 @@ void block::set_history(unsigned history) { d_history = history; }
 void block::declare_sample_delay(unsigned delay)
 {
     d_attr_delay = delay;
-    if (d_detail) {
-        unsigned int nins = static_cast<unsigned int>(d_detail->ninputs());
+    if (d_executor) {
+        unsigned int nins = static_cast<unsigned int>(d_executor->ninputs());
         for (unsigned int n = 0; n < nins; n++) {
-            d_detail->input(n)->declare_sample_delay(d_attr_delay);
+            d_executor->input(n)->declare_sample_delay(d_attr_delay);
         }
     }
 }
@@ -86,8 +86,8 @@ void block::declare_sample_delay(unsigned delay)
 void block::declare_sample_delay(int which, unsigned delay)
 {
     d_attr_delay = delay;
-    if (d_detail) {
-        d_detail->input(which)->declare_sample_delay(d_attr_delay);
+    if (d_executor) {
+        d_executor->input(which)->declare_sample_delay(d_attr_delay);
     }
 }
 
@@ -178,14 +178,14 @@ void block::set_relative_rate(uint64_t interpolation, uint64_t decimation)
 
 void block::consume(int which_input, int how_many_items)
 {
-    d_detail->consume(which_input, how_many_items);
+    d_executor->consume(which_input, how_many_items);
 }
 
-void block::consume_each(int how_many_items) { d_detail->consume_each(how_many_items); }
+void block::consume_each(int how_many_items) { d_executor->consume_each(how_many_items); }
 
 void block::produce(int which_output, int how_many_items)
 {
-    d_detail->produce(which_output, how_many_items);
+    d_executor->produce(which_output, how_many_items);
 }
 
 int block::fixed_rate_ninput_to_noutput(int ninput)
@@ -200,8 +200,8 @@ int block::fixed_rate_noutput_to_ninput(int noutput)
 
 uint64_t block::nitems_read(unsigned int which_input)
 {
-    if (d_detail) {
-        return d_detail->nitems_read(which_input);
+    if (d_executor) {
+        return d_executor->nitems_read(which_input);
     } else {
         // throw std::runtime_error("No block_detail associated with block yet");
         return 0;
@@ -210,22 +210,22 @@ uint64_t block::nitems_read(unsigned int which_input)
 
 uint64_t block::nitems_written(unsigned int which_output)
 {
-    if (d_detail) {
-        return d_detail->nitems_written(which_output);
+    if (d_executor) {
+        return d_executor->nitems_written(which_output);
     } else {
-        // throw std::runtime_error("No block_detail associated with block yet");
+        // throw std::runtime_error("No block_executor associated with block yet");
         return 0;
     }
 }
 
 void block::add_item_tag(unsigned int which_output, const tag_t& tag)
 {
-    d_detail->add_item_tag(which_output, tag);
+    d_executor->add_item_tag(which_output, tag);
 }
 
 void block::remove_item_tag(unsigned int which_input, const tag_t& tag)
 {
-    d_detail->remove_item_tag(which_input, tag, unique_id());
+    d_executor->remove_item_tag(which_input, tag, unique_id());
 }
 
 void block::get_tags_in_range(std::vector<tag_t>& v,
@@ -233,7 +233,7 @@ void block::get_tags_in_range(std::vector<tag_t>& v,
                               uint64_t start,
                               uint64_t end)
 {
-    d_detail->get_tags_in_range(v, which_input, start, end, unique_id());
+    d_executor->get_tags_in_range(v, which_input, start, end, unique_id());
 }
 
 void block::get_tags_in_range(std::vector<tag_t>& v,
@@ -242,7 +242,7 @@ void block::get_tags_in_range(std::vector<tag_t>& v,
                               uint64_t end,
                               const pmt::pmt_t& key)
 {
-    d_detail->get_tags_in_range(v, which_input, start, end, key, unique_id());
+    d_executor->get_tags_in_range(v, which_input, start, end, key, unique_id());
 }
 
 void block::get_tags_in_window(std::vector<tag_t>& v,
@@ -250,7 +250,7 @@ void block::get_tags_in_window(std::vector<tag_t>& v,
                                uint64_t start,
                                uint64_t end)
 {
-    d_detail->get_tags_in_range(v,
+    d_executor->get_tags_in_range(v,
                                 which_input,
                                 nitems_read(which_input) + start,
                                 nitems_read(which_input) + end,
@@ -263,7 +263,7 @@ void block::get_tags_in_window(std::vector<tag_t>& v,
                                uint64_t end,
                                const pmt::pmt_t& key)
 {
-    d_detail->get_tags_in_range(v,
+    d_executor->get_tags_in_range(v,
                                 which_input,
                                 nitems_read(which_input) + start,
                                 nitems_read(which_input) + end,
@@ -300,23 +300,23 @@ bool block::is_set_max_noutput_items() { return d_max_noutput_items_set; }
 void block::set_processor_affinity(const std::vector<int>& mask)
 {
     d_affinity = mask;
-    if (d_detail) {
-        d_detail->set_processor_affinity(d_affinity);
+    if (d_executor) {
+        d_executor->set_processor_affinity(d_affinity);
     }
 }
 
 void block::unset_processor_affinity()
 {
     d_affinity.clear();
-    if (d_detail) {
-        d_detail->unset_processor_affinity();
+    if (d_executor) {
+        d_executor->unset_processor_affinity();
     }
 }
 
 int block::active_thread_priority()
 {
-    if (d_detail) {
-        return d_detail->thread_priority();
+    if (d_executor) {
+        return d_executor->thread_priority();
     }
     return -1;
 }
@@ -326,8 +326,8 @@ int block::thread_priority() { return d_priority; }
 int block::set_thread_priority(int priority)
 {
     d_priority = priority;
-    if (d_detail) {
-        return d_detail->set_thread_priority(priority);
+    if (d_executor) {
+        return d_executor->set_thread_priority(priority);
     }
     return d_priority;
 }
@@ -393,8 +393,8 @@ void block::enable_update_rate(bool en) { d_update_rate = en; }
 
 float block::pc_noutput_items()
 {
-    if (d_detail) {
-        return d_detail->pc_noutput_items();
+    if (d_executor) {
+        return d_executor->pc_noutput_items();
     } else {
         return 0;
     }
@@ -402,8 +402,8 @@ float block::pc_noutput_items()
 
 float block::pc_noutput_items_avg()
 {
-    if (d_detail) {
-        return d_detail->pc_noutput_items_avg();
+    if (d_executor) {
+        return d_executor->pc_noutput_items_avg();
     } else {
         return 0;
     }
@@ -411,8 +411,8 @@ float block::pc_noutput_items_avg()
 
 float block::pc_noutput_items_var()
 {
-    if (d_detail) {
-        return d_detail->pc_noutput_items_var();
+    if (d_executor) {
+        return d_executor->pc_noutput_items_var();
     } else {
         return 0;
     }
@@ -420,8 +420,8 @@ float block::pc_noutput_items_var()
 
 float block::pc_nproduced()
 {
-    if (d_detail) {
-        return d_detail->pc_nproduced();
+    if (d_executor) {
+        return d_executor->pc_nproduced();
     } else {
         return 0;
     }
@@ -429,8 +429,8 @@ float block::pc_nproduced()
 
 float block::pc_nproduced_avg()
 {
-    if (d_detail) {
-        return d_detail->pc_nproduced_avg();
+    if (d_executor) {
+        return d_executor->pc_nproduced_avg();
     } else {
         return 0;
     }
@@ -438,8 +438,8 @@ float block::pc_nproduced_avg()
 
 float block::pc_nproduced_var()
 {
-    if (d_detail) {
-        return d_detail->pc_nproduced_var();
+    if (d_executor) {
+        return d_executor->pc_nproduced_var();
     } else {
         return 0;
     }
@@ -447,8 +447,8 @@ float block::pc_nproduced_var()
 
 float block::pc_input_buffers_full(int which)
 {
-    if (d_detail) {
-        return d_detail->pc_input_buffers_full(static_cast<size_t>(which));
+    if (d_executor) {
+        return d_executor->pc_input_buffers_full(static_cast<size_t>(which));
     } else {
         return 0;
     }
@@ -456,8 +456,8 @@ float block::pc_input_buffers_full(int which)
 
 float block::pc_input_buffers_full_avg(int which)
 {
-    if (d_detail) {
-        return d_detail->pc_input_buffers_full_avg(static_cast<size_t>(which));
+    if (d_executor) {
+        return d_executor->pc_input_buffers_full_avg(static_cast<size_t>(which));
     } else {
         return 0;
     }
@@ -465,8 +465,8 @@ float block::pc_input_buffers_full_avg(int which)
 
 float block::pc_input_buffers_full_var(int which)
 {
-    if (d_detail) {
-        return d_detail->pc_input_buffers_full_var(static_cast<size_t>(which));
+    if (d_executor) {
+        return d_executor->pc_input_buffers_full_var(static_cast<size_t>(which));
     } else {
         return 0;
     }
@@ -474,8 +474,8 @@ float block::pc_input_buffers_full_var(int which)
 
 std::vector<float> block::pc_input_buffers_full()
 {
-    if (d_detail) {
-        return d_detail->pc_input_buffers_full();
+    if (d_executor) {
+        return d_executor->pc_input_buffers_full();
     } else {
         return std::vector<float>(1, 0);
     }
@@ -483,8 +483,8 @@ std::vector<float> block::pc_input_buffers_full()
 
 std::vector<float> block::pc_input_buffers_full_avg()
 {
-    if (d_detail) {
-        return d_detail->pc_input_buffers_full_avg();
+    if (d_executor) {
+        return d_executor->pc_input_buffers_full_avg();
     } else {
         return std::vector<float>(1, 0);
     }
@@ -492,8 +492,8 @@ std::vector<float> block::pc_input_buffers_full_avg()
 
 std::vector<float> block::pc_input_buffers_full_var()
 {
-    if (d_detail) {
-        return d_detail->pc_input_buffers_full_var();
+    if (d_executor) {
+        return d_executor->pc_input_buffers_full_var();
     } else {
         return std::vector<float>(1, 0);
     }
@@ -501,8 +501,8 @@ std::vector<float> block::pc_input_buffers_full_var()
 
 float block::pc_output_buffers_full(int which)
 {
-    if (d_detail) {
-        return d_detail->pc_output_buffers_full(static_cast<size_t>(which));
+    if (d_executor) {
+        return d_executor->pc_output_buffers_full(static_cast<size_t>(which));
     } else {
         return 0;
     }
@@ -510,8 +510,8 @@ float block::pc_output_buffers_full(int which)
 
 float block::pc_output_buffers_full_avg(int which)
 {
-    if (d_detail) {
-        return d_detail->pc_output_buffers_full_avg(static_cast<size_t>(which));
+    if (d_executor) {
+        return d_executor->pc_output_buffers_full_avg(static_cast<size_t>(which));
     } else {
         return 0;
     }
@@ -519,8 +519,8 @@ float block::pc_output_buffers_full_avg(int which)
 
 float block::pc_output_buffers_full_var(int which)
 {
-    if (d_detail) {
-        return d_detail->pc_output_buffers_full_var(static_cast<size_t>(which));
+    if (d_executor) {
+        return d_executor->pc_output_buffers_full_var(static_cast<size_t>(which));
     } else {
         return 0;
     }
@@ -528,8 +528,8 @@ float block::pc_output_buffers_full_var(int which)
 
 std::vector<float> block::pc_output_buffers_full()
 {
-    if (d_detail) {
-        return d_detail->pc_output_buffers_full();
+    if (d_executor) {
+        return d_executor->pc_output_buffers_full();
     } else {
         return std::vector<float>(1, 0);
     }
@@ -537,8 +537,8 @@ std::vector<float> block::pc_output_buffers_full()
 
 std::vector<float> block::pc_output_buffers_full_avg()
 {
-    if (d_detail) {
-        return d_detail->pc_output_buffers_full_avg();
+    if (d_executor) {
+        return d_executor->pc_output_buffers_full_avg();
     } else {
         return std::vector<float>(1, 0);
     }
@@ -546,8 +546,8 @@ std::vector<float> block::pc_output_buffers_full_avg()
 
 std::vector<float> block::pc_output_buffers_full_var()
 {
-    if (d_detail) {
-        return d_detail->pc_output_buffers_full_var();
+    if (d_executor) {
+        return d_executor->pc_output_buffers_full_var();
     } else {
         return std::vector<float>(1, 0);
     }
@@ -555,8 +555,8 @@ std::vector<float> block::pc_output_buffers_full_var()
 
 float block::pc_work_time()
 {
-    if (d_detail) {
-        return d_detail->pc_work_time();
+    if (d_executor) {
+        return d_executor->pc_work_time();
     } else {
         return 0;
     }
@@ -564,8 +564,8 @@ float block::pc_work_time()
 
 float block::pc_work_time_avg()
 {
-    if (d_detail) {
-        return d_detail->pc_work_time_avg();
+    if (d_executor) {
+        return d_executor->pc_work_time_avg();
     } else {
         return 0;
     }
@@ -573,8 +573,8 @@ float block::pc_work_time_avg()
 
 float block::pc_work_time_var()
 {
-    if (d_detail) {
-        return d_detail->pc_work_time_var();
+    if (d_executor) {
+        return d_executor->pc_work_time_var();
     } else {
         return 0;
     }
@@ -582,8 +582,8 @@ float block::pc_work_time_var()
 
 float block::pc_work_time_total()
 {
-    if (d_detail) {
-        return d_detail->pc_work_time_total();
+    if (d_executor) {
+        return d_executor->pc_work_time_total();
     } else {
         return 0;
     }
@@ -591,8 +591,8 @@ float block::pc_work_time_total()
 
 float block::pc_throughput_avg()
 {
-    if (d_detail) {
-        return d_detail->pc_throughput_avg();
+    if (d_executor) {
+        return d_executor->pc_throughput_avg();
     } else {
         return 0;
     }
@@ -600,8 +600,8 @@ float block::pc_throughput_avg()
 
 void block::reset_perf_counters()
 {
-    if (d_detail) {
-        d_detail->reset_perf_counters();
+    if (d_executor) {
+        d_executor->reset_perf_counters();
     }
 }
 
@@ -655,7 +655,7 @@ void block::notify_msg_neighbors()
 
 bool block::finished()
 {
-    if (detail()->ninputs() != 0)
+    if (executor()->ninputs() != 0)
         return false;
     else
         return d_finished;
@@ -683,10 +683,7 @@ pmt::pmt_t block::message_ports_in()
     return port_names;
 }
 
-void block::post(pmt::pmt_t which_port, pmt::pmt_t msg)
-{
-    insert_tail(which_port, msg);
-}
+void block::post(pmt::pmt_t which_port, pmt::pmt_t msg) { insert_tail(which_port, msg); }
 
 void block::insert_tail(pmt::pmt_t which_port, pmt::pmt_t msg)
 {

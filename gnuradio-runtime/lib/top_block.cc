@@ -91,7 +91,7 @@ void top_block::start(int max_noutput_items)
 
     // Validate new simple flow graph and wire it up
     d_ffg->validate();
-    d_ffg->setup_connections();
+    d_ffg->setup_connections(max_noutput_items);
 
     // Only export perf. counters if ControlPort config param is
     // enabled and if the PerfCounter option 'export' is turned on.
@@ -100,7 +100,7 @@ void top_block::start(int max_noutput_items)
         p->get_bool("PerfCounters", "export", false))
         d_ffg->enable_pc_rpc();
 
-    d_scheduler = scheduler::make(d_ffg, d_max_noutput_items);
+    d_scheduler = scheduler::make(d_ffg);
     d_state = RUNNING;
 
     if (prefs::singleton()->get_bool("ControlPort", "on", false)) {
@@ -204,13 +204,12 @@ void top_block::restart()
     wait_for_jobs();
 
     // Create new simple flow graph
-    flat_flowgraph_sptr new_ffg = flatten();
-    new_ffg->validate();               // check consistency, sanity, etc
-    new_ffg->merge_connections(d_ffg); // reuse buffers, etc
-    d_ffg = new_ffg;
+    d_ffg = flatten();
+    d_ffg->validate();
+    d_ffg->setup_connections(d_max_noutput_items);
 
     // Create a new scheduler to execute it
-    d_scheduler = scheduler::make(d_ffg, d_max_noutput_items);
+    d_scheduler = scheduler::make(d_ffg);
     d_retry_wait = true;
 }
 

@@ -66,7 +66,7 @@ BOOST_AUTO_TEST_CASE(t1)
     BOOST_REQUIRE_EQUAL(0, dst2->output_signature()->max_streams());
 }
 
-#include <gnuradio/block_detail.h>
+#include <gnuradio/block_executor.h>
 #include <gnuradio/blocks/nop.h>
 #include <gnuradio/buffer.h>
 #include <gnuradio/top_block.h>
@@ -82,10 +82,10 @@ BOOST_AUTO_TEST_CASE(t2)
     tb->connect(nop, 0, dst1, 0);
     tb->start();
 
-    const char* obuf = nop->detail()->output(0)->base();
-    int obsize = nop->detail()->output(0)->bufsize();
-    const char* ibuf = nop->detail()->input(0)->buffer()->base();
-    int ibsize = nop->detail()->input(0)->buffer()->bufsize();
+    const char* obuf = nop->executor()->output(0)->base();
+    int obsize = nop->executor()->output(0)->bufsize();
+    const char* ibuf = nop->executor()->input(0)->buffer()->base();
+    int ibsize = nop->executor()->input(0)->buffer()->bufsize();
 
     BOOST_REQUIRE(obuf != NULL);
     BOOST_REQUIRE(ibuf != NULL);

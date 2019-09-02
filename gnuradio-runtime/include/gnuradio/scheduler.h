@@ -49,7 +49,7 @@ private:
      * The scheduler will continue running until all blocks until they
      * report that they are done or the stop method is called.
      */
-    scheduler(flat_flowgraph_sptr ffg, int max_noutput_items);
+    scheduler(flat_flowgraph_sptr ffg);
 
 public:
     typedef boost::shared_ptr<scheduler> sptr;
@@ -60,7 +60,7 @@ public:
      * The scheduler will continue running until all blocks
      * report that they are done or the stop method is called.
      */
-    static scheduler::sptr make(flat_flowgraph_sptr ffg, int max_noutput_items = 100000);
+    static sptr make(flat_flowgraph_sptr ffg);
 
     virtual ~scheduler();
 
