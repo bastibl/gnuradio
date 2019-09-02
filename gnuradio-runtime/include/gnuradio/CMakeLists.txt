@@ -58,7 +58,6 @@ install(FILES
   top_block.h
   scheduler.h
   sincos.h
-  sptr_magic.h
   sync_block.h
   sync_decimator.h
   sync_interpolator.h

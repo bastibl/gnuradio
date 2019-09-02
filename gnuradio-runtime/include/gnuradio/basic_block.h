@@ -26,7 +26,6 @@
 #include <gnuradio/api.h>
 #include <gnuradio/io_signature.h>
 #include <gnuradio/runtime_types.h>
-#include <gnuradio/sptr_magic.h>
 #include <gnuradio/thread/thread.h>
 #include <pmt/pmt.h>
 #include <boost/enable_shared_from_this.hpp>
@@ -185,7 +184,7 @@ public:
 
 protected:
     //! Protected constructor prevents instantiation by non-derived classes
-     basic_block(void) {} // allows pure virtual interface sub-classes
+    basic_block(void) {} // allows pure virtual interface sub-classes
 
     basic_block(const std::string& name,
                 gr::io_signature::sptr input_signature,
@@ -227,6 +226,18 @@ inline std::ostream& operator<<(std::ostream& os, basic_block::sptr basic_block)
     os << basic_block->unique_name();
     return os;
 }
+
+namespace gnuradio {
+/*
+ * \brief New!  Improved!  Standard method to get/create the
+ * boost::shared_ptr for a block.
+ */
+template <class T>
+boost::shared_ptr<T> get_initial_sptr(T* p)
+{
+    return boost::dynamic_pointer_cast<T, gr::basic_block>(gr::basic_block::sptr(p));
+}
+} // namespace gnuradio
 
 } /* namespace gr */
 

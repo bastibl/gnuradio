@@ -83,15 +83,15 @@ ofdm_sync_sc_cfb_impl::ofdm_sync_sc_cfb_impl(int fft_len,
     d_plateau_detector = plateau_detector;
 
     // Delay Path
-    connect(self(), 0, delay, 0);
+    connect_input(0, 0, delay);
     connect(delay, 0, delay_conjugate, 0);
     connect(delay_conjugate, 0, delay_corr, 1);
-    connect(self(), 0, delay_corr, 0);
+    connect_input(0, 0, delay_corr);
     connect(delay_corr, 0, delay_ma, 0);
     connect(delay_ma, 0, delay_magsquare, 0);
     connect(delay_magsquare, 0, delay_normalize, 0);
     // Energy Path
-    connect(self(), 0, normalizer_magsquare, 0);
+    connect_input(0, 0, normalizer_magsquare);
     connect(normalizer_magsquare, 0, normalizer_ma, 0);
     connect(normalizer_ma, 0, normalizer_square, 0);
     connect(normalizer_ma, 0, normalizer_square, 1);
@@ -99,14 +99,14 @@ ofdm_sync_sc_cfb_impl::ofdm_sync_sc_cfb_impl(int fft_len,
     // Fine frequency estimate (output 0)
     connect(delay_ma, 0, peak_to_angle, 0);
     connect(peak_to_angle, 0, sample_and_hold, 0);
-    connect(sample_and_hold, 0, self(), 0);
+    connect_output(0, 0, sample_and_hold);
     // Peak detect (output 1)
     connect(delay_normalize, 0, plateau_detector, 0);
     connect(plateau_detector, 0, sample_and_hold, 1);
-    connect(plateau_detector, 0, self(), 1);
+    connect_output(1, 0, plateau_detector);
 #ifdef SYNC_ADD_DEBUG_OUTPUT
     // Debugging: timing metric (output 2)
-    connect(delay_normalize, 0, self(), 2);
+    connect_output(2, 0, delay_normalize);
 #endif
 }
 

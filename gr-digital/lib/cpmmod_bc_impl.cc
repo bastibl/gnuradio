@@ -69,10 +69,10 @@ cpmmod_bc_impl::cpmmod_bc_impl(const std::string& name,
         throw std::invalid_argument("cpmmod_bc_impl: invalid CPM type");
     }
 
-    connect(self(), 0, d_char_to_float, 0);
+    connect_input(0, 0, d_char_to_float);
     connect(d_char_to_float, 0, d_pulse_shaper, 0);
     connect(d_pulse_shaper, 0, d_fm, 0);
-    connect(d_fm, 0, self(), 0);
+    connect_output(0, 0, d_fm);
 }
 
 cpmmod_bc_impl::~cpmmod_bc_impl() {}

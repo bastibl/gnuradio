@@ -87,12 +87,12 @@ dynamic_channel_model_impl::dynamic_channel_model_impl(double samp_rate,
     d_fader = channels::selective_fading_model::make(
         N, doppler_freq / samp_rate, LOS_model, K, noise_seed, delays, mags, ntaps_mpath);
 
-    connect(self(), 0, d_sro_model, 0);
+    connect_input(0, 0, d_sro_model);
     connect(d_sro_model, 0, d_cfo_model, 0);
     connect(d_cfo_model, 0, d_fader, 0);
     connect(d_fader, 0, d_noise_adder, 1);
     connect(d_noise, 0, d_noise_adder, 0);
-    connect(d_noise_adder, 0, self(), 0);
+    connect_output(0, 0, d_noise_adder);
 }
 
 dynamic_channel_model_impl::~dynamic_channel_model_impl() {}

@@ -65,13 +65,13 @@ channel_model_impl::channel_model_impl(double noise_voltage,
         analog::sig_source_c::make(1, analog::GR_SIN_WAVE, frequency_offset, 1.0, 0.0);
     d_mixer_offset = blocks::multiply_cc::make();
 
-    connect(self(), 0, d_timing_offset, 0);
+    connect_input(0, 0, d_timing_offset);
     connect(d_timing_offset, 0, d_multipath, 0);
     connect(d_multipath, 0, d_mixer_offset, 0);
     connect(d_freq_offset, 0, d_mixer_offset, 1);
     connect(d_mixer_offset, 0, d_noise_adder, 1);
     connect(d_noise, 0, d_noise_adder, 0);
-    connect(d_noise_adder, 0, self(), 0);
+    connect_output(0, 0, d_noise_adder);
 
     if (block_tags) {
         d_timing_offset->set_tag_propagation_policy(gr::block::TPP_DONT);

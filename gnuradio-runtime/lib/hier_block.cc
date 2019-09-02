@@ -46,9 +46,6 @@ hier_block::hier_block(const std::string& name,
       d_fg(make_flowgraph()),
       d_message_ports_in(pmt::PMT_NIL)
 {
-    // This bit of magic ensures that self() works in the constructors of derived classes.
-    gnuradio::detail::sptr_magic::create_and_stash_initial_sptr(this);
-
     int min_inputs = input_signature->min_streams();
     int max_inputs = input_signature->max_streams();
     int min_outputs = output_signature->min_streams();
@@ -73,11 +70,7 @@ hier_block::hier_block(const std::string& name,
 hier_block::~hier_block()
 {
     disconnect_all();
-    gnuradio::detail::sptr_magic::cancel_initial_sptr(this);
 }
-
-basic_block::sptr hier_block::self() { return shared_from_this(); }
-
 
 void hier_block::connect(basic_block::sptr block)
 {
@@ -95,8 +88,6 @@ void hier_block::connect(basic_block::sptr block)
         msg << "Block " << block << " must not have any input or output ports";
         throw std::invalid_argument(msg.str());
     }
-
-    hier_block_sptr hblock(cast_to_hier_block_sptr(block));
 
     d_blocks.push_back(block);
 }

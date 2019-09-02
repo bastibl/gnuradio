@@ -46,16 +46,6 @@ public:
     virtual ~hier_block();
 
     /*!
-     * \brief Return an object, representing the current block, which
-     * can be passed to connect.
-     *
-     * The returned object may only be used as an argument to connect
-     * or disconnect.  Any other use of self() results in unspecified
-     * (erroneous) behavior.
-     */
-    basic_block::sptr self();
-
-    /*!
      * \brief Add a stand-alone (possibly hierarchical) block to
      * internal graph
      *
@@ -234,6 +224,11 @@ protected:
 
     void flatten_aux(flat_flowgraph_sptr sfg) const;
 
+    void connect_input(int my_port, int port, basic_block::sptr block);
+    void connect_output(int my_port, int port, basic_block::sptr block);
+    void disconnect_input(int my_port, int port, basic_block::sptr block);
+    void disconnect_output(int my_port, int port, basic_block::sptr block);
+
 private:
     // Track output buffer min/max settings
     std::vector<size_t> d_max_output_buffer;
@@ -249,10 +244,6 @@ private:
     pmt::pmt_t d_message_ports_in;
 
     void refresh_io_signature();
-    void connect_input(int my_port, int port, basic_block::sptr block);
-    void connect_output(int my_port, int port, basic_block::sptr block);
-    void disconnect_input(int my_port, int port, basic_block::sptr block);
-    void disconnect_output(int my_port, int port, basic_block::sptr block);
 
     endpoint_vector_t resolve_port(int port, bool is_input);
     endpoint_vector_t resolve_endpoint(const endpoint& endp, bool is_input) const;

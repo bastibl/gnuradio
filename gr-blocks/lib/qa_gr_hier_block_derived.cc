@@ -47,7 +47,7 @@ public:
 
 gr_derived_block_sptr gr_make_derived_block()
 {
-    return gnuradio::get_initial_sptr(new gr_derived_block());
+    return gr::gnuradio::get_initial_sptr(new gr_derived_block());
 }
 
 gr_derived_block::gr_derived_block()
@@ -57,8 +57,8 @@ gr_derived_block::gr_derived_block()
 {
     gr::block_sptr copy(gr::blocks::copy::make(sizeof(int)));
 
-    connect(self(), 0, copy, 0);
-    connect(copy, 0, self(), 0);
+    connect_input(0, 0, copy);
+    connect_output(0, 0, copy);
 }
 
 gr_derived_block::~gr_derived_block() {}
