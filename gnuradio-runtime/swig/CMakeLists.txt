@@ -84,7 +84,6 @@ install(
     basic_block.i
     block.i
     block_gateway.i
-    buffer.i
     constants.i
     feval.i
     gr_ctrlport.i

@@ -45,9 +45,9 @@ class vmcircbuf;
  * \param sizeof_item is the size of an item in bytes.
  * \param link is the block that writes to this buffer.
  */
-GR_RUNTIME_API buffer_sptr make_buffer(int nitems,
+GR_RUNTIME_API buffer_uptr make_buffer(int nitems,
                                        size_t sizeof_item,
-                                       block_sptr link = block_sptr());
+                                       block* link);
 
 /*!
  * \brief Single writer, multiple reader fifo.
@@ -92,7 +92,7 @@ public:
     /*!
      * \brief Return the block that writes to this buffer.
      */
-    block_sptr link() { return block_sptr(d_link); }
+    block* link() { return d_link; }
 
     size_t nreaders() const { return d_readers.size(); }
     buffer_reader* reader(size_t index) { return d_readers[index]; }
@@ -151,12 +151,12 @@ public:
 
 private:
     friend class buffer_reader;
-    friend GR_RUNTIME_API buffer_sptr make_buffer(int nitems,
+    friend GR_RUNTIME_API buffer_uptr make_buffer(int nitems,
                                                   size_t sizeof_item,
-                                                  block_sptr link);
-    friend GR_RUNTIME_API buffer_reader_sptr buffer_add_reader(buffer_sptr buf,
+                                                  block* link);
+    friend GR_RUNTIME_API buffer_reader_uptr buffer_add_reader(buffer* buf,
                                                                int nzero_preload,
-                                                               block_sptr link,
+                                                               block* link,
                                                                int delay);
 
 protected:
@@ -170,7 +170,7 @@ private:
     gr::vmcircbuf* d_vmcircbuf;
     size_t d_sizeof_item; // in bytes
     std::vector<buffer_reader*> d_readers;
-    boost::weak_ptr<block> d_link; // block that writes to this buffer
+    block* d_link; // block that writes to this buffer
 
     //
     // The mutex protects d_write_index, d_abs_write_offset, d_done, d_item_tags
@@ -220,12 +220,7 @@ private:
      * dependent boundary.  This is typically the system page size, but
      * under MS windows is 64KB.
      */
-    buffer(int nitems, size_t sizeof_item, block_sptr link);
-
-    /*!
-     * \brief disassociate \p reader from this buffer
-     */
-    void drop_reader(buffer_reader* reader);
+    buffer(int nitems, size_t sizeof_item, block* link);
 };
 
 /*!
@@ -235,9 +230,9 @@ private:
  * \param link is the block that reads from the buffer using this gr::buffer_reader.
  * \param delay Optional setting to declare the buffer's sample delay.
  */
-GR_RUNTIME_API buffer_reader_sptr buffer_add_reader(buffer_sptr buf,
+GR_RUNTIME_API buffer_reader_uptr buffer_add_reader(buffer* buf,
                                                     int nzero_preload,
-                                                    block_sptr link = block_sptr(),
+                                                    block* link,
                                                     int delay = 0);
 
 //! returns # of buffers currently allocated
@@ -279,7 +274,7 @@ public:
     /*!
      * \brief Return buffer this reader reads from.
      */
-    buffer_sptr buffer() const { return d_buffer; }
+    class buffer* buffer() const { return d_buffer; }
 
     /*!
      * \brief Return maximum number of items that could ever be available for reading.
@@ -314,7 +309,7 @@ public:
      * \brief Return the block that reads via this reader.
      *
      */
-    block_sptr link() { return block_sptr(d_link); }
+    block* link() { return d_link; }
 
     /*!
      * \brief Given a [start,end), returns a vector all tags in the range.
@@ -339,19 +334,19 @@ public:
 
 private:
     friend class buffer;
-    friend GR_RUNTIME_API buffer_reader_sptr buffer_add_reader(buffer_sptr buf,
+    friend GR_RUNTIME_API buffer_reader_uptr buffer_add_reader(class buffer* buf,
                                                                int nzero_preload,
-                                                               block_sptr link,
+                                                               block* link,
                                                                int delay);
 
-    buffer_sptr d_buffer;
+    class buffer* d_buffer;
     unsigned int d_read_index;     // in items [0,d->buffer.d_bufsize)
     uint64_t d_abs_read_offset;    // num items seen since the start
-    boost::weak_ptr<block> d_link; // block that reads via this buffer reader
+    block* d_link; // block that reads via this buffer reader
     unsigned d_attr_delay;         // sample delay attribute for tag propagation
 
     //! constructor is private.  Use gr::buffer::add_reader to create instances
-    buffer_reader(buffer_sptr buffer, unsigned int read_index, block_sptr link);
+    buffer_reader(class buffer* buffer, unsigned int read_index, block* link);
 };
 
 //! returns # of buffer_readers currently allocated

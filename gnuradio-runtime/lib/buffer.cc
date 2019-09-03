@@ -87,7 +87,7 @@ static long minimum_buffer_items(long type_size, long page_size)
 }
 
 
-buffer::buffer(int nitems, size_t sizeof_item, block_sptr link)
+buffer::buffer(int nitems, size_t sizeof_item, block* link)
     : d_base(0),
       d_bufsize(0),
       d_max_reader_delay(0),
@@ -105,15 +105,14 @@ buffer::buffer(int nitems, size_t sizeof_item, block_sptr link)
     s_buffer_count++;
 }
 
-buffer_sptr make_buffer(int nitems, size_t sizeof_item, block_sptr link)
+buffer_uptr make_buffer(int nitems, size_t sizeof_item, block* link)
 {
-    return buffer_sptr(new buffer(nitems, sizeof_item, link));
+    return buffer_uptr(new buffer(nitems, sizeof_item, link));
 }
 
 buffer::~buffer()
 {
     delete d_vmcircbuf;
-    assert(d_readers.size() == 0);
     s_buffer_count--;
 }
 
@@ -200,29 +199,18 @@ void buffer::set_done(bool done)
     d_done = done;
 }
 
-buffer_reader_sptr
-buffer_add_reader(buffer_sptr buf, int nzero_preload, block_sptr link, int delay)
+buffer_reader_uptr
+buffer_add_reader(buffer* buf, int nzero_preload, block* link, int delay)
 {
     if (nzero_preload < 0)
         throw std::invalid_argument("buffer_add_reader: nzero_preload must be >= 0");
 
-    buffer_reader_sptr r(
+    buffer_reader_uptr r(
         new buffer_reader(buf, buf->index_sub(buf->d_write_index, nzero_preload), link));
     r->declare_sample_delay(delay);
     buf->d_readers.push_back(r.get());
 
     return r;
-}
-
-void buffer::drop_reader(buffer_reader* reader)
-{
-    std::vector<buffer_reader*>::iterator result =
-        std::find(d_readers.begin(), d_readers.end(), reader);
-
-    if (result == d_readers.end())
-        throw std::invalid_argument("buffer::drop_reader"); // we didn't find it...
-
-    d_readers.erase(result);
 }
 
 void buffer::add_item_tag(const tag_t& tag)
@@ -287,7 +275,7 @@ long buffer_ncurrently_allocated() { return s_buffer_count; }
 
 // ----------------------------------------------------------------------------
 
-buffer_reader::buffer_reader(buffer_sptr buffer, unsigned int read_index, block_sptr link)
+buffer_reader::buffer_reader(class buffer* buffer, unsigned int read_index, block* link)
     : d_buffer(buffer),
       d_read_index(read_index),
       d_abs_read_offset(0),
@@ -301,7 +289,6 @@ buffer_reader::buffer_reader(buffer_sptr buffer, unsigned int read_index, block_
 
 buffer_reader::~buffer_reader()
 {
-    d_buffer->drop_reader(this);
     s_buffer_reader_count--;
 }
 

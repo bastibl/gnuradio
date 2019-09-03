@@ -41,8 +41,8 @@ class flowgraph;
 
 typedef boost::shared_ptr<block> block_sptr;
 typedef std::unique_ptr<block_executor> block_executor_uptr;
-typedef boost::shared_ptr<buffer> buffer_sptr;
-typedef boost::shared_ptr<buffer_reader> buffer_reader_sptr;
+typedef std::unique_ptr<buffer> buffer_uptr;
+typedef std::unique_ptr<buffer_reader> buffer_reader_uptr;
 typedef boost::shared_ptr<hier_block> hier_block_sptr;
 typedef boost::shared_ptr<flat_flowgraph> flat_flowgraph_sptr;
 typedef boost::shared_ptr<flowgraph> flowgraph_sptr;

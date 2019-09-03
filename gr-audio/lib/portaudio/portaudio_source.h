@@ -55,8 +55,8 @@ class portaudio_source : public source
     PaStream* d_stream;
     PaStreamParameters d_input_parameters;
 
-    gr::buffer_sptr d_writer; // buffer used between work and callback
-    gr::buffer_reader_sptr d_reader;
+    gr::buffer_uptr d_writer; // buffer used between work and callback
+    gr::buffer_reader_uptr d_reader;
 
     gr::thread::mutex d_ringbuffer_mutex;
     gr::thread::condition_variable d_ringbuffer_cond;

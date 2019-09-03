@@ -74,20 +74,20 @@ public:
     void set_done(bool done);
     bool done() const { return d_done; }
 
-    void set_input(unsigned int which, buffer_reader_sptr reader);
-    buffer_reader_sptr input(unsigned int which)
+    void set_input(unsigned int which, buffer_reader_uptr reader);
+    buffer_reader* input(unsigned int which)
     {
         if (which >= d_ninputs)
             throw std::invalid_argument("block_executor::input");
-        return d_input[which];
+        return d_input[which].get();
     }
 
-    void set_output(unsigned int which, buffer_sptr buffer);
-    buffer_sptr output(unsigned int which)
+    void set_output(unsigned int which, buffer_uptr buffer);
+    buffer* output(unsigned int which)
     {
         if (which >= d_noutputs)
             throw std::invalid_argument("block_executor::output");
-        return d_output[which];
+        return d_output[which].get();
     }
 
     /*!
@@ -335,8 +335,8 @@ private:
 
     unsigned int d_ninputs;
     unsigned int d_noutputs;
-    std::vector<buffer_reader_sptr> d_input;
-    std::vector<buffer_sptr> d_output;
+    std::vector<buffer_reader_uptr> d_input;
+    std::vector<buffer_uptr> d_output;
     bool d_done;
     int d_consumed;
 

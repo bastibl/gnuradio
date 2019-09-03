@@ -75,7 +75,7 @@ int block_executor::min_available_space(int output_multiple, int min_noutput_ite
     if (min_noutput_items == 0)
         min_noutput_items = 1;
     for (int i = 0; i < noutputs(); i++) {
-        buffer_sptr out_buf = output(i);
+        buffer* out_buf = output(i);
         gr::thread::scoped_lock guard(*out_buf->mutex());
         int avail_n = round_down(out_buf->space_available(), output_multiple);
         int best_n = round_down(out_buf->bufsize() / 2, output_multiple);
@@ -115,7 +115,7 @@ bool block_executor::propagate_tags(block::tag_propagation_policy_t policy,
         return true;
     case block::TPP_ALL_TO_ALL: {
         // every tag on every input propagates to everyone downstream
-        std::vector<buffer_sptr> out_buf;
+        std::vector<buffer*> out_buf;
 
         for (int i = 0; i < ninputs(); i++) {
             get_tags_in_range(rtags, i, start_nitems_read[i], nitems_read(i), block_id);
@@ -167,7 +167,7 @@ bool block_executor::propagate_tags(block::tag_propagation_policy_t policy,
         // this requires ninputs() == noutputs; this is checked when this
         // type of tag-propagation system is selected in block_executor
         if (ninputs() == noutputs()) {
-            buffer_sptr out_buf;
+            buffer* out_buf;
 
             for (int i = 0; i < ninputs(); i++) {
                 get_tags_in_range(
@@ -350,7 +350,7 @@ block_executor::state block_executor::run_one_iteration()
                 /*
                  * Acquire the mutex and grab local copies of items_available and done.
                  */
-                buffer_reader_sptr in_buf = input(i);
+                buffer_reader* in_buf = input(i);
                 gr::thread::scoped_lock guard(*in_buf->mutex());
                 d_ninput_items[i] = in_buf->items_available();
                 d_input_done[i] = in_buf->done();
@@ -397,7 +397,7 @@ block_executor::state block_executor::run_one_iteration()
                 /*
                  * Acquire the mutex and grab local copies of items_available and done.
                  */
-                buffer_reader_sptr in_buf = input(i);
+                buffer_reader* in_buf = input(i);
                 gr::thread::scoped_lock guard(*in_buf->mutex());
                 d_ninput_items[i] = in_buf->items_available();
                 d_input_done[i] = in_buf->done();
@@ -506,7 +506,7 @@ block_executor::state block_executor::run_one_iteration()
                 goto were_done;
 
             // Is it possible to ever fulfill this request?
-            buffer_reader_sptr in_buf = input(i);
+            buffer_reader* in_buf = input(i);
             if (d_ninput_items_required[i] > in_buf->max_possible_items_available()) {
                 // Nope, never going to happen...
                 std::cerr
@@ -623,20 +623,20 @@ were_done:
 }
 
 
-void block_executor::set_input(unsigned int which, buffer_reader_sptr reader)
+void block_executor::set_input(unsigned int which, buffer_reader_uptr reader)
 {
     if (which >= d_ninputs)
         throw std::invalid_argument("block_executor::set_input");
 
-    d_input[which] = reader;
+    d_input[which] = std::move(reader);
 }
 
-void block_executor::set_output(unsigned int which, buffer_sptr buffer)
+void block_executor::set_output(unsigned int which, buffer_uptr buffer)
 {
     if (which >= d_noutputs)
         throw std::invalid_argument("block_executor::set_output");
 
-    d_output[which] = buffer;
+    d_output[which] = std::move(buffer);
 }
 
 void block_executor::set_done(bool done)
@@ -826,7 +826,7 @@ void block_executor::notify_downstream()
     // have new input available.
 
     for (size_t i = 0; i < d_output.size(); i++) {
-        buffer_sptr buf = d_output[i];
+        buffer* buf = d_output[i].get();
         for (size_t j = 0, k = buf->nreaders(); j < k; j++)
             buf->reader(j)->link()->executor()->set_input_changed();
     }
@@ -863,7 +863,7 @@ void block_executor::stop_perf_counters(int noutput_items, int nproduced)
         d_total_noutput_items = noutput_items;
         d_pc_start_time = (float)gr::high_res_timer_now();
         for (size_t i = 0; i < d_input.size(); i++) {
-            buffer_reader_sptr in_buf = d_input[i];
+            buffer_reader* in_buf = d_input[i].get();
             gr::thread::scoped_lock guard(*in_buf->mutex());
             float pfull = static_cast<float>(in_buf->items_available()) /
                           static_cast<float>(in_buf->max_possible_items_available());
@@ -872,7 +872,7 @@ void block_executor::stop_perf_counters(int noutput_items, int nproduced)
             d_var_input_buffers_full[i] = 0;
         }
         for (size_t i = 0; i < d_output.size(); i++) {
-            buffer_sptr out_buf = d_output[i];
+            buffer* out_buf = d_output[i].get();
             gr::thread::scoped_lock guard(*out_buf->mutex());
             float pfull = 1.0f - static_cast<float>(out_buf->space_available()) /
                                      static_cast<float>(out_buf->bufsize());
@@ -903,7 +903,7 @@ void block_executor::stop_perf_counters(int noutput_items, int nproduced)
         d_avg_throughput = d_total_noutput_items / monitor_time;
 
         for (size_t i = 0; i < d_input.size(); i++) {
-            buffer_reader_sptr in_buf = d_input[i];
+            buffer_reader* in_buf = d_input[i].get();
             gr::thread::scoped_lock guard(*in_buf->mutex());
             float pfull = static_cast<float>(in_buf->items_available()) /
                           static_cast<float>(in_buf->max_possible_items_available());
@@ -915,7 +915,7 @@ void block_executor::stop_perf_counters(int noutput_items, int nproduced)
         }
 
         for (size_t i = 0; i < d_output.size(); i++) {
-            buffer_sptr out_buf = d_output[i];
+            buffer* out_buf = d_output[i].get();
             gr::thread::scoped_lock guard(*out_buf->mutex());
             float pfull = 1.0f - static_cast<float>(out_buf->space_available()) /
                                      static_cast<float>(out_buf->bufsize());

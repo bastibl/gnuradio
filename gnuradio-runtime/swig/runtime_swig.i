@@ -41,7 +41,6 @@
 %{
 #include <gnuradio/block.h>
 #include <gnuradio/block_executor.h>
-#include <gnuradio/buffer.h>
 #include <gnuradio/constants.h>
 #include <gnuradio/endianness.h>
 #include <gnuradio/feval.h>
@@ -72,7 +71,6 @@
 %include <gnuradio/realtime.h>
 %include "basic_block.i"
 %include "block.i"
-%include "buffer.i"
 %include "constants.i"
 %include "feval.i"
 %include "hier_block.i"

@@ -118,11 +118,12 @@ block_executor_uptr flat_flowgraph::allocate_block_executor(block_sptr block,
     for (int i = 0; i < noutputs; i++) {
         grblock->expand_minmax_buffer(i);
 
-        buffer_sptr buffer = allocate_buffer(block, i);
+        buffer_uptr ubuffer = allocate_buffer(block, i);
         GR_LOG_DEBUG(d_debug_logger,
                      "Allocated buffer for output " + block->alias() + " " +
                          std::to_string(i));
-        executor->set_output(i, buffer);
+        executor->set_output(i, std::move(ubuffer));
+        buffer* buffer = executor->output(i);
 
         // Update the block's max_output_buffer based on what was actually allocated.
         if ((grblock->max_output_buffer(i) != buffer->bufsize()) &&
@@ -145,7 +146,7 @@ block_executor_uptr flat_flowgraph::allocate_block_executor(block_sptr block,
     return executor;
 }
 
-buffer_sptr flat_flowgraph::allocate_buffer(block_sptr grblock, int port)
+buffer_uptr flat_flowgraph::allocate_buffer(block_sptr grblock, int port)
 {
     int item_size = grblock->output_signature()->sizeof_stream_item(port);
 
@@ -195,11 +196,11 @@ buffer_sptr flat_flowgraph::allocate_buffer(block_sptr grblock, int port)
     //  "\n";
     // We're going to let this fail once and retry. If that fails,
     // throw and exit.
-    buffer_sptr b;
+    buffer_uptr b;
     try {
-        b = make_buffer(nitems, item_size, grblock);
+        b = make_buffer(nitems, item_size, grblock.get());
     } catch (std::bad_alloc&) {
-        b = make_buffer(nitems, item_size, grblock);
+        b = make_buffer(nitems, item_size, grblock.get());
     }
 
     return b;
@@ -221,7 +222,7 @@ void flat_flowgraph::connect_block_inputs(block_sptr grblock)
         block_sptr src_grblock = cast_to_block_sptr(src_block);
         if (!src_grblock)
             throw std::runtime_error("connect_block_inputs found non-gr::block");
-        buffer_sptr src_buffer = src_grblock->executor()->output(src_port);
+        buffer* src_buffer = src_grblock->executor()->output(src_port);
 
 
         GR_LOG_DEBUG(d_debug_logger,
@@ -231,7 +232,7 @@ void flat_flowgraph::connect_block_inputs(block_sptr grblock)
         executor->set_input(dst_port,
                             buffer_add_reader(src_buffer,
                                               grblock->history() - 1,
-                                              grblock,
+                                              grblock.get(),
                                               grblock->sample_delay(src_port)));
     }
 }
@@ -265,12 +266,12 @@ void flat_flowgraph::dump()
         int ni = executor->ninputs();
         int no = executor->noutputs();
         for (int i = 0; i < no; i++) {
-            buffer_sptr buffer = executor->output(i);
+            buffer* buffer = executor->output(i);
             std::cout << "   output " << i << ": " << buffer << std::endl;
         }
 
         for (int i = 0; i < ni; i++) {
-            buffer_reader_sptr reader = executor->input(i);
+            buffer_reader* reader = executor->input(i);
             std::cout << "   reader " << i << ": " << reader
                       << " reading from buffer=" << reader->buffer() << std::endl;
         }

@@ -48,7 +48,8 @@ static void t0_body()
     int nitems = 4000 / sizeof(int);
     int counter = 0;
 
-    gr::buffer_sptr buf(gr::make_buffer(nitems, sizeof(int), gr::block_sptr()));
+    gr::block_sptr b = gr::block_sptr();
+    gr::buffer_uptr buf(gr::make_buffer(nitems, sizeof(int), b.get()));
 
     int last_sa;
     int sa;
@@ -82,8 +83,9 @@ static void t1_body()
     int write_counter = 0;
     int read_counter = 0;
 
-    gr::buffer_sptr buf(gr::make_buffer(nitems, sizeof(int), gr::block_sptr()));
-    gr::buffer_reader_sptr r1(gr::buffer_add_reader(buf, 0, gr::block_sptr()));
+    gr::block_sptr b = gr::block_sptr();
+    gr::buffer_uptr buf(gr::make_buffer(nitems, sizeof(int), b.get()));
+    gr::buffer_reader_uptr r1(gr::buffer_add_reader(buf.get(), 0, b.get()));
 
     int sa;
 
@@ -153,8 +155,9 @@ static void t2_body()
 
     int nitems = (64 * (1L << 10)) / sizeof(int); // 64K worth of ints
 
-    gr::buffer_sptr buf(gr::make_buffer(nitems, sizeof(int), gr::block_sptr()));
-    gr::buffer_reader_sptr r1(gr::buffer_add_reader(buf, 0, gr::block_sptr()));
+    gr::block_sptr b = gr::block_sptr();
+    gr::buffer_uptr buf(gr::make_buffer(nitems, sizeof(int), b.get()));
+    gr::buffer_reader_uptr r1(gr::buffer_add_reader(buf.get(), 0, b.get()));
 
     int read_counter = 0;
     int write_counter = 0;
@@ -218,15 +221,17 @@ static void t3_body()
     int nitems = (64 * (1L << 10)) / sizeof(int);
 
     static const int N = 5;
-    gr::buffer_sptr buf(gr::make_buffer(nitems, sizeof(int), gr::block_sptr()));
-    gr::buffer_reader_sptr reader[N];
+    gr::block_sptr b = gr::block_sptr();
+    gr::buffer_uptr buf(gr::make_buffer(nitems, sizeof(int), b.get()));
+    gr::buffer_reader_uptr reader[N];
     int read_counter[N];
     int write_counter = 0;
     gr::random random;
 
-    for (int i = 0; i < N; i++) {
+    for (int i = 0; i < N; i++)
+    {
         read_counter[i] = 0;
-        reader[i] = buffer_add_reader(buf, 0, gr::block_sptr());
+        reader[i] = buffer_add_reader(buf.get(), 0, b.get());
     }
 
     for (int lc = 0; lc < 1000; lc++) {
