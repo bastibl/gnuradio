@@ -146,7 +146,8 @@ void udp_source_impl::handle_read(const boost::system::error_code& error,
                 // If we are using EOF notification, test for it and don't
                 // add anything to the output.
                 d_residual = WORK_DONE;
-                d_cond_wait.notify_one();
+
+                post("system", pmt::cons(pmt::mp("done"), pmt::from_long(0)));
                 return;
             } else {
                 // Make sure we never go beyond the boundary of the
@@ -162,7 +163,7 @@ void udp_source_impl::handle_read(const boost::system::error_code& error,
                     d_residual += bytes_transferred;
                 }
             }
-            d_cond_wait.notify_one();
+            post("system", pmt::cons(pmt::mp("done"), pmt::from_long(0)));
         }
     }
     start_receive();
@@ -181,9 +182,6 @@ int udp_source_impl::work(int noutput_items,
     // because the conditional wait is interruptible while a
     // synchronous receive_from is not.
     boost::unique_lock<boost::mutex> lock(d_udp_mutex);
-
-    // use timed_wait to avoid permanent blocking in the work function
-    d_cond_wait.timed_wait(lock, boost::posix_time::milliseconds(10));
 
     if (d_residual < 0) {
         return d_residual;
