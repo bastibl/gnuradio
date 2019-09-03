@@ -41,8 +41,8 @@ async_decoder_impl::async_decoder_impl(generic_decoder::sptr my_decoder,
                                        int mtu)
     : block("async_decoder", io_signature::make(0, 0, 0), io_signature::make(0, 0, 0))
 {
-    d_in_port = pmt::mp("in");
-    d_out_port = pmt::mp("out");
+    d_in_port = "in";
+    d_out_port = "out";
 
     d_decoder = my_decoder;
 

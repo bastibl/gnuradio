@@ -48,8 +48,8 @@ selector_impl::selector_impl(size_t itemsize,
       d_num_inputs(0),
       d_num_outputs(0)
 {
-    message_port_register_in(pmt::mp("en"));
-    set_msg_handler(pmt::mp("en"), [this](pmt::pmt_t msg) { this->handle_enable(msg); });
+    message_port_register_in("en");
+    set_msg_handler("en", [this](pmt::pmt_t msg) { this->handle_enable(msg); });
 
     // TODO: add message ports for input_index and output_index
 }

@@ -30,69 +30,6 @@
 
 namespace gr {
 
-/*!
- * \brief Class representing a specific input or output graph endpoint
- * \ingroup internal
- */
-class GR_RUNTIME_API endpoint
-{
-private:
-    basic_block::sptr d_basic_block;
-    int d_port;
-
-public:
-    endpoint() : d_basic_block(), d_port(0) {}
-    endpoint(basic_block::sptr block, int port)
-    {
-        d_basic_block = block;
-        d_port = port;
-    }
-    basic_block::sptr block() const { return d_basic_block; }
-    int port() const { return d_port; }
-    std::string identifier() const
-    {
-        return d_basic_block->alias() + ":" + std::to_string(d_port);
-    };
-
-    bool operator==(const endpoint& other) const;
-};
-
-inline bool endpoint::operator==(const endpoint& other) const
-{
-    return (d_basic_block == other.d_basic_block && d_port == other.d_port);
-}
-
-class GR_RUNTIME_API msg_endpoint
-{
-private:
-    basic_block::sptr d_basic_block;
-    pmt::pmt_t d_port;
-
-public:
-    msg_endpoint() : d_basic_block(), d_port(pmt::PMT_NIL) {}
-    msg_endpoint(basic_block::sptr block, pmt::pmt_t port)
-    {
-        d_basic_block = block;
-        d_port = port;
-    }
-    basic_block::sptr block() const { return d_basic_block; }
-    pmt::pmt_t port() const { return d_port; }
-    std::string identifier() const
-    {
-        return d_basic_block->alias() + ":" + pmt::symbol_to_string(d_port);
-    }
-
-    bool operator==(const msg_endpoint& other) const;
-};
-
-inline bool msg_endpoint::operator==(const msg_endpoint& other) const
-{
-    return (d_basic_block == other.d_basic_block && pmt::equal(d_port, other.d_port));
-}
-
-// Hold vectors of gr::endpoint objects
-typedef std::vector<endpoint> endpoint_vector_t;
-typedef std::vector<endpoint>::iterator endpoint_viter_t;
 
 /*!
  *\brief Class representing a connection between to graph endpoints
@@ -127,7 +64,6 @@ typedef std::vector<edge>::iterator edge_viter_t;
 class GR_RUNTIME_API msg_edge
 {
 public:
-    msg_edge() : d_src(), d_dst(){};
     msg_edge(const msg_endpoint& src, const msg_endpoint& dst) : d_src(src), d_dst(dst) {}
     ~msg_edge() {}
 
@@ -306,8 +242,6 @@ inline std::ostream& operator<<(std::ostream& os, const msg_edge edge)
     os << edge.identifier();
     return os;
 }
-
-std::string dot_graph_fg(flowgraph_sptr fg);
 
 } /* namespace gr */
 

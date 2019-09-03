@@ -46,7 +46,7 @@ packet_headerparser_b_impl::packet_headerparser_b_impl(
                  io_signature::make(1, 1, sizeof(unsigned char)),
                  io_signature::make(0, 0, 0)),
       d_header_formatter(header_formatter),
-      d_port(pmt::mp("header_data"))
+      d_port("header_data")
 {
     message_port_register_out(d_port);
     set_output_multiple(header_formatter->header_len());

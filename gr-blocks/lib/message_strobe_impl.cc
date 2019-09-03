@@ -44,13 +44,12 @@ message_strobe_impl::message_strobe_impl(pmt::pmt_t msg, long period_ms)
       d_finished(false),
       d_period_ms(period_ms),
       d_msg(msg),
-      d_port(pmt::mp("strobe"))
+      d_port("strobe")
 {
     message_port_register_out(d_port);
 
-    message_port_register_in(pmt::mp("set_msg"));
-    set_msg_handler(pmt::mp("set_msg"),
-                    boost::bind(&message_strobe_impl::set_msg, this, _1));
+    message_port_register_in("set_msg");
+    set_msg_handler("set_msg", boost::bind(&message_strobe_impl::set_msg, this, _1));
 }
 
 message_strobe_impl::~message_strobe_impl() {}

@@ -44,6 +44,9 @@ typedef boost::shared_ptr<rpcbasic_base> rpcbasic_sptr;
 
 namespace gr {
 
+class endpoint;
+class msg_endpoint;
+
 /*!
  * \brief The abstract base class for all signal processing blocks.
  * \ingroup internal
@@ -92,31 +95,25 @@ public:
      * block_registry to get the block using either the alias or the
      * original symbol name.
      */
-    void set_block_alias(std::string name);
+    void set_block_alias(const std::string name);
 
     // ** Message passing interface **
 
-    virtual void message_port_register_in(pmt::pmt_t port_id) = 0;
+    virtual void message_port_register_in(const std::string port_id) = 0;
     /*!
      * \brief Get input message port names.
-     *
-     * Returns the available input message ports for a block. The
-     * return object is a PMT vector that is filled with PMT symbols.
      */
-    virtual pmt::pmt_t message_ports_in() = 0;
+    virtual std::vector<std::string> message_ports_in() const = 0;
 
-    void message_port_register_out(pmt::pmt_t port_id);
-    void message_port_sub(pmt::pmt_t port_id, pmt::pmt_t target);
-    void message_port_unsub(pmt::pmt_t port_id, pmt::pmt_t target);
-    pmt::pmt_t message_subscribers(pmt::pmt_t port);
+    void message_port_register_out(const std::string port_id);
+    void message_port_sub(const std::string port_id, basic_block::sptr target, const std::string target_port);
+    void message_port_unsub(const std::string port_id, basic_block::sptr target, const std::string target_port);
+    std::vector<msg_endpoint> message_subscribers(const std::string port_id);
 
     /*!
      * \brief Get output message port names.
-     *
-     * Returns the available output message ports for a block. The
-     * return object is a PMT vector that is filled with PMT symbols.
      */
-    pmt::pmt_t message_ports_out();
+    std::vector<std::string> message_ports_out() const;
 
 #ifdef GR_CTRLPORT
     /*!
@@ -210,7 +207,7 @@ protected:
     bool d_rpc_set;
     std::vector<rpcbasic_sptr> d_rpc_vars; // container for all RPC variables
 
-    pmt::pmt_t d_message_subscribers;
+    std::map<std::string, std::vector<msg_endpoint>> d_message_subscribers;
 };
 
 inline bool operator<(basic_block::sptr lhs, basic_block::sptr rhs)
@@ -226,6 +223,71 @@ inline std::ostream& operator<<(std::ostream& os, basic_block::sptr basic_block)
     os << basic_block->unique_name();
     return os;
 }
+
+/*!
+ * \brief Class representing a specific input or output graph endpoint
+ * \ingroup internal
+ */
+class GR_RUNTIME_API endpoint
+{
+private:
+    basic_block::sptr d_basic_block;
+    int d_port;
+
+public:
+    endpoint() : d_basic_block(), d_port(0) {}
+    endpoint(basic_block::sptr block, int port)
+    {
+        d_basic_block = block;
+        d_port = port;
+    }
+    basic_block::sptr block() const { return d_basic_block; }
+    int port() const { return d_port; }
+    std::string identifier() const
+    {
+        return d_basic_block->alias() + ":" + std::to_string(d_port);
+    };
+
+    bool operator==(const endpoint& other) const;
+};
+
+inline bool endpoint::operator==(const endpoint& other) const
+{
+    return (d_basic_block == other.d_basic_block && d_port == other.d_port);
+}
+
+class GR_RUNTIME_API msg_endpoint
+{
+private:
+    basic_block::sptr d_basic_block;
+    std::string d_port;
+
+public:
+    msg_endpoint() : d_basic_block(nullptr), d_port("") {}
+    msg_endpoint(basic_block::sptr block, std::string port)
+    {
+        d_basic_block = block;
+        d_port = port;
+    }
+    basic_block::sptr block() const { return d_basic_block; }
+    std::string port() const { return d_port; }
+    std::string identifier() const
+    {
+        return d_basic_block->alias() + ":" + d_port;
+    }
+
+    bool operator==(const msg_endpoint& other) const;
+};
+
+inline bool msg_endpoint::operator==(const msg_endpoint& other) const
+{
+    return (d_basic_block == other.d_basic_block && d_port == other.d_port);
+}
+
+// Hold vectors of gr::endpoint objects
+typedef std::vector<endpoint> endpoint_vector_t;
+typedef std::vector<endpoint>::iterator endpoint_viter_t;
+
 
 namespace gnuradio {
 /*

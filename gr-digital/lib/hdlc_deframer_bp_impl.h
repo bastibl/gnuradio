@@ -38,7 +38,7 @@ private:
     size_t d_bitctr;
     unsigned char* d_pktbuf;
 
-    const pmt::pmt_t d_port;
+    const std::string d_port;
 
     unsigned int crc_ccitt(unsigned char* data, size_t len);
 

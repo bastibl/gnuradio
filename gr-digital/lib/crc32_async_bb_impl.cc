@@ -37,8 +37,8 @@ crc32_async_bb_impl::crc32_async_bb_impl(bool check)
       d_npass(0),
       d_nfail(0)
 {
-    d_in_port = pmt::mp("in");
-    d_out_port = pmt::mp("out");
+    d_in_port = "in";
+    d_out_port = "out";
 
     message_port_register_in(d_in_port);
     message_port_register_out(d_out_port);

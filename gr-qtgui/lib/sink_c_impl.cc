@@ -73,7 +73,7 @@ sink_c_impl::sink_c_impl(int fftsize,
       d_center_freq(fc),
       d_bandwidth(bw),
       d_name(name),
-      d_port(pmt::mp("freq")),
+      d_port("freq"),
       d_plotfreq(plotfreq),
       d_plotwaterfall(plotwaterfall),
       d_plottime(plottime),
@@ -295,7 +295,7 @@ void sink_c_impl::check_clicked()
 {
     if (d_main_gui->checkClicked()) {
         double freq = d_main_gui->getClickedFreq();
-        message_port_pub(d_port, pmt::cons(d_port, pmt::from_double(freq)));
+        message_port_pub(d_port, pmt::cons(pmt::mp(d_port), pmt::from_double(freq)));
     }
 }
 

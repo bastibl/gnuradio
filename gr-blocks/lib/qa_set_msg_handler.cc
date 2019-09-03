@@ -51,9 +51,8 @@ BOOST_AUTO_TEST_CASE(t0)
     tb->start();
 
     // Send them...
-    pmt::pmt_t port(pmt::intern("port"));
     for (int i = 0; i < NMSGS; i++) {
-        send(nop, port, pmt::mp(pmt::mp("example-msg"), pmt::mp(i)));
+        send(nop, "port", pmt::mp(pmt::mp("example-msg"), pmt::mp(i)));
     }
 
     // Give the messages a chance to be processed

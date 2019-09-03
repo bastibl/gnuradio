@@ -61,8 +61,8 @@ sig_source_impl<T>::sig_source_impl(double sampling_freq,
 {
     this->set_frequency(frequency);
     this->set_phase(phase);
-    this->message_port_register_in(pmt::mp("freq"));
-    this->set_msg_handler(pmt::mp("freq"),
+    this->message_port_register_in("freq");
+    this->set_msg_handler("freq",
                           boost::bind(&sig_source_impl<T>::set_frequency_msg, this, _1));
 }
 

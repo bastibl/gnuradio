@@ -64,9 +64,8 @@ const_sink_c_impl::const_sink_c_impl(int size,
     d_index = 0;
 
     // setup PDU handling input port
-    message_port_register_in(pmt::mp("in"));
-    set_msg_handler(pmt::mp("in"),
-                    boost::bind(&const_sink_c_impl::handle_pdus, this, _1));
+    message_port_register_in("in");
+    set_msg_handler("in", boost::bind(&const_sink_c_impl::handle_pdus, this, _1));
 
     for (int i = 0; i < d_nconnections; i++) {
         d_residbufs_real.push_back(

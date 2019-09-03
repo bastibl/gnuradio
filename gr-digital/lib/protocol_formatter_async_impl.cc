@@ -42,9 +42,9 @@ protocol_formatter_async_impl::protocol_formatter_async_impl(
 {
     d_format = format;
 
-    d_in_port = pmt::mp("in");
-    d_hdr_port = pmt::mp("header");
-    d_pld_port = pmt::mp("payload");
+    d_in_port = "in";
+    d_hdr_port = "header";
+    d_pld_port = "payload";
 
     message_port_register_in(d_in_port);
     message_port_register_out(d_hdr_port);

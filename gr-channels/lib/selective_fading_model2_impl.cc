@@ -101,7 +101,7 @@ selective_fading_model2_impl::selective_fading_model2_impl(
     d_taps.resize(ntaps, gr_complex(0, 0));
 
     // set up message port
-    message_port_register_out(pmt::mp("taps"));
+    message_port_register_out("taps");
 }
 
 selective_fading_model2_impl::~selective_fading_model2_impl()
@@ -161,10 +161,10 @@ int selective_fading_model2_impl::work(int noutput_items,
         out[i] = sum;
     }
 
-    if (pmt::length(message_subscribers(pmt::mp("taps"))) > 0) {
+    if (message_subscribers("taps").size() > 0) {
         pmt::pmt_t pdu(
             pmt::cons(pmt::PMT_NIL, pmt::init_c32vector(d_taps.size(), d_taps)));
-        message_port_pub(pmt::mp("taps"), pdu);
+        message_port_pub("taps", pdu);
     }
 
     // return all outputs

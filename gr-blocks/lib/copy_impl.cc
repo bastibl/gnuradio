@@ -39,8 +39,8 @@ copy_impl::copy_impl(size_t itemsize)
       d_itemsize(itemsize),
       d_enabled(true)
 {
-    message_port_register_in(pmt::mp("en"));
-    set_msg_handler(pmt::mp("en"), boost::bind(&copy_impl::handle_enable, this, _1));
+    message_port_register_in("en");
+    set_msg_handler("en", boost::bind(&copy_impl::handle_enable, this, _1));
 }
 
 copy_impl::~copy_impl() {}

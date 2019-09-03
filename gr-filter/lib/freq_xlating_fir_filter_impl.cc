@@ -62,9 +62,9 @@ freq_xlating_fir_filter_impl<IN_T, OUT_T, TAP_T>::freq_xlating_fir_filter_impl(
     this->set_history(this->d_proto_taps.size());
     this->build_composite_fir();
 
-    this->message_port_register_in(pmt::mp("freq"));
+    this->message_port_register_in("freq");
     this->set_msg_handler(
-        pmt::mp("freq"),
+        "freq",
         boost::bind(
             &freq_xlating_fir_filter_impl<IN_T, OUT_T, TAP_T>::handle_set_center_freq,
             this,

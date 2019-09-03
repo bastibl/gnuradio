@@ -33,8 +33,8 @@ class protocol_formatter_async_impl : public protocol_formatter_async
 private:
     header_format_base::sptr d_format;
 
-    pmt::pmt_t d_in_port;
-    pmt::pmt_t d_hdr_port, d_pld_port;
+    std::string d_in_port;
+    std::string d_hdr_port, d_pld_port;
 
     void append(pmt::pmt_t msg);
 

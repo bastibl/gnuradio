@@ -43,7 +43,7 @@ static const pmt::pmt_t SEQ_ERROR_KEY = pmt::string_to_symbol("seq_error");
 static const pmt::pmt_t SEQ_ERROR_IN_BURST_KEY =
     pmt::string_to_symbol("seq_error_in_burst");
 static const pmt::pmt_t TIME_ERROR_KEY = pmt::string_to_symbol("time_error");
-static const pmt::pmt_t ASYNC_MSGS_PORT_KEY = pmt::string_to_symbol("async_msgs");
+static const std::string ASYNC_MSGS_PORT_KEY = "async_msgs";
 
 
 namespace gr {

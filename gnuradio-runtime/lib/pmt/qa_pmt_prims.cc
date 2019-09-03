@@ -475,7 +475,7 @@ class qa_pmt_msg_accepter_nop : public gr::messages::msg_accepter
 public:
     qa_pmt_msg_accepter_nop() {}
     ~qa_pmt_msg_accepter_nop();
-    void post(pmt::pmt_t, pmt::pmt_t) {}
+    void post(const std::string, pmt::pmt_t) {}
 };
 
 qa_pmt_msg_accepter_nop::~qa_pmt_msg_accepter_nop() {}
@@ -498,10 +498,9 @@ BOOST_AUTO_TEST_CASE(test_msg_accepter)
     BOOST_CHECK_THROW(pmt::msg_accepter_ref(p0), pmt::wrong_type);
 
     // just confirm interfaces on send are OK
-    pmt::pmt_t port(pmt::intern("port"));
-    gr::messages::send(ma0.get(), port, sym);
-    gr::messages::send(ma0, port, sym);
-    gr::messages::send(p1, port, sym);
+    gr::messages::send(ma0.get(), "port", sym);
+    gr::messages::send(ma0, "port", sym);
+    gr::messages::send(p1, "port", sym);
 }
 
 // ------------------------------------------------------------------------

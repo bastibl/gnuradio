@@ -49,8 +49,8 @@ class test_pdu(gr_unittest.TestCase):
         # Test that the right number of ports exist.
         pi = snk3.message_ports_in()
         po = snk3.message_ports_out()
-        self.assertEqual(pmt.length(pi), 1) #system port is defined automatically
-        self.assertEqual(pmt.length(po), 1)
+        self.assertEqual(len(pi), 1) #system port is defined automatically
+        self.assertEqual(len(po), 1)
 
         self.tb.connect(src, snk)
         self.tb.connect(src, snk2)
@@ -58,12 +58,12 @@ class test_pdu(gr_unittest.TestCase):
         self.tb.msg_connect(snk3, "pdus", dbg, "store")
 
         # make our reference and message pmts
-        port = pmt.intern("pdus")
+        port = "pdus"
         msg = pmt.cons( pmt.PMT_NIL, pmt.make_u8vector(16, 0xFF))
 
         # post the message
         src.to_basic_block().post(port, msg)
-        src.to_basic_block().post(pmt.intern("system"),
+        src.to_basic_block().post("system",
                 pmt.cons(pmt.intern("done"), pmt.from_long(1)))
 
         self.tb.start()
@@ -94,11 +94,11 @@ class test_pdu(gr_unittest.TestCase):
         snk = blocks.vector_sink_f()
 
         self.tb.connect(src, snk)
-        port = pmt.intern("pdus")
+        port = "pdus"
 
         msg = pmt.cons( pmt.PMT_NIL, pmt.init_f32vector(10, src_data))
         src.to_basic_block().post(port, msg)
-        src.to_basic_block().post(pmt.intern("system"),
+        src.to_basic_block().post("system",
                 pmt.cons(pmt.intern("done"), pmt.from_long(1)))
 
         self.tb.start()

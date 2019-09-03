@@ -53,7 +53,7 @@ class test_packet_format_fb(gr_unittest.TestCase):
             pmt.u8vector_set(send_pmt, i, ord(send_str[i]))
         msg = pmt.cons(pmt.PMT_NIL, send_pmt)
 
-        port = pmt.intern("in")
+        port = "in"
         formatter.to_basic_block().post(port, msg)
 
         self.tb.start()
@@ -147,7 +147,7 @@ class test_packet_format_fb(gr_unittest.TestCase):
             pmt.u8vector_set(send_pmt, i, ord(send_str[i]))
         msg = pmt.cons(pmt.PMT_NIL, send_pmt)
 
-        port = pmt.intern("in")
+        port = "in"
         formatter.to_basic_block().post(port, msg)
 
         self.tb.start()

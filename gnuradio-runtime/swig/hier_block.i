@@ -53,14 +53,8 @@ namespace gr {
     void connect(gr::basic_block::sptr src, int src_port,
                  gr::basic_block::sptr dst, int dst_port)
       noexcept(false);
-    void msg_connect(gr::basic_block::sptr src, pmt::pmt_t srcport,
-                     gr::basic_block::sptr dst, pmt::pmt_t dstport)
-      noexcept(false);
     void msg_connect(gr::basic_block::sptr src, std::string srcport,
                      gr::basic_block::sptr dst,  std::string dstport)
-      noexcept(false);
-    void msg_disconnect(gr::basic_block::sptr src, pmt::pmt_t srcport,
-                        gr::basic_block::sptr dst, pmt::pmt_t dstport)
       noexcept(false);
     void msg_disconnect(gr::basic_block::sptr src, std::string srcport,
                         gr::basic_block::sptr dst, std::string dstport)
@@ -73,8 +67,8 @@ namespace gr {
       noexcept(false);
     void disconnect_all();
 
-    void message_port_register_in(pmt::pmt_t port_id);
-    void message_port_register_out(pmt::pmt_t port_id);
+    void message_port_register_in(std::string port_id);
+    void message_port_register_out(std::string port_id);
 
     void set_processor_affinity(const std::vector<int> &mask);
     void unset_processor_affinity();

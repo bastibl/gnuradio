@@ -35,8 +35,8 @@ class FEC_API async_encoder_impl : public async_encoder
 private:
     generic_encoder::sptr d_encoder;
 
-    pmt::pmt_t d_in_port;
-    pmt::pmt_t d_out_port;
+    std::string d_in_port;
+    std::string d_out_port;
 
     blocks::kernel::unpack_k_bits* d_unpack;
     blocks::kernel::pack_k_bits* d_pack;

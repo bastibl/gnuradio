@@ -32,7 +32,7 @@ class protocol_parser_b_impl : public protocol_parser_b
 {
 private:
     header_format_base::sptr d_format;
-    pmt::pmt_t d_out_port;
+    std::string d_out_port;
 
 public:
     protocol_parser_b_impl(const header_format_base::sptr& format);

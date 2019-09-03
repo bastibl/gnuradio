@@ -27,10 +27,9 @@
 namespace gr {
 namespace digital {
 
-const pmt::pmt_t header_payload_demux_impl::msg_port_id()
+const std::string header_payload_demux_impl::msg_port_id()
 {
-    static const pmt::pmt_t msg_port_id = pmt::mp("header_data");
-    return msg_port_id;
+    return std::string("header_data");
 }
 
 //! Returns a PMT time tuple (uint seconds, double fraction) as the sum of

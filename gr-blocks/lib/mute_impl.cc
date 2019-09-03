@@ -42,8 +42,8 @@ mute_impl<T>::mute_impl(bool mute)
                  io_signature::make(1, 1, sizeof(T))),
       d_mute(mute)
 {
-    this->message_port_register_in(pmt::intern("set_mute"));
-    this->set_msg_handler(pmt::intern("set_mute"),
+    this->message_port_register_in("set_mute");
+    this->set_msg_handler("set_mute",
                           boost::bind(&mute_impl<T>::set_mute_pmt, this, _1));
 }
 

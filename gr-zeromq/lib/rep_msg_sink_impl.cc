@@ -37,7 +37,7 @@ rep_msg_sink_impl::rep_msg_sink_impl(char* address, int timeout)
                 gr::io_signature::make(0, 0, 0),
                 gr::io_signature::make(0, 0, 0)),
       d_timeout(timeout),
-      d_port(pmt::mp("in"))
+      d_port("in")
 {
     int major, minor, patch;
     zmq::version(&major, &minor, &patch);

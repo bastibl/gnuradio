@@ -39,7 +39,7 @@ sub_msg_source_impl::sub_msg_source_impl(char* address, int timeout)
                 gr::io_signature::make(0, 0, 0),
                 gr::io_signature::make(0, 0, 0)),
       d_timeout(timeout),
-      d_port(pmt::mp("out"))
+      d_port("out")
 {
     int major, minor, patch;
     zmq::version(&major, &minor, &patch);

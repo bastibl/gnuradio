@@ -56,12 +56,11 @@ block::block(const std::string& name,
       d_update_rate(false),
       d_max_output_buffer(std::max(output_signature->max_streams(), 1), -1),
       d_min_output_buffer(std::max(output_signature->max_streams(), 1), -1),
-      d_pmt_done(pmt::intern("done")),
-      d_system_port(pmt::intern("system"))
+      d_pmt_done(pmt::intern("done"))
 {
     global_block_registry.register_primitive(unique_id(), this);
-    message_port_register_in(d_system_port);
-    set_msg_handler(d_system_port, boost::bind(&block::system_handler, this, _1));
+    message_port_register_in("system");
+    set_msg_handler("system", boost::bind(&block::system_handler, this, _1));
 
     configure_default_loggers(d_logger, d_debug_logger, unique_name());
 }
@@ -251,10 +250,10 @@ void block::get_tags_in_window(std::vector<tag_t>& v,
                                uint64_t end)
 {
     d_executor->get_tags_in_range(v,
-                                which_input,
-                                nitems_read(which_input) + start,
-                                nitems_read(which_input) + end,
-                                unique_id());
+                                  which_input,
+                                  nitems_read(which_input) + start,
+                                  nitems_read(which_input) + end,
+                                  unique_id());
 }
 
 void block::get_tags_in_window(std::vector<tag_t>& v,
@@ -264,11 +263,11 @@ void block::get_tags_in_window(std::vector<tag_t>& v,
                                const pmt::pmt_t& key)
 {
     d_executor->get_tags_in_range(v,
-                                which_input,
-                                nitems_read(which_input) + start,
-                                nitems_read(which_input) + end,
-                                key,
-                                unique_id());
+                                  which_input,
+                                  nitems_read(which_input) + start,
+                                  nitems_read(which_input) + end,
+                                  key,
+                                  unique_id());
 }
 
 block::tag_propagation_policy_t block::tag_propagation_policy()
@@ -628,27 +627,11 @@ std::string block::log_level()
     return level;
 }
 
-void block::notify_msg_neighbors()
+void block::notify_msg_neighbors() const
 {
-    size_t len = pmt::length(d_message_subscribers);
-    pmt::pmt_t port_names = pmt::make_vector(len, pmt::PMT_NIL);
-    pmt::pmt_t keys = pmt::dict_keys(d_message_subscribers);
-    for (size_t i = 0; i < len; i++) {
-        // for each output port
-        pmt::pmt_t oport = pmt::nth(i, keys);
-
-        // for each subscriber on this port
-        pmt::pmt_t currlist = pmt::dict_ref(d_message_subscribers, oport, pmt::PMT_NIL);
-
-        // iterate through subscribers on port
-        while (pmt::is_pair(currlist)) {
-            pmt::pmt_t target = pmt::car(currlist);
-
-            pmt::pmt_t block = pmt::car(target);
-
-            currlist = pmt::cdr(currlist);
-            basic_block::sptr blk = global_block_registry.block_lookup(block);
-            blk->post(d_system_port, pmt::cons(d_pmt_done, pmt::mp(true)));
+    for (const auto port_it : d_message_subscribers) {
+        for (const auto ep_it : port_it.second) {
+            ep_it.block()->post("system", pmt::cons(d_pmt_done, pmt::from_bool(true)));
         }
     }
 }
@@ -662,36 +645,34 @@ bool block::finished()
 }
 
 //  - register a new input message port
-void block::message_port_register_in(pmt::pmt_t port_id)
+void block::message_port_register_in(const std::string port_id)
 {
-    if (!pmt::is_symbol(port_id)) {
-        throw std::runtime_error("message_port_register_in: bad port id");
+    if (d_msg_queue.find(port_id) != d_msg_queue.end()) {
+        throw std::runtime_error("block::message_port_register_in: already registered");
     }
     d_msg_queue[port_id] = msg_queue_t();
     d_msg_queue_ready[port_id] =
         boost::shared_ptr<boost::condition_variable>(new boost::condition_variable());
 }
 
-pmt::pmt_t block::message_ports_in()
+std::vector<std::string> block::message_ports_in() const
 {
-    pmt::pmt_t port_names = pmt::make_vector(d_msg_queue.size(), pmt::PMT_NIL);
-    auto itr = d_msg_queue.begin();
-    for (size_t i = 0; i < d_msg_queue.size(); i++) {
-        pmt::vector_set(port_names, i, (*itr).first);
-        itr++;
+    std::vector<std::string> port_names;
+    for (const auto it : d_msg_queue) {
+        port_names.push_back(it.first);
     }
+
     return port_names;
 }
 
-void block::post(pmt::pmt_t which_port, pmt::pmt_t msg) { insert_tail(which_port, msg); }
+void block::post(const std::string which_port, pmt::pmt_t msg) { insert_tail(which_port, msg); }
 
-void block::insert_tail(pmt::pmt_t which_port, pmt::pmt_t msg)
+void block::insert_tail(const std::string which_port, pmt::pmt_t& msg)
 {
     gr::thread::scoped_lock guard(d_mutex);
 
     if ((d_msg_queue.find(which_port) == d_msg_queue.end()) ||
         (d_msg_queue_ready.find(which_port) == d_msg_queue_ready.end())) {
-        std::cout << "target port = " << pmt::symbol_to_string(which_port) << std::endl;
         throw std::runtime_error("attempted to insert_tail on invalid queue!");
     }
 
@@ -702,7 +683,7 @@ void block::insert_tail(pmt::pmt_t which_port, pmt::pmt_t msg)
     global_block_registry.notify_blk(unique_id());
 }
 
-pmt::pmt_t block::delete_head_nowait(pmt::pmt_t which_port)
+pmt::pmt_t block::delete_head_nowait(const std::string which_port)
 {
     gr::thread::scoped_lock guard(d_mutex);
 
@@ -717,23 +698,15 @@ pmt::pmt_t block::delete_head_nowait(pmt::pmt_t which_port)
 }
 
 //  - publish a message on a message port
-void block::message_port_pub(pmt::pmt_t port_id, pmt::pmt_t msg)
+void block::message_port_pub(const std::string port_id, pmt::pmt_t msg)
 {
-    if (!pmt::dict_has_key(d_message_subscribers, port_id)) {
-        throw std::runtime_error("port does not exist");
+
+    if (d_message_subscribers.count(port_id) == 0) {
+        throw std::runtime_error("message_port_pub: port not registered");
     }
 
-    pmt::pmt_t currlist = pmt::dict_ref(d_message_subscribers, port_id, pmt::PMT_NIL);
-    // iterate through subscribers on port
-    while (pmt::is_pair(currlist)) {
-        pmt::pmt_t target = pmt::car(currlist);
-
-        pmt::pmt_t block = pmt::car(target);
-        pmt::pmt_t port = pmt::cdr(target);
-
-        currlist = pmt::cdr(currlist);
-        basic_block::sptr blk = global_block_registry.block_lookup(block);
-        blk->post(port, msg);
+    for(const auto ep : d_message_subscribers[port_id]) {
+        ep.block()->post(ep.port(), msg);
     }
 }
 

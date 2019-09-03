@@ -45,13 +45,13 @@ protected:
     std::vector<uint8_t> d_rxbuf;
     gr::thread::thread d_thread;
 
-    pmt::pmt_t d_port;
+    std::string d_port;
     block* d_blk;
 
     void run();
     void send(pmt::pmt_t msg);
     bool wait_ready();
-    void start_rxthread(block* blk, pmt::pmt_t rxport);
+    void start_rxthread(block* blk, std::string rxport);
     void stop_rxthread();
 };
 

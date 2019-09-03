@@ -93,7 +93,7 @@ void flat_flowgraph::setup_connections(int max_noutput_items)
             boost::format("flat_fg connecting msg primitives: (%s, %s)->(%s, %s)\n") %
                 i->src().block() % i->src().port() % i->dst().block() % i->dst().port());
         i->src().block()->message_port_sub(
-            i->src().port(), pmt::cons(i->dst().block()->alias_pmt(), i->dst().port()));
+            i->src().port(), i->dst().block(), i->dst().port());
     }
 }
 
@@ -102,8 +102,7 @@ block_executor_sptr flat_flowgraph::allocate_block_executor(block_sptr block,
 {
     int ninputs = calc_used_ports(block, true).size();
     int noutputs = calc_used_ports(block, false).size();
-    block_executor_sptr executor =
-        make_block_executor(block, ninputs, noutputs);
+    block_executor_sptr executor = make_block_executor(block, ninputs, noutputs);
 
     block_sptr grblock = cast_to_block_sptr(block);
     if (!grblock)
@@ -139,7 +138,7 @@ block_executor_sptr flat_flowgraph::allocate_block_executor(block_sptr block,
     }
 
     executor->set_max_noutput_items(max_items);
-    if(!grblock->is_set_max_noutput_items()) {
+    if (!grblock->is_set_max_noutput_items()) {
         grblock->set_max_noutput_items(max_items);
     }
 
@@ -309,7 +308,6 @@ void flat_flowgraph::replace_endpoint(const msg_endpoint& e,
                                       const msg_endpoint& r,
                                       bool is_src)
 {
-    size_t n_replr(0);
     GR_LOG_DEBUG(d_debug_logger,
                  boost::format("flat_flowgraph::replace_endpoint( %s, %s, %d )\n") %
                      e.block() % r.block() % is_src);
@@ -322,7 +320,6 @@ void flat_flowgraph::replace_endpoint(const msg_endpoint& e,
                         "flat_flowgraph::replace_endpoint() flattening to ( %s, %s )\n") %
                         r % d_msg_edges[i].dst())
                 d_msg_edges.push_back(msg_edge(r, d_msg_edges[i].dst()));
-                n_replr++;
             }
         } else {
             if (d_msg_edges[i].dst() == e) {
@@ -332,7 +329,6 @@ void flat_flowgraph::replace_endpoint(const msg_endpoint& e,
                         "flat_flowgraph::replace_endpoint() flattening to ( %s, %s )\n") %
                         r % d_msg_edges[i].src());
                 d_msg_edges.push_back(msg_edge(d_msg_edges[i].src(), r));
-                n_replr++;
             }
         }
     }

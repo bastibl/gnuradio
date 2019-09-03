@@ -34,7 +34,7 @@ class block_with_message_output(gr.basic_block):
             "block_with_message_output",
             in_sig=None,
             out_sig=None)
-        self.message_port_register_out(pmt.intern("test"))
+        self.message_port_register_out("test")
 
 
 class block_with_message_input(gr.basic_block):
@@ -44,7 +44,7 @@ class block_with_message_input(gr.basic_block):
             "block_with_message_input",
             in_sig=None,
             out_sig=None)
-        self.message_port_register_in(pmt.intern("test"))
+        self.message_port_register_in("test")
 
 
 class hier_block_with_message_output(gr.hier_block):
@@ -109,10 +109,11 @@ class test_hier_block_message_connections(gr_unittest.TestCase):
         :param receiver: a block sptr to the message receiver
         :param string receive_port: the port messages are being received on
         """
-        subs = sender.message_subscribers(pmt.intern(send_port))
-        self.assertTrue(pmt.list_has(subs, pmt.cons(
+        subs = sender.message_subscribers(send_port)
+        print(subs)
+        self.assertTrue(subs, pmt.cons(
             pmt.intern(receiver.to_basic_block().alias()),
-            pmt.intern(receive_port))))
+            pmt.intern(receive_port)))
 
     def assert_has_num_subscriptions(self, block, port, number):
         """assert that the given block has the given number of subscriptions
@@ -122,8 +123,8 @@ class test_hier_block_message_connections(gr_unittest.TestCase):
         :param string port: the port name
         :param number: the number of subscriptions expected
         """
-        subs = block.message_subscribers(pmt.intern(port))
-        self.assertEqual(pmt.length(subs), number)
+        subs = block.message_subscribers(port)
+        self.assertEqual(len(subs), number)
 
     def test_hier_out_to_normal_in(self):
         message_debug = blocks.message_debug()

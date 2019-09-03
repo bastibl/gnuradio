@@ -35,7 +35,7 @@ private:
     bool d_finished;
     long d_period_ms;
     pmt::pmt_t d_msg;
-    const pmt::pmt_t d_port;
+    const std::string d_port;
 
     void run();
 

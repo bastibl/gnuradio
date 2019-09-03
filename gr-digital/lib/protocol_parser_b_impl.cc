@@ -42,7 +42,7 @@ protocol_parser_b_impl::protocol_parser_b_impl(const header_format_base::sptr& f
 {
     d_format = format;
 
-    d_out_port = pmt::mp("info");
+    d_out_port = "info";
     message_port_register_out(d_out_port);
 }
 

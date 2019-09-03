@@ -34,8 +34,8 @@ class FEC_API async_decoder_impl : public async_decoder
 private:
     generic_decoder::sptr d_decoder;
 
-    pmt::pmt_t d_in_port;
-    pmt::pmt_t d_out_port;
+    std::string d_in_port;
+    std::string d_out_port;
 
     blocks::kernel::pack_k_bits* d_pack;
 

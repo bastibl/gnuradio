@@ -41,7 +41,7 @@ probe_rate_impl::probe_rate_impl(size_t itemsize, double update_rate_ms, double 
       d_avg(0),
       d_min_update_time(update_rate_ms),
       d_lastthru(0),
-      d_port(pmt::mp("rate")),
+      d_port("rate"),
       d_dict_avg(pmt::mp("rate_avg")),
       d_dict_now(pmt::mp("rate_now"))
 {

@@ -36,7 +36,7 @@ class GR_RUNTIME_API msg_accepter
 {
 public:
     msg_accepter(){};
-    virtual ~msg_accepter() {};
+    virtual ~msg_accepter(){};
 
     /*!
      * \brief send \p msg to \p msg_accepter on port \p which_port
@@ -45,7 +45,7 @@ public:
      * call will not wait for the message either to arrive at the
      * destination or to be received.
      */
-    virtual void post(pmt::pmt_t which_port, pmt::pmt_t msg) = 0;
+    virtual void post(const std::string which_port, pmt::pmt_t msg) = 0;
 };
 
 typedef boost::shared_ptr<msg_accepter> msg_accepter_sptr;

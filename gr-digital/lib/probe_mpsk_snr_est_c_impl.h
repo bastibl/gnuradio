@@ -37,9 +37,9 @@ private:
     mpsk_snr_est* d_snr_est;
 
     // Message port names
-    pmt::pmt_t d_snr_port;
-    pmt::pmt_t d_signal_port;
-    pmt::pmt_t d_noise_port;
+    std::string d_snr_port;
+    std::string d_signal_port;
+    std::string d_noise_port;
 
 public:
     probe_mpsk_snr_est_c_impl(snr_est_type_t type,

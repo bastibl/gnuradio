@@ -229,7 +229,7 @@ multiply_matrix_impl<gr_complex>::multiply_matrix_impl(
     const int alignment_multiple = volk_get_alignment() / sizeof(gr_complex);
     set_alignment(std::max(1, alignment_multiple));
 
-    pmt::pmt_t port_name = pmt::string_to_symbol("set_A");
+    std::string port_name = "set_A";
     message_port_register_in(port_name);
     set_msg_handler(
         port_name,
@@ -250,7 +250,7 @@ multiply_matrix_impl<float>::multiply_matrix_impl(
     const int alignment_multiple = volk_get_alignment() / sizeof(float);
     set_alignment(std::max(1, alignment_multiple));
 
-    pmt::pmt_t port_name = pmt::string_to_symbol("set_A");
+    std::string port_name = "set_A";
     message_port_register_in(port_name);
     set_msg_handler(port_name,
                     boost::bind(&multiply_matrix_impl<float>::msg_handler_A, this, _1));

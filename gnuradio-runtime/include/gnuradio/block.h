@@ -948,18 +948,13 @@ protected:
      */
     const pmt::pmt_t d_pmt_done;
 
-    /*! PMT Symbol of the system port, `pmt::mp("system")`
-     */
-    const pmt::pmt_t d_system_port;
-
     typedef boost::function<void(pmt::pmt_t)> msg_handler_t;
 
-    std::map<pmt::pmt_t, msg_handler_t, pmt::comparator> d_msg_handlers;
+    std::map<std::string, msg_handler_t> d_msg_handlers;
 
     typedef std::deque<pmt::pmt_t> msg_queue_t;
-    typedef std::map<pmt::pmt_t, msg_queue_t, pmt::comparator> msg_queue_map_t;
-    std::map<pmt::pmt_t, boost::shared_ptr<boost::condition_variable>, pmt::comparator>
-        d_msg_queue_ready;
+    typedef std::map<std::string, msg_queue_t> msg_queue_map_t;
+    std::map<std::string, boost::shared_ptr<boost::condition_variable>> d_msg_queue_ready;
 
     msg_queue_map_t d_msg_queue;
 
@@ -969,7 +964,7 @@ protected:
      * The thread-safety guarantees mentioned in set_msg_handler are
      * implemented by the callers of this method.
      */
-    virtual void dispatch_msg(pmt::pmt_t which_port, pmt::pmt_t msg)
+    virtual void dispatch_msg(const std::string which_port, pmt::pmt_t& msg)
     {
         // AA Update this
         if (has_msg_handler(which_port)) {   // Is there a handler?
@@ -982,17 +977,17 @@ public:
     block_executor_sptr executor() const { return d_executor; }
     void set_executor(block_executor_sptr executor) { d_executor = executor; }
 
-    void message_port_register_in(pmt::pmt_t port_id) override;
+    void message_port_register_in(const std::string port_id) override;
     /*!
      * \brief Get input message port names.
      *
      * Returns the available input message ports for a block. The
      * return object is a PMT vector that is filled with PMT symbols.
      */
-    pmt::pmt_t message_ports_in() override;
+    std::vector<std::string> message_ports_in() const override;
 
 
-    void message_port_pub(pmt::pmt_t port_id, pmt::pmt_t msg);
+    void message_port_pub(const std::string port_id, pmt::pmt_t msg);
 
     /*!
      * \brief Set the callback that is fired when messages are available.
@@ -1022,7 +1017,7 @@ public:
      * will ensure that no reentrant calls are made to msg_handler.
      */
     template <typename T>
-    void set_msg_handler(pmt::pmt_t which_port, T msg_handler)
+    void set_msg_handler(const std::string which_port, T msg_handler)
     {
         if (d_msg_queue.find(which_port) == d_msg_queue.end()) {
             throw std::runtime_error(
@@ -1034,14 +1029,14 @@ public:
     /*!
      * \brief Tests if there is a handler attached to port \p which_port
      */
-    virtual bool has_msg_handler(pmt::pmt_t which_port)
+    virtual bool has_msg_handler(const std::string which_port) const
     {
         return (d_msg_handlers.find(which_port) != d_msg_handlers.end());
     }
 
 
     //! How many messages in the queue?
-    size_t nmsgs(pmt::pmt_t which_port)
+    size_t nmsgs(const std::string which_port)
     {
         if (d_msg_queue.find(which_port) == d_msg_queue.end())
             throw std::runtime_error("port does not exist!");
@@ -1049,19 +1044,19 @@ public:
     }
 
     //| Acquires and release the mutex
-    void insert_tail(pmt::pmt_t which_port, pmt::pmt_t msg);
+    void insert_tail(const std::string which_port, pmt::pmt_t& msg);
     /*!
      * \returns returns pmt at head of queue or pmt::pmt_t() if empty.
      */
-    pmt::pmt_t delete_head_nowait(pmt::pmt_t which_port);
+    pmt::pmt_t delete_head_nowait(const std::string which_port);
 
-    void erase_msg(pmt::pmt_t which_port, msg_queue_t::iterator it)
+    void erase_msg(const std::string which_port, msg_queue_t::iterator it)
     {
         d_msg_queue[which_port].erase(it);
     }
 
     //! is the queue empty?
-    bool empty_p(pmt::pmt_t which_port)
+    bool empty_p(const std::string which_port)
     {
         if (d_msg_queue.find(which_port) == d_msg_queue.end())
             throw std::runtime_error("port does not exist!");
@@ -1078,7 +1073,7 @@ public:
 
     /*! \brief Tell msg neighbors we are finished
      */
-    void notify_msg_neighbors();
+    void notify_msg_neighbors() const;
 
     /*! \brief Make sure we don't think we are finished
      */
@@ -1089,7 +1084,7 @@ public:
     /*!
      * Accept msg, place in queue, arrange for thread to be awakened if it's not already.
      */
-    virtual void post(pmt::pmt_t which_port, pmt::pmt_t msg) override;
+    virtual void post(const std::string which_port, pmt::pmt_t msg) override;
 };
 
 typedef std::vector<block_sptr> block_vector_t;

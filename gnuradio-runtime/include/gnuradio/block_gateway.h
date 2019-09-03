@@ -261,41 +261,41 @@ public:
     }
 
     /* Message passing interface */
-    void block__message_port_register_in(pmt::pmt_t port_id)
+    void block__message_port_register_in(std::string port_id)
     {
         gr::block::message_port_register_in(port_id);
     }
 
-    void block__message_port_register_out(pmt::pmt_t port_id)
+    void block__message_port_register_out(std::string port_id)
     {
         gr::basic_block::message_port_register_out(port_id);
     }
 
-    void block__message_port_pub(pmt::pmt_t port_id, pmt::pmt_t msg)
+    void block__message_port_pub(std::string port_id, pmt::pmt_t msg)
     {
         gr::block::message_port_pub(port_id, msg);
     }
 
-    void block__message_port_sub(pmt::pmt_t port_id, pmt::pmt_t target)
+    void block__message_port_sub(std::string port_id, basic_block::sptr target, std::string target_port)
     {
-        gr::basic_block::message_port_sub(port_id, target);
+        gr::basic_block::message_port_sub(port_id, target, target_port);
     }
 
-    void block__message_port_unsub(pmt::pmt_t port_id, pmt::pmt_t target)
+    void block__message_port_unsub(std::string port_id, basic_block::sptr target, std::string target_port)
     {
-        gr::basic_block::message_port_unsub(port_id, target);
+        gr::basic_block::message_port_unsub(port_id, target, target_port);
     }
 
-    pmt::pmt_t block__message_subscribers(pmt::pmt_t which_port)
+    std::vector<msg_endpoint> block__message_subscribers(std::string which_port)
     {
         return gr::basic_block::message_subscribers(which_port);
     }
 
-    pmt::pmt_t block__message_ports_in() { return gr::block::message_ports_in(); }
+    std::vector<std::string> block__message_ports_in() { return gr::block::message_ports_in(); }
 
-    pmt::pmt_t block__message_ports_out() { return gr::basic_block::message_ports_out(); }
+    std::vector<std::string> block__message_ports_out() { return gr::basic_block::message_ports_out(); }
 
-    void set_msg_handler_feval(pmt::pmt_t which_port, gr::feval_p* msg_handler)
+    void set_msg_handler_feval(std::string which_port, gr::feval_p* msg_handler)
     {
         if (d_msg_queue.find(which_port) == d_msg_queue.end()) {
             throw std::runtime_error(
@@ -305,10 +305,10 @@ public:
     }
 
 protected:
-    typedef std::map<pmt::pmt_t, feval_p*, pmt::comparator> msg_handlers_feval_t;
+    typedef std::map<std::string, feval_p*> msg_handlers_feval_t;
     msg_handlers_feval_t d_msg_handlers_feval;
 
-    bool has_msg_handler(pmt::pmt_t which_port)
+    bool has_msg_handler(const std::string which_port) const override
     {
         if (d_msg_handlers_feval.find(which_port) != d_msg_handlers_feval.end()) {
             return true;
@@ -317,7 +317,7 @@ protected:
         }
     }
 
-    void dispatch_msg(pmt::pmt_t which_port, pmt::pmt_t msg)
+    void dispatch_msg(const std::string which_port, pmt::pmt_t& msg) override
     {
         // Is there a handler?
         if (d_msg_handlers_feval.find(which_port) != d_msg_handlers_feval.end()) {

@@ -47,9 +47,8 @@ mmse_resampler_cc_impl::mmse_resampler_cc_impl(float phase_shift, float resamp_r
         throw std::out_of_range("phase shift ratio must be > 0 and < 1");
 
     set_inverse_relative_rate(d_mu_inc);
-    message_port_register_in(pmt::intern("msg_in"));
-    set_msg_handler(pmt::intern("msg_in"),
-                    boost::bind(&mmse_resampler_cc_impl::handle_msg, this, _1));
+    message_port_register_in("msg_in");
+    set_msg_handler("msg_in", boost::bind(&mmse_resampler_cc_impl::handle_msg, this, _1));
 }
 
 mmse_resampler_cc_impl::~mmse_resampler_cc_impl() { delete d_resamp; }

@@ -144,10 +144,10 @@ class hier_block(object):
         """
         Register a message port for this hier block
         """
-        self.primitive_message_port_register_in(pmt.intern(portname))
+        self.primitive_message_port_register_in(portname)
 
     def message_port_register_out(self, portname):
         """
         Register a message port for this hier block
         """
-        self.primitive_message_port_register_out(pmt.intern(portname))
+        self.primitive_message_port_register_out(portname)

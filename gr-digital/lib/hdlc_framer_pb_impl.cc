@@ -40,7 +40,7 @@ hdlc_framer_pb_impl::hdlc_framer_pb_impl(const std::string frame_tag_name)
     : gr::sync_block("hdlc_framer_pb",
                      gr::io_signature::make(0, 0, 0),
                      gr::io_signature::make(1, 1, sizeof(unsigned char))),
-      d_port(pmt::mp("in"))
+      d_port("in")
 {
     message_port_register_in(d_port);
     d_frame_tag = pmt::string_to_symbol(frame_tag_name);

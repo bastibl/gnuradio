@@ -105,8 +105,8 @@ class blk(gr.sync_block):
             in_sig = (np.float32,),
             out_sig = (np.float32,np.complex64,),
         )
-        self.message_port_register_in(pmt.intern('msg_in'))
-        self.message_port_register_out(pmt.intern('msg_out'))
+        self.message_port_register_in('msg_in')
+        self.message_port_register_out('msg_out')
         self.param1 = param1
         self._param2 = param2
         self._param3 = param3

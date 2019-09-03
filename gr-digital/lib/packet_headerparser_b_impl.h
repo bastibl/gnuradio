@@ -32,7 +32,7 @@ class packet_headerparser_b_impl : public packet_headerparser_b
 private:
     packet_header_default::sptr d_header_formatter;
 
-    const pmt::pmt_t d_port;
+    const std::string d_port;
 
 public:
     packet_headerparser_b_impl(

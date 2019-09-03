@@ -59,7 +59,7 @@ message_strobe_random_impl::message_strobe_random_impl(
       d_dist(dist),
       d_msg(msg),
       d_rng(),
-      d_port(pmt::mp("strobe"))
+      d_port("strobe")
 {
     // allocate RNGs
     update_dist();
@@ -69,8 +69,8 @@ message_strobe_random_impl::message_strobe_random_impl(
     d_thread = boost::shared_ptr<gr::thread::thread>(
         new gr::thread::thread(boost::bind(&message_strobe_random_impl::run, this)));
 
-    message_port_register_in(pmt::mp("set_msg"));
-    set_msg_handler(pmt::mp("set_msg"),
+    message_port_register_in("set_msg");
+    set_msg_handler("set_msg",
                     boost::bind(&message_strobe_random_impl::set_msg, this, _1));
 }
 

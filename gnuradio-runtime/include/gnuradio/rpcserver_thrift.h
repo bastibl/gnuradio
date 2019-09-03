@@ -106,7 +106,7 @@ private:
      */
     void set_h(const handlerCallback_t& _handlerCallback,
                const priv_lvl_t& _cur_priv,
-               pmt::pmt_t port,
+               std::string port,
                pmt::pmt_t msg)
     {
         if (cur_priv <= _handlerCallback.priv) {
@@ -133,7 +133,7 @@ private:
             if (iter != d_setcallbackmap.end()) {
                 if (cur_priv <= iter->second.priv) {
                     (*iter->second.callback)
-                        .post(pmt::PMT_NIL, rpcpmtconverter::To_PMT::instance(p.second));
+                        .post("", rpcpmtconverter::To_PMT::instance(p.second));
                 } else {
                     std::cerr << "Key " << p.first
                               << " requires PRIVLVL <= " << iter->second.priv

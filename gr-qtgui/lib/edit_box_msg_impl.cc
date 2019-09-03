@@ -52,7 +52,7 @@ edit_box_msg_impl::edit_box_msg_impl(data_type_t type,
                                      QWidget* parent)
     : block("edit_box_msg", io_signature::make(0, 0, 0), io_signature::make(0, 0, 0)),
       QObject(parent),
-      d_port(pmt::mp("msg"))
+      d_port("msg")
 {
     // Required now for Qt; argc must be greater than 0 and argv
     // must have at least one valid character. Must be valid through
@@ -152,9 +152,9 @@ edit_box_msg_impl::edit_box_msg_impl(data_type_t type,
     d_msg = pmt::PMT_NIL;
 
     message_port_register_out(d_port);
-    message_port_register_in(pmt::mp("val"));
+    message_port_register_in("val");
 
-    set_msg_handler(pmt::mp("val"), boost::bind(&edit_box_msg_impl::set_value, this, _1));
+    set_msg_handler("val", boost::bind(&edit_box_msg_impl::set_value, this, _1));
 }
 
 edit_box_msg_impl::~edit_box_msg_impl()

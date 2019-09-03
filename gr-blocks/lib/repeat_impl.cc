@@ -39,8 +39,8 @@ repeat_impl::repeat_impl(size_t itemsize, int interp)
       d_itemsize(itemsize),
       d_interp(interp)
 {
-    message_port_register_in(pmt::mp("interpolation"));
-    set_msg_handler(pmt::mp("interpolation"),
+    message_port_register_in("interpolation");
+    set_msg_handler("interpolation",
                     boost::bind(&repeat_impl::msg_set_interpolation, this, _1));
 }
 
@@ -54,8 +54,8 @@ void repeat_impl::set_interpolation(int interp)
 {
     // This ensures that interpolation is only changed between calls to work
     // (and not in the middle of an ongoing work)
-    post(pmt::mp("interpolation"),                                   /* port */
-          pmt::cons(pmt::mp("interpolation"), pmt::from_long(interp)) /* pair */
+    post("interpolation",                                            /* port */
+         pmt::cons(pmt::mp("interpolation"), pmt::from_long(interp)) /* pair */
     );
 }
 

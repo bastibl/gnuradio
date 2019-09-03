@@ -41,7 +41,7 @@ hdlc_deframer_bp_impl::hdlc_deframer_bp_impl(int length_min, int length_max)
                      gr::io_signature::make(0, 0, 0)),
       d_length_min(length_min),
       d_length_max(length_max),
-      d_port(pmt::mp("out"))
+      d_port("out")
 {
     set_output_multiple(length_max * 2);
     message_port_register_out(d_port);

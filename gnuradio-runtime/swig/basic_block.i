@@ -28,6 +28,8 @@
 
 namespace gr {
 
+  class msg_endpoint;
+
   class gr::basic_block
   {
   protected:
@@ -44,14 +46,49 @@ namespace gr {
     gr::io_signature::sptr output_signature() const;
     gr::basic_block::sptr to_basic_block();
     virtual bool check_topology(int ninputs, int noutputs);
-    std::string alias();
-    void set_block_alias(std::string name);
-    virtual void post(pmt::pmt_t which_port, pmt::pmt_t msg);
-    pmt::pmt_t message_ports_in();
-    pmt::pmt_t message_ports_out();
-    pmt::pmt_t message_subscribers(pmt::pmt_t which_port);
+    std::string alias() const;
+    void set_block_alias(const std::string name);
+    virtual void post(const std::string, pmt::pmt_t msg);
+    virtual std::vector<std::string> message_ports_in() const;
+    std::vector<std::string> message_ports_out() const;
+    std::vector<msg_endpoint> message_subscribers(const std::string which_port);
   };
+
+  class msg_endpoint
+  {
+  private:
+      basic_block::sptr d_basic_block;
+      std::string d_port;
+
+  public:
+      msg_endpoint() : d_basic_block(nullptr), d_port("") {}
+      msg_endpoint(basic_block::sptr block, std::string port)
+      {
+          d_basic_block = block;
+          d_port = port;
+      }
+      basic_block::sptr block() const { return d_basic_block; }
+      std::string port() const { return d_port; }
+      std::string identifier() const
+      {
+          return d_basic_block->alias() + ":" + d_port;
+      }
+
+      bool operator==(const msg_endpoint& other) const;
+  };
+
+  inline bool msg_endpoint::operator==(const msg_endpoint& other) const
+  {
+      return (d_basic_block == other.d_basic_block && d_port == other.d_port);
+  }
+
+  // Hold vectors of gr::endpoint objects
+  typedef std::vector<endpoint> endpoint_vector_t;
+  typedef std::vector<endpoint>::iterator endpoint_viter_t;
+
 }
+
+%template(msg_endpoint_vector_t) std::vector<gr::msg_endpoint>;
 
 %template(basic_block_sptr) boost::shared_ptr<gr::basic_block>;
 

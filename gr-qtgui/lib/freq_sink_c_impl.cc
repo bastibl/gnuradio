@@ -64,8 +64,8 @@ freq_sink_c_impl::freq_sink_c_impl(int fftsize,
       d_bandwidth(bw),
       d_name(name),
       d_nconnections(nconnections),
-      d_port(pmt::mp("freq")),
-      d_port_bw(pmt::mp("bw")),
+      d_port("freq"),
+      d_port_bw("bw"),
       d_parent(parent)
 {
     // Required now for Qt; argc must be greater than 0 and argv
@@ -87,8 +87,8 @@ freq_sink_c_impl::freq_sink_c_impl(int fftsize,
     set_msg_handler(d_port, boost::bind(&freq_sink_c_impl::handle_set_freq, this, _1));
 
     // setup PDU handling input port
-    message_port_register_in(pmt::mp("in"));
-    set_msg_handler(pmt::mp("in"), boost::bind(&freq_sink_c_impl::handle_pdus, this, _1));
+    message_port_register_in("in");
+    set_msg_handler("in", boost::bind(&freq_sink_c_impl::handle_pdus, this, _1));
 
     d_main_gui = NULL;
 
@@ -477,7 +477,7 @@ void freq_sink_c_impl::check_clicked()
 {
     if (d_main_gui->checkClicked()) {
         double freq = d_main_gui->getClickedFreq();
-        message_port_pub(d_port, pmt::cons(d_port, pmt::from_double(freq)));
+        message_port_pub(d_port, pmt::cons(pmt::mp(d_port), pmt::from_double(freq)));
     }
 }
 

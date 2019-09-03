@@ -63,7 +63,7 @@ vector_sink_f_impl::vector_sink_f_impl(unsigned int vlen,
       d_vecavg(1.0),
       d_name(name),
       d_nconnections(nconnections),
-      d_port(pmt::mp(MSG_PORT_OUT_XVAL)),
+      d_port(MSG_PORT_OUT_XVAL),
       d_msg(pmt::mp("x")),
       d_parent(parent)
 {

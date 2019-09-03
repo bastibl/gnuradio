@@ -55,7 +55,7 @@ class HeaderToMessageBlock(gr.sync_block):
             out_sig=[itemsize],
         )
         self.header_len = header_len
-        self.message_port_register_out(pmt.intern('header_data'))
+        self.message_port_register_out('header_data')
         self.messages = messages
         self.msg_count = 0
 
@@ -63,7 +63,7 @@ class HeaderToMessageBlock(gr.sync_block):
         """Where the magic happens."""
         for _ in range(len(input_items[0]) // self.header_len):
             msg = self.messages[self.msg_count] or False
-            self.message_port_pub(pmt.intern('header_data'), pmt.to_pmt(msg))
+            self.message_port_pub('header_data', pmt.to_pmt(msg))
             self.msg_count += 1
         output_items[0][:] = input_items[0][:]
         return len(input_items[0])
@@ -144,7 +144,7 @@ class qa_header_payload_demux (gr_unittest.TestCase):
             len(header),
             [len(payload)]
         )
-        self.assertEqual(pmt.length(hpd.message_ports_in()), 2) #extra system port defined for you
+        self.assertEqual(len(hpd.message_ports_in()), 2) #extra system port defined for you
         payload_sink = blocks.vector_sink_f()
         header_sink = blocks.vector_sink_f()
         self.connect_all_blocks(
@@ -202,7 +202,7 @@ class qa_header_payload_demux (gr_unittest.TestCase):
         hpd = digital.header_payload_demux(
             len(header), 1, 0, "frame_len", "detect", False, gr.sizeof_float
         )
-        self.assertEqual(pmt.length(hpd.message_ports_in()), 2) #extra system port defined for you
+        self.assertEqual(len(hpd.message_ports_in()), 2) #extra system port defined for you
         header_sink = blocks.vector_sink_f()
         payload_sink = blocks.vector_sink_f()
         mock_header_demod = HeaderToMessageBlock(
@@ -333,7 +333,8 @@ class qa_header_payload_demux (gr_unittest.TestCase):
             (), # No special tags
             header_padding
         )
-        self.assertEqual(pmt.length(hpd.message_ports_in()), 2) #extra system port defined for you
+        print(hpd.message_ports_in())
+        self.assertEqual(len(hpd.message_ports_in()), 2) #extra system port defined for you
         header_sink = blocks.vector_sink_f()
         payload_sink = blocks.vector_sink_f()
         self.tb.connect(data_src,    (hpd, 0))
@@ -343,7 +344,7 @@ class qa_header_payload_demux (gr_unittest.TestCase):
         self.tb.start()
         time.sleep(.2) # Need this, otherwise, the next message is ignored
         hpd.to_basic_block().post(
-            pmt.intern('header_data'),
+            'header_data',
             pmt.to_pmt({'frame_len': len(payload), 'payload_offset': payload_offset})
         )
         while len(payload_sink.data()) < len(payload):
@@ -401,7 +402,7 @@ class qa_header_payload_demux (gr_unittest.TestCase):
             True,                            # Output symbols (not items)
             gr.sizeof_float                  # Bytes per item
         )
-        self.assertEqual(pmt.length(hpd.message_ports_in()), 2) #extra system port defined for you
+        self.assertEqual(len(hpd.message_ports_in()), 2) #extra system port defined for you
         header_sink = blocks.vector_sink_f(items_per_symbol)
         payload_sink = blocks.vector_sink_f(items_per_symbol)
         self.tb.connect(data_src,    (hpd, 0))
@@ -411,7 +412,7 @@ class qa_header_payload_demux (gr_unittest.TestCase):
         self.tb.start()
         time.sleep(.2) # Need this, otherwise, the next message is ignored
         hpd.to_basic_block().post(
-            pmt.intern('header_data'),
+            'header_data',
             pmt.from_long(n_symbols)
         )
         while len(payload_sink.data()) < len(payload) * n_symbols:
@@ -486,7 +487,7 @@ class qa_header_payload_demux (gr_unittest.TestCase):
             samp_rate=sampling_rate,
             special_tags=('rx_freq',),
         )
-        self.assertEqual(pmt.length(hpd.message_ports_in()), 2) #extra system port defined for you
+        self.assertEqual(len(hpd.message_ports_in()), 2) #extra system port defined for you
         header_sink = blocks.vector_sink_f()
         payload_sink = blocks.vector_sink_f()
         self.tb.connect(data_src,    (hpd, 0))
@@ -496,20 +497,20 @@ class qa_header_payload_demux (gr_unittest.TestCase):
         self.tb.start()
         time.sleep(.2) # Need this, otherwise, the next message is ignored
         hpd.to_basic_block().post(
-            pmt.intern('header_data'),
+            'header_data',
             pmt.from_long(len(payload1))
         )
         while len(payload_sink.data()) < len(payload1):
             time.sleep(.2)
         hpd.to_basic_block().post(
-            pmt.intern('header_data'),
+            'header_data',
             pmt.PMT_F
         )
         # This next command is a bit of a showstopper, but there's no condition to check upon
         # to see if the previous msg handling is finished
         time.sleep(.7)
         hpd.to_basic_block().post(
-            pmt.intern('header_data'),
+            'header_data',
             pmt.from_long(len(payload2))
         )
         while len(payload_sink.data()) < len(payload1) + len(payload2):

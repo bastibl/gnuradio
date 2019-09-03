@@ -34,8 +34,8 @@ class crc32_async_bb_impl : public crc32_async_bb
 private:
     boost::crc_optimal<32, 0x04C11DB7, 0xFFFFFFFF, 0xFFFFFFFF, true, true> d_crc_impl;
 
-    pmt::pmt_t d_in_port;
-    pmt::pmt_t d_out_port;
+    std::string d_in_port;
+    std::string d_out_port;
 
     void calc(pmt::pmt_t msg);
     void check(pmt::pmt_t msg);

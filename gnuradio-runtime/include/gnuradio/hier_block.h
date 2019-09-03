@@ -66,10 +66,10 @@ public:
     connect(basic_block::sptr src, int src_port, basic_block::sptr dst, int dst_port);
 
 
-    void message_port_register_in(pmt::pmt_t port_id) override;
-    pmt::pmt_t message_ports_in() override;
+    void message_port_register_in(const std::string port_id) override;
+    std::vector<std::string> message_ports_in() const override;
 
-    void post(pmt::pmt_t which_port, pmt::pmt_t msg) override;
+    void post(const std::string which_port, pmt::pmt_t msg) override;
 
     /*!
      * \brief Add gr-blocks or hierarchical blocks to internal graph
@@ -80,17 +80,9 @@ public:
      * subscription
      */
     void msg_connect(basic_block::sptr src,
-                     pmt::pmt_t srcport,
-                     basic_block::sptr dst,
-                     pmt::pmt_t dstport);
-    void msg_connect(basic_block::sptr src,
                      std::string srcport,
                      basic_block::sptr dst,
                      std::string dstport);
-    void msg_disconnect(basic_block::sptr src,
-                        pmt::pmt_t srcport,
-                        basic_block::sptr dst,
-                        pmt::pmt_t dstport = 0);
     void msg_disconnect(basic_block::sptr src,
                         std::string srcport,
                         basic_block::sptr dst,
@@ -122,6 +114,11 @@ public:
      * the internal flowgraph.
      */
     void disconnect_all();
+
+    void connect_input(int my_port, int port, basic_block::sptr block);
+    void connect_output(int my_port, int port, basic_block::sptr block);
+    void disconnect_input(int my_port, int port, basic_block::sptr block);
+    void disconnect_output(int my_port, int port, basic_block::sptr block);
 
     /*!
      * \brief Returns max buffer size (itemcount) on output port \p i.
@@ -224,11 +221,6 @@ protected:
 
     void flatten_aux(flat_flowgraph_sptr sfg) const;
 
-    void connect_input(int my_port, int port, basic_block::sptr block);
-    void connect_output(int my_port, int port, basic_block::sptr block);
-    void disconnect_input(int my_port, int port, basic_block::sptr block);
-    void disconnect_output(int my_port, int port, basic_block::sptr block);
-
 private:
     // Track output buffer min/max settings
     std::vector<size_t> d_max_output_buffer;
@@ -241,7 +233,7 @@ private:
     endpoint_vector_t d_outputs; // Single internal endpoint per external output
     basic_block_vector_t d_blocks;
 
-    pmt::pmt_t d_message_ports_in;
+    std::vector<std::string> d_message_ports_in;
 
     void refresh_io_signature();
 

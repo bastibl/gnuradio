@@ -56,14 +56,14 @@ constellation_receiver_cb_impl::constellation_receiver_cb_impl(
         throw std::runtime_error(
             "This receiver only works with constellations of dimension 1.");
 
-    message_port_register_in(pmt::mp("set_constellation"));
+    message_port_register_in("set_constellation");
     set_msg_handler(
-        pmt::mp("set_constellation"),
+        "set_constellation",
         boost::bind(&constellation_receiver_cb_impl::handle_set_constellation, this, _1));
 
-    message_port_register_in(pmt::mp("rotate_phase"));
+    message_port_register_in("rotate_phase");
     set_msg_handler(
-        pmt::mp("rotate_phase"),
+        "rotate_phase",
         boost::bind(&constellation_receiver_cb_impl::handle_rotate_phase, this, _1));
 }
 
@@ -151,7 +151,7 @@ int constellation_receiver_cb_impl::general_work(int noutput_items,
         tchecker.get_tags(tags_now, i + nitems_read(0));
         for (unsigned int j = 0; j < tags_now.size(); j++) {
             tag_t tag = tags_now[j];
-            dispatch_msg(tag.key, tag.value);
+            dispatch_msg(pmt::symbol_to_string(tag.key), tag.value);
         }
 
         sample = in[i];

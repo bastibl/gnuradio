@@ -42,9 +42,7 @@ hier_block::sptr hier_block::make(const std::string& name,
 hier_block::hier_block(const std::string& name,
                        gr::io_signature::sptr input_signature,
                        gr::io_signature::sptr output_signature)
-    : basic_block(name, input_signature, output_signature),
-      d_fg(make_flowgraph()),
-      d_message_ports_in(pmt::PMT_NIL)
+    : basic_block(name, input_signature, output_signature), d_fg(make_flowgraph())
 {
     int min_inputs = input_signature->min_streams();
     int max_inputs = input_signature->max_streams();
@@ -67,10 +65,7 @@ hier_block::hier_block(const std::string& name,
     d_min_output_buffer = std::vector<size_t>(std::max(max_outputs, 1), 0);
 }
 
-hier_block::~hier_block()
-{
-    disconnect_all();
-}
+hier_block::~hier_block() { disconnect_all(); }
 
 void hier_block::connect(basic_block::sptr block)
 {
@@ -97,8 +92,6 @@ void hier_block::connect(basic_block::sptr src,
                          basic_block::sptr dst,
                          int dst_port)
 {
-    std::stringstream msg;
-
     if (HIER_BLOCK_DEBUG)
         std::cout << "connecting: " << endpoint(src, src_port) << " -> "
                   << endpoint(dst, dst_port) << std::endl;
@@ -112,8 +105,7 @@ void hier_block::connect(basic_block::sptr src,
     if (src.get() == this) {
         max_port = src->input_signature()->max_streams();
         if ((max_port != -1 && (src_port >= max_port)) || src_port < 0) {
-            msg << "source port " << src_port << " out of range for " << src;
-            throw std::invalid_argument(msg.str());
+            throw std::invalid_argument("source port out of range");
         }
 
         return connect_input(src_port, dst_port, dst);
@@ -122,8 +114,7 @@ void hier_block::connect(basic_block::sptr src,
     if (dst.get() == this) {
         max_port = dst->output_signature()->max_streams();
         if ((max_port != -1 && (dst_port >= max_port)) || dst_port < 0) {
-            msg << "destination port " << dst_port << " out of range for " << dst;
-            throw std::invalid_argument(msg.str());
+            throw std::invalid_argument("destination port out of range");
         }
 
         return connect_output(dst_port, src_port, src);
@@ -131,21 +122,21 @@ void hier_block::connect(basic_block::sptr src,
 
     // Internal connections
     d_fg->connect(src, src_port, dst, dst_port);
-
-    // TODO: connects to NC
 }
 
 void hier_block::msg_connect(basic_block::sptr src,
-                             pmt::pmt_t srcport,
+                             std::string srcport,
                              basic_block::sptr dst,
-                             pmt::pmt_t dstport)
+                             std::string dstport)
 {
     if (HIER_BLOCK_DEBUG)
         std::cout << "connecting message port..." << std::endl;
 
     // add block uniquely to list to internal blocks
-    if (std::find(d_blocks.begin(), d_blocks.end(), dst) == d_blocks.end()) {
+    if (std::find(d_blocks.begin(), d_blocks.end(), src) != d_blocks.end()) {
         d_blocks.push_back(src);
+    }
+    if (std::find(d_blocks.begin(), d_blocks.end(), dst) != d_blocks.end()) {
         d_blocks.push_back(dst);
     }
 
@@ -156,18 +147,10 @@ void hier_block::msg_connect(basic_block::sptr src,
     d_fg->connect(msg_endpoint(src, srcport), msg_endpoint(dst, dstport));
 }
 
-void hier_block::msg_connect(basic_block::sptr src,
-                             std::string srcport,
-                             basic_block::sptr dst,
-                             std::string dstport)
-{
-    msg_connect(src, pmt::mp(srcport), dst, pmt::mp(dstport));
-}
-
 void hier_block::msg_disconnect(basic_block::sptr src,
-                                pmt::pmt_t srcport,
+                                std::string srcport,
                                 basic_block::sptr dst,
-                                pmt::pmt_t dstport)
+                                std::string dstport)
 {
     if (HIER_BLOCK_DEBUG)
         std::cout << "disconnecting message port..." << std::endl;
@@ -201,38 +184,26 @@ void hier_block::msg_disconnect(basic_block::sptr src,
     }
 
     // unregister the subscription - if already subscribed
-    src->message_port_unsub(srcport, pmt::cons(dst->alias_pmt(), dstport));
+    src->message_port_unsub(srcport, dst, dstport);
 }
 
-void hier_block::msg_disconnect(basic_block::sptr src,
-                                std::string srcport,
-                                basic_block::sptr dst,
-                                std::string dstport)
-{
-    msg_disconnect(src, pmt::mp(srcport), dst, pmt::mp(dstport));
-}
-
-void hier_block::message_port_register_in(pmt::pmt_t port_id)
+void hier_block::message_port_register_in(const std::string port_id)
 {
 
-    if (pmt::list_has(d_message_ports_in, port_id))
+    if (std::find(d_message_ports_in.begin(), d_message_ports_in.end(), port_id) !=
+        d_message_ports_in.end()) {
         throw std::invalid_argument("hier msg in port by this name already registered");
-
-    d_message_ports_in = pmt::list_add(d_message_ports_in, port_id);
-}
-
-pmt::pmt_t hier_block::message_ports_in()
-{
-    pmt::pmt_t port_names =
-        pmt::make_vector(pmt::length(d_message_ports_in), pmt::PMT_NIL);
-
-    for (size_t i = 0; i < pmt::length(d_message_ports_in); i++) {
-        pmt::vector_set(port_names, i, pmt::nth(i, d_message_ports_in));
     }
-    return port_names;
+
+    d_message_ports_in.push_back(port_id);
 }
 
-void hier_block::post(pmt::pmt_t which_port, pmt::pmt_t msg)
+std::vector<std::string> hier_block::message_ports_in() const
+{
+    return d_message_ports_in;
+}
+
+void hier_block::post(std::string which_port, pmt::pmt_t msg)
 {
     throw std::runtime_error("not implemented yet");
 }

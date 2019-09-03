@@ -135,8 +135,8 @@ usrp_block_impl::usrp_block_impl(const ::uhd::device_addr_t& device_addr,
     _check_mboard_sensors_locked();
 
     // Set up message ports:
-    message_port_register_in(pmt::mp("command"));
-    set_msg_handler(pmt::mp("command"),
+    message_port_register_in("command");
+    set_msg_handler("command",
                     boost::bind(&usrp_block_impl::msg_handler_command, this, _1));
 
 // cuz we lazy:

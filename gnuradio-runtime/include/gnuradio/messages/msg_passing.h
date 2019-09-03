@@ -47,7 +47,7 @@ namespace messages {
  * \returns msg
  */
 static inline pmt::pmt_t
-send(msg_accepter_sptr accepter, const pmt::pmt_t& which_port, const pmt::pmt_t& msg)
+send(msg_accepter_sptr accepter, const std::string& which_port, const pmt::pmt_t& msg)
 {
     accepter->post(which_port, msg);
     return msg;
@@ -67,7 +67,7 @@ send(msg_accepter_sptr accepter, const pmt::pmt_t& which_port, const pmt::pmt_t&
  * \returns msg
  */
 static inline pmt::pmt_t
-send(msg_accepter* accepter, const pmt::pmt_t& which_port, const pmt::pmt_t& msg)
+send(msg_accepter* accepter, const std::string& which_port, const pmt::pmt_t& msg)
 {
     accepter->post(which_port, msg);
     return msg;
@@ -87,7 +87,7 @@ send(msg_accepter* accepter, const pmt::pmt_t& which_port, const pmt::pmt_t& msg
  * \returns msg
  */
 static inline pmt::pmt_t
-send(msg_accepter& accepter, const pmt::pmt_t& which_port, const pmt::pmt_t& msg)
+send(msg_accepter& accepter, const std::string& which_port, const pmt::pmt_t& msg)
 {
     accepter.post(which_port, msg);
     return msg;
@@ -108,7 +108,7 @@ send(msg_accepter& accepter, const pmt::pmt_t& which_port, const pmt::pmt_t& msg
  * \returns msg
  */
 static inline pmt::pmt_t
-send(pmt::pmt_t accepter, const pmt::pmt_t& which_port, const pmt::pmt_t& msg)
+send(pmt::pmt_t accepter, const std::string& which_port, const pmt::pmt_t& msg)
 {
     return send(pmt::msg_accepter_ref(accepter), which_port, msg);
 }

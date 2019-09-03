@@ -38,7 +38,7 @@ class message_generator(gr.sync_block):
         self.msg_list = msg_list
         self.msg_interval = msg_interval
         self.msg_ctr = 0
-        self.message_port_register_out(pmt.intern('out_port'))
+        self.message_port_register_out('out_port')
 
 
     def work(self, input_items, output_items):
@@ -46,7 +46,7 @@ class message_generator(gr.sync_block):
         while self.msg_ctr < len(self.msg_list) and \
                 (self.msg_ctr * self.msg_interval) < \
                 (self.nitems_read(0) + inLen):
-            self.message_port_pub(pmt.intern('out_port'),
+            self.message_port_pub('out_port',
                                   self.msg_list[self.msg_ctr])
             self.msg_ctr += 1
         return inLen
@@ -61,9 +61,8 @@ class message_consumer(gr.sync_block):
             out_sig = None
         )
         self.msg_list = []
-        self.message_port_register_in(pmt.intern('in_port'))
-        self.set_msg_handler(pmt.intern('in_port'),
-                             self.handle_msg)
+        self.message_port_register_in('in_port')
+        self.set_msg_handler('in_port', self.handle_msg)
 
     def handle_msg(self, msg):
         # Create a new PMT from long value and put in list
@@ -99,8 +98,8 @@ class test_python_message_passing(gr_unittest.TestCase):
         self.tb.msg_connect(msg_gen, 'out_port', msg_cons, 'in_port')
 
         # Verify that the messgae port query functions work
-        self.assertEqual(pmt.to_python(msg_gen.message_ports_out())[0], 'out_port')
-        self.assertEqual('in_port' in pmt.to_python(msg_cons.message_ports_in()), True)
+        self.assertEqual(msg_gen.message_ports_out()[0], 'out_port')
+        self.assertEqual('in_port' in msg_cons.message_ports_in(), True)
 
         # Run to verify message passing
         self.tb.run()

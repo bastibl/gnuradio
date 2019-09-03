@@ -75,8 +75,8 @@ time_sink_c_impl::time_sink_c_impl(int size,
     d_main_gui = NULL;
 
     // setup PDU handling input port
-    message_port_register_in(pmt::mp("in"));
-    set_msg_handler(pmt::mp("in"), boost::bind(&time_sink_c_impl::handle_pdus, this, _1));
+    message_port_register_in("in");
+    set_msg_handler("in", boost::bind(&time_sink_c_impl::handle_pdus, this, _1));
 
     // +2 for the PDU message buffers
     for (unsigned int n = 0; n < d_nconnections + 2; n++) {

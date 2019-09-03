@@ -29,8 +29,8 @@
 #include <volk/volk.h>
 
 #include <string.h>
-#include <iostream>
 #include <algorithm>
+#include <iostream>
 
 namespace gr {
 namespace qtgui {
@@ -66,8 +66,8 @@ waterfall_sink_c_impl::waterfall_sink_c_impl(int fftsize,
       d_name(name),
       d_nconnections(nconnections),
       d_nrows(200),
-      d_port(pmt::mp("freq")),
-      d_port_bw(pmt::mp("bw")),
+      d_port("freq"),
+      d_port_bw("bw"),
       d_parent(parent)
 {
     // Required now for Qt; argc must be greater than 0 and argv
@@ -124,9 +124,8 @@ waterfall_sink_c_impl::waterfall_sink_c_impl(int fftsize,
                     boost::bind(&waterfall_sink_c_impl::handle_set_freq, this, _1));
 
     // setup PDU handling input port
-    message_port_register_in(pmt::mp("in"));
-    set_msg_handler(pmt::mp("in"),
-                    boost::bind(&waterfall_sink_c_impl::handle_pdus, this, _1));
+    message_port_register_in("in");
+    set_msg_handler("in", boost::bind(&waterfall_sink_c_impl::handle_pdus, this, _1));
 }
 
 waterfall_sink_c_impl::~waterfall_sink_c_impl()
@@ -411,7 +410,7 @@ void waterfall_sink_c_impl::check_clicked()
 {
     if (d_main_gui->checkClicked()) {
         double freq = d_main_gui->getClickedFreq();
-        message_port_pub(d_port, pmt::cons(d_port, pmt::from_double(freq)));
+        message_port_pub(d_port, pmt::cons(pmt::mp(d_port), pmt::from_double(freq)));
     }
 }
 

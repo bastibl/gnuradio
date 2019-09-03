@@ -262,7 +262,7 @@ void rpcserver_thrift::postMessage(const std::string& alias,
     HandlerCallbackMap_t::iterator itr = d_handlercallbackmap.begin();
     for (; itr != d_handlercallbackmap.end(); itr++) {
         if (iface == (*itr).first) {
-            set_h((*itr).second, cur_priv, port_pmt, msg_pmt);
+            set_h((*itr).second, cur_priv, port, msg_pmt);
         }
     }
 }

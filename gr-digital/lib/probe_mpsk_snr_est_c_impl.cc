@@ -53,9 +53,9 @@ probe_mpsk_snr_est_c_impl::probe_mpsk_snr_est_c_impl(snr_est_type_t type,
     // at least 1 estimator has to look back
     set_history(2);
 
-    d_snr_port = pmt::string_to_symbol("snr");
-    d_signal_port = pmt::string_to_symbol("signal");
-    d_noise_port = pmt::string_to_symbol("noise");
+    d_snr_port = "snr";
+    d_signal_port = "signal";
+    d_noise_port = "noise";
 
     message_port_register_out(d_snr_port);
     message_port_register_out(d_signal_port);

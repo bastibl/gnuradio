@@ -37,7 +37,7 @@ private:
     uint64_t d_lastthru;
     void setup_rpc();
 
-    const pmt::pmt_t d_port;
+    const std::string d_port;
     const pmt::pmt_t d_dict_avg, d_dict_now;
 
 public:

@@ -76,8 +76,8 @@ costas_loop_cc_impl::costas_loop_cc_impl(float loop_bw, int order, bool use_snr)
         break;
     }
 
-    message_port_register_in(pmt::mp("noise"));
-    set_msg_handler(pmt::mp("noise"),
+    message_port_register_in("noise");
+    set_msg_handler("noise",
                     boost::bind(&costas_loop_cc_impl::handle_set_noise, this, _1));
 }
 
