@@ -173,9 +173,7 @@ void thread_body::execute_block(block_sptr block, gr::thread::barrier_sptr start
             gr::thread::scoped_lock guard(executor->d_mutex);
 
             if (!executor->d_input_changed) {
-                boost::system_time const timeout =
-                    boost::get_system_time() + boost::posix_time::milliseconds(250);
-                executor->d_input_cond.timed_wait(guard, timeout);
+                executor->d_input_cond.wait(guard);
             }
         } break;
 
