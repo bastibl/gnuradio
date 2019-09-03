@@ -631,7 +631,7 @@ void block::notify_msg_neighbors() const
 {
     for (const auto port_it : d_message_subscribers) {
         for (const auto ep_it : port_it.second) {
-            ep_it.block()->post("system", pmt::cons(d_pmt_done, pmt::from_bool(true)));
+            ep_it.block()->post("system", pmt::cons(d_pmt_done, pmt::from_long(1)));
         }
     }
 }
