@@ -52,7 +52,7 @@ flat_flowgraph::~flat_flowgraph()
     block_vector_t blocks = flat_flowgraph::make_block_vector(used_blocks);
 
     for (size_t i = 0; i < blocks.size(); i++) {
-        blocks[i]->set_executor(nullptr);
+        blocks[i]->reset_executor();
     }
 }
 
@@ -97,12 +97,12 @@ void flat_flowgraph::setup_connections(int max_noutput_items)
     }
 }
 
-block_executor_sptr flat_flowgraph::allocate_block_executor(block_sptr block,
+block_executor_uptr flat_flowgraph::allocate_block_executor(block_sptr block,
                                                             int max_noutput_items)
 {
     int ninputs = calc_used_ports(block, true).size();
     int noutputs = calc_used_ports(block, false).size();
-    block_executor_sptr executor = make_block_executor(block, ninputs, noutputs);
+    block_executor_uptr executor = make_block_executor(block, ninputs, noutputs);
 
     block_sptr grblock = cast_to_block_sptr(block);
     if (!grblock)
@@ -208,7 +208,7 @@ buffer_sptr flat_flowgraph::allocate_buffer(block_sptr grblock, int port)
 void flat_flowgraph::connect_block_inputs(block_sptr grblock)
 {
     // Get its executor and edges that feed into it
-    block_executor_sptr executor = grblock->executor();
+    block_executor* executor = grblock->executor();
     edge_vector_t in_edges = calc_upstream_edges(grblock);
 
     // For each edge that feeds into it
@@ -259,7 +259,7 @@ void flat_flowgraph::dump()
 
     for (basic_block_viter_t p = d_blocks.begin(); p != d_blocks.end(); p++) {
         std::cout << " block: " << (*p) << std::endl;
-        block_executor_sptr executor = cast_to_block_sptr(*p)->executor();
+        block_executor* executor = cast_to_block_sptr(*p)->executor();
         std::cout << "  executor @" << executor << ":" << std::endl;
 
         int ni = executor->ninputs();

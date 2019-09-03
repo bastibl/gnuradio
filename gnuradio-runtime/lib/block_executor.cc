@@ -48,12 +48,10 @@ namespace gr {
     } while (0)
 #endif
 
-block_executor_sptr make_block_executor(block_sptr block,
-                                        unsigned int ninputs,
-                                        unsigned int noutputs)
+block_executor_uptr
+make_block_executor(block_sptr block, unsigned int ninputs, unsigned int noutputs)
 {
-    return block_executor_sptr(
-        new block_executor(block, ninputs, noutputs));
+    return block_executor_uptr(new block_executor(block, ninputs, noutputs));
 }
 
 inline static unsigned int round_up(unsigned int n, unsigned int multiple)
@@ -254,9 +252,11 @@ block_executor::block_executor(block_sptr block,
       d_var_work_time(0),
       d_avg_throughput(0),
       d_pc_counter(0)
-{}
+{
+}
 
-void block_executor::start() {
+void block_executor::start()
+{
     d_pc_start_time = gr::high_res_timer_now();
 
     if (ENABLE_LOGGING) {

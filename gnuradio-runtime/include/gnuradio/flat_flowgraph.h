@@ -84,7 +84,7 @@ public:
 private:
     flat_flowgraph();
 
-    block_executor_sptr allocate_block_executor(block_sptr block, int max_noutput_items);
+    block_executor_uptr allocate_block_executor(block_sptr block, int max_noutput_items);
     buffer_sptr allocate_buffer(block_sptr block, int port);
     void connect_block_inputs(block_sptr block);
 

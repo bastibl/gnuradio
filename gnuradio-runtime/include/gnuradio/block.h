@@ -748,7 +748,7 @@ private:
     bool d_is_unaligned;
     double d_relative_rate; // approx output_rate / input_rate
     mpq_class d_mp_relative_rate;
-    block_executor_sptr d_executor;
+    block_executor_uptr d_executor;
     unsigned d_history;
     unsigned d_attr_delay; // the block's sample delay
     bool d_fixed_rate;
@@ -974,8 +974,12 @@ protected:
 
 
 public:
-    block_executor_sptr executor() const { return d_executor; }
-    void set_executor(block_executor_sptr executor) { d_executor = executor; }
+    block_executor* executor() const { return d_executor.get(); }
+    void set_executor(block_executor_uptr executor)
+    {
+        d_executor = std::move(executor);
+    }
+    void reset_executor() { d_executor.reset(); }
 
     void message_port_register_in(const std::string port_id) override;
     /*!
@@ -1098,5 +1102,7 @@ inline block_sptr cast_to_block_sptr(basic_block::sptr p)
 GR_RUNTIME_API std::ostream& operator<<(std::ostream& os, const block* m);
 
 } /* namespace gr */
+
+#include <gnuradio/block_executor.h>
 
 #endif /* INCLUDED_GR_RUNTIME_BLOCK_H */

@@ -32,8 +32,8 @@
 
 namespace gr {
 
-typedef boost::shared_ptr<block_executor> block_executor_sptr;
-GR_RUNTIME_API block_executor_sptr make_block_executor(block_sptr block,
+typedef std::unique_ptr<block_executor> block_executor_uptr;
+GR_RUNTIME_API block_executor_uptr make_block_executor(block_sptr block,
                                                        unsigned int ninputs,
                                                        unsigned int noutputs);
 
@@ -46,7 +46,7 @@ class GR_RUNTIME_API block_executor
 
 public:
     friend class thread_body;
-    friend GR_RUNTIME_API block_executor_sptr make_block_executor(block_sptr block,
+    friend GR_RUNTIME_API block_executor_uptr make_block_executor(block_sptr block,
                                                                   unsigned int ninputs,
                                                                   unsigned int noutputs);
 

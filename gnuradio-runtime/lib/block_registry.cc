@@ -114,7 +114,7 @@ void block_registry::notify_blk(long id)
     if (primitive_map.find(id) == primitive_map.end()) {
         return;
     }
-    if (primitive_map[id]->executor().get())
+    if (primitive_map[id]->executor())
         primitive_map[id]->executor()->notify_msg();
 }
 
