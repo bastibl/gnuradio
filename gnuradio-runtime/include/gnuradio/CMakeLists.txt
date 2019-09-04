@@ -28,6 +28,7 @@ install(FILES
   attributes.h
   basic_block.h
   block.h
+  block_executor.h
   block_gateway.h
   block_registry.h
   buffer.h
