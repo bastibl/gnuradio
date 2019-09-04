@@ -45,7 +45,7 @@ basic_block::~basic_block() { global_block_registry.block_unregister(this); }
 
 basic_block::sptr basic_block::to_basic_block() { return shared_from_this(); }
 
-void basic_block::set_block_alias(const std::string name)
+void basic_block::set_block_alias(const std::string& name)
 {
     global_block_registry.update_alias(this, name);
 
@@ -56,7 +56,7 @@ void basic_block::set_block_alias(const std::string name)
 // ** Message passing interface **
 
 //  - register a new output message port
-void basic_block::message_port_register_out(const std::string port_id)
+void basic_block::message_port_register_out(const std::string& port_id)
 {
     if (d_message_subscribers.count(port_id)) {
         throw std::runtime_error("message_port_register_out: port already registered");
@@ -75,7 +75,7 @@ std::vector<std::string> basic_block::message_ports_out() const
 }
 
 //  - subscribe to a message port
-void basic_block::message_port_sub(const std::string port_id, basic_block::sptr target, const std::string target_port)
+void basic_block::message_port_sub(const std::string& port_id, basic_block::sptr target, const std::string& target_port)
 {
     // check if port exists
     if (!d_message_subscribers.count(port_id)) {
@@ -93,7 +93,7 @@ void basic_block::message_port_sub(const std::string port_id, basic_block::sptr 
     }
 }
 
-void basic_block::message_port_unsub(const std::string port_id, basic_block::sptr target, const std::string target_port)
+void basic_block::message_port_unsub(const std::string& port_id, basic_block::sptr target, const std::string& target_port)
 {
     // check if port exists
     if (!d_message_subscribers.count(port_id)) {
@@ -109,7 +109,7 @@ void basic_block::message_port_unsub(const std::string port_id, basic_block::spt
     subs.erase(std::remove(subs.begin(), subs.end(), ep), subs.end());
 }
 
-std::vector<msg_endpoint> basic_block::message_subscribers(const std::string port_id)
+std::vector<msg_endpoint> basic_block::message_subscribers(const std::string& port_id)
 {
     // check if port exists
     if (!d_message_subscribers.count(port_id)) {

@@ -645,7 +645,7 @@ bool block::finished()
 }
 
 //  - register a new input message port
-void block::message_port_register_in(const std::string port_id)
+void block::message_port_register_in(const std::string& port_id)
 {
     if (d_msg_queue.find(port_id) != d_msg_queue.end()) {
         throw std::runtime_error("block::message_port_register_in: already registered");
@@ -665,9 +665,9 @@ std::vector<std::string> block::message_ports_in() const
     return port_names;
 }
 
-void block::post(const std::string which_port, pmt::pmt_t msg) { insert_tail(which_port, msg); }
+void block::post(const std::string& which_port, const pmt::pmt_t& msg) { insert_tail(which_port, msg); }
 
-void block::insert_tail(const std::string which_port, pmt::pmt_t& msg)
+void block::insert_tail(const std::string& which_port, const pmt::pmt_t& msg)
 {
     gr::thread::scoped_lock guard(d_mutex);
 
@@ -683,7 +683,7 @@ void block::insert_tail(const std::string which_port, pmt::pmt_t& msg)
     global_block_registry.notify_blk(unique_id());
 }
 
-pmt::pmt_t block::delete_head_nowait(const std::string which_port)
+pmt::pmt_t block::delete_head_nowait(const std::string& which_port)
 {
     gr::thread::scoped_lock guard(d_mutex);
 
@@ -698,7 +698,7 @@ pmt::pmt_t block::delete_head_nowait(const std::string which_port)
 }
 
 //  - publish a message on a message port
-void block::message_port_pub(const std::string port_id, pmt::pmt_t msg)
+void block::message_port_pub(const std::string& port_id, const pmt::pmt_t& msg)
 {
 
     if (d_message_subscribers.count(port_id) == 0) {

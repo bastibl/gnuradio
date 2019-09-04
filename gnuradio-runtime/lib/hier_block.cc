@@ -187,7 +187,7 @@ void hier_block::msg_disconnect(basic_block::sptr src,
     src->message_port_unsub(srcport, dst, dstport);
 }
 
-void hier_block::message_port_register_in(const std::string port_id)
+void hier_block::message_port_register_in(const std::string& port_id)
 {
 
     if (std::find(d_message_ports_in.begin(), d_message_ports_in.end(), port_id) !=
@@ -203,7 +203,7 @@ std::vector<std::string> hier_block::message_ports_in() const
     return d_message_ports_in;
 }
 
-void hier_block::post(std::string which_port, pmt::pmt_t msg)
+void hier_block::post(const std::string& which_port, const pmt::pmt_t& msg)
 {
     throw std::runtime_error("not implemented yet");
 }

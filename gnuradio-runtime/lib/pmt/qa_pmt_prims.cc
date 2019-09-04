@@ -475,7 +475,7 @@ class qa_pmt_msg_accepter_nop : public gr::messages::msg_accepter
 public:
     qa_pmt_msg_accepter_nop() {}
     ~qa_pmt_msg_accepter_nop();
-    void post(const std::string, pmt::pmt_t) {}
+    void post(const std::string&, const pmt::pmt_t&) {}
 };
 
 qa_pmt_msg_accepter_nop::~qa_pmt_msg_accepter_nop() {}

@@ -66,10 +66,10 @@ public:
     connect(basic_block::sptr src, int src_port, basic_block::sptr dst, int dst_port);
 
 
-    void message_port_register_in(const std::string port_id) override;
+    void message_port_register_in(const std::string& port_id) override;
     std::vector<std::string> message_ports_in() const override;
 
-    void post(const std::string which_port, pmt::pmt_t msg) override;
+    void post(const std::string& which_port, const pmt::pmt_t& msg) override;
 
     /*!
      * \brief Add gr-blocks or hierarchical blocks to internal graph

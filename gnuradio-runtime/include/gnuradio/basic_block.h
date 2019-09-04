@@ -95,20 +95,20 @@ public:
      * block_registry to get the block using either the alias or the
      * original symbol name.
      */
-    void set_block_alias(const std::string name);
+    void set_block_alias(const std::string& name);
 
     // ** Message passing interface **
 
-    virtual void message_port_register_in(const std::string port_id) = 0;
+    virtual void message_port_register_in(const std::string& port_id) = 0;
     /*!
      * \brief Get input message port names.
      */
     virtual std::vector<std::string> message_ports_in() const = 0;
 
-    void message_port_register_out(const std::string port_id);
-    void message_port_sub(const std::string port_id, basic_block::sptr target, const std::string target_port);
-    void message_port_unsub(const std::string port_id, basic_block::sptr target, const std::string target_port);
-    std::vector<msg_endpoint> message_subscribers(const std::string port_id);
+    void message_port_register_out(const std::string& port_id);
+    void message_port_sub(const std::string& port_id, basic_block::sptr target, const std::string& target_port);
+    void message_port_unsub(const std::string& port_id, basic_block::sptr target, const std::string& target_port);
+    std::vector<msg_endpoint> message_subscribers(const std::string& port_id);
 
     /*!
      * \brief Get output message port names.

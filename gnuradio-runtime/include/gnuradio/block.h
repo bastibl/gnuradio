@@ -981,7 +981,7 @@ public:
     }
     void reset_executor() { d_executor.reset(); }
 
-    void message_port_register_in(const std::string port_id) override;
+    void message_port_register_in(const std::string& port_id) override;
     /*!
      * \brief Get input message port names.
      *
@@ -991,7 +991,7 @@ public:
     std::vector<std::string> message_ports_in() const override;
 
 
-    void message_port_pub(const std::string port_id, pmt::pmt_t msg);
+    void message_port_pub(const std::string& port_id, const pmt::pmt_t& msg);
 
     /*!
      * \brief Set the callback that is fired when messages are available.
@@ -1021,7 +1021,7 @@ public:
      * will ensure that no reentrant calls are made to msg_handler.
      */
     template <typename T>
-    void set_msg_handler(const std::string which_port, T msg_handler)
+    void set_msg_handler(const std::string& which_port, T msg_handler)
     {
         if (d_msg_queue.find(which_port) == d_msg_queue.end()) {
             throw std::runtime_error(
@@ -1040,7 +1040,7 @@ public:
 
 
     //! How many messages in the queue?
-    size_t nmsgs(const std::string which_port)
+    size_t nmsgs(const std::string& which_port)
     {
         if (d_msg_queue.find(which_port) == d_msg_queue.end())
             throw std::runtime_error("port does not exist!");
@@ -1048,19 +1048,19 @@ public:
     }
 
     //| Acquires and release the mutex
-    void insert_tail(const std::string which_port, pmt::pmt_t& msg);
+    void insert_tail(const std::string& which_port, const pmt::pmt_t& msg);
     /*!
      * \returns returns pmt at head of queue or pmt::pmt_t() if empty.
      */
-    pmt::pmt_t delete_head_nowait(const std::string which_port);
+    pmt::pmt_t delete_head_nowait(const std::string& which_port);
 
-    void erase_msg(const std::string which_port, msg_queue_t::iterator it)
+    void erase_msg(const std::string& which_port, msg_queue_t::iterator it)
     {
         d_msg_queue[which_port].erase(it);
     }
 
     //! is the queue empty?
-    bool empty_p(const std::string which_port)
+    bool empty_p(const std::string& which_port)
     {
         if (d_msg_queue.find(which_port) == d_msg_queue.end())
             throw std::runtime_error("port does not exist!");
@@ -1088,7 +1088,7 @@ public:
     /*!
      * Accept msg, place in queue, arrange for thread to be awakened if it's not already.
      */
-    virtual void post(const std::string which_port, pmt::pmt_t msg) override;
+    virtual void post(const std::string& which_port, const pmt::pmt_t& msg) override;
 };
 
 typedef std::vector<block_sptr> block_vector_t;

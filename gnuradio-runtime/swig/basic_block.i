@@ -47,11 +47,11 @@ namespace gr {
     gr::basic_block::sptr to_basic_block();
     virtual bool check_topology(int ninputs, int noutputs);
     std::string alias() const;
-    void set_block_alias(const std::string name);
-    virtual void post(const std::string, pmt::pmt_t msg);
+    void set_block_alias(const std::string& name);
+    virtual void post(const std::string&, const pmt::pmt_t& msg);
     virtual std::vector<std::string> message_ports_in() const;
     std::vector<std::string> message_ports_out() const;
-    std::vector<msg_endpoint> message_subscribers(const std::string which_port);
+    std::vector<msg_endpoint> message_subscribers(const std::string& which_port);
   };
 
   class msg_endpoint

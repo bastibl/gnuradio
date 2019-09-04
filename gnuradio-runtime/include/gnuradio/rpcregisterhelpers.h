@@ -52,7 +52,7 @@ public:
     }
     ~rpcextractor_base() { ; }
 
-    void post(std::string which_port, pmt::pmt_t msg)
+    void post(const std::string& which_port, const pmt::pmt_t& msg)
     {
         (void)which_port;
         (void)msg;
@@ -72,7 +72,7 @@ public:
     rpcextractor_base(T* source, void (T::*func)()) : _source(source), _func(func) { ; }
     ~rpcextractor_base() { ; }
 
-    void post(std::string which_port, pmt::pmt_t msg)
+    void post(const std::string& which_port, const pmt::pmt_t& msg)
     {
         (void)which_port;
         (void)msg;
@@ -173,7 +173,7 @@ public:
     }
     ~rpchandler_base() { ; }
 
-    void post(std::string which_port, pmt::pmt_t msg) { _source->post(which_port, msg); }
+    void post(const std::string& which_port, const pmt::pmt_t& msg) { _source->post(which_port, msg); }
 
 protected:
     T* _source;
@@ -213,7 +213,7 @@ public:
         ;
     }
 
-    void post(std::string which_port, pmt::pmt_t msg)
+    void post(const std::string& which_port, const pmt::pmt_t& msg)
     {
         (void)which_port;
         (void)msg;
@@ -234,7 +234,7 @@ public:
         ;
     }
 
-    void post(std::string which_port, pmt::pmt_t msg)
+    void post(const std::string& which_port, const pmt::pmt_t& msg)
     {
         (void)which_port;
         (rpcextractor_base<T, char>::_source->*rpcextractor_base<T, char>::_func)(
@@ -255,7 +255,7 @@ public:
         ;
     }
 
-    void post(std::string which_port, pmt::pmt_t msg)
+    void post(const std::string& which_port, const pmt::pmt_t& msg)
     {
         (void)which_port;
         (rpcextractor_base<T, short>::_source->*rpcextractor_base<T, short>::_func)(
@@ -276,7 +276,7 @@ public:
         ;
     }
 
-    void post(std::string which_port, pmt::pmt_t msg)
+    void post(const std::string& which_port, const pmt::pmt_t& msg)
     {
         (void)which_port;
         (rpcextractor_base<T, double>::_source->*rpcextractor_base<T, double>::_func)(
@@ -297,7 +297,7 @@ public:
         ;
     }
 
-    void post(std::string which_port, pmt::pmt_t msg)
+    void post(const std::string& which_port, const pmt::pmt_t& msg)
     {
         (void)which_port;
         (rpcextractor_base<T, float>::_source->*rpcextractor_base<T, float>::_func)(
@@ -318,7 +318,7 @@ public:
         ;
     }
 
-    void post(std::string which_port, pmt::pmt_t msg)
+    void post(const std::string& which_port, const pmt::pmt_t& msg)
     {
         (void)which_port;
         (rpcextractor_base<T, long>::_source->*rpcextractor_base<T, long>::_func)(
@@ -339,7 +339,7 @@ public:
         ;
     }
 
-    void post(std::string which_port, pmt::pmt_t msg)
+    void post(const std::string& which_port, const pmt::pmt_t& msg)
     {
         (void)which_port;
         (rpcextractor_base<T, int>::_source->*rpcextractor_base<T, int>::_func)(
@@ -360,7 +360,7 @@ public:
         ;
     }
 
-    void post(std::string which_port, pmt::pmt_t msg)
+    void post(const std::string& which_port, const pmt::pmt_t& msg)
     {
         (void)which_port;
         (rpcextractor_base<T, bool>::_source->*rpcextractor_base<T, bool>::_func)(
@@ -382,7 +382,7 @@ public:
         ;
     }
 
-    void post(std::string which_port, pmt::pmt_t msg)
+    void post(const std::string& which_port, const pmt::pmt_t& msg)
     {
         (void)which_port;
         std::complex<float> k = static_cast<std::complex<float>>(pmt::to_complex(msg));
@@ -405,7 +405,7 @@ public:
         ;
     }
 
-    void post(std::string which_port, pmt::pmt_t msg)
+    void post(const std::string& which_port, const pmt::pmt_t& msg)
     {
         (void)which_port;
         (rpcextractor_base<T, std::complex<double>>::_source
@@ -427,7 +427,7 @@ public:
         ;
     }
 
-    void post(std::string which_port, pmt::pmt_t msg)
+    void post(const std::string& which_port, const pmt::pmt_t& msg)
     {
         (void)which_port;
         (rpcextractor_base<T, std::string>::_source
