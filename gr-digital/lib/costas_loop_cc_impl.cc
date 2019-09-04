@@ -173,7 +173,7 @@ int costas_loop_cc_impl::work(int noutput_items,
                       0,
                       nitems_read(0),
                       nitems_read(0) + noutput_items,
-                      pmt::intern("phase_est"));
+                      "phase_est");
 
     for (int i = 0; i < noutput_items; i++) {
         if (!tags.empty()) {

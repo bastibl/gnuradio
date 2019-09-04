@@ -42,7 +42,7 @@ tag_gate_impl::tag_gate_impl(size_t item_size, bool propagate_tags)
     if (!d_propagate_tags) {
         set_tag_propagation_policy(TPP_DONT);
     }
-    d_single_key = pmt::PMT_NIL;
+    d_single_key = "";
 }
 
 tag_gate_impl::~tag_gate_impl() {}
@@ -60,23 +60,16 @@ void tag_gate_impl::set_propagation(bool propagate_tags)
 
 void tag_gate_impl::set_single_key(const std::string& single_key)
 {
-    if (single_key.empty()) {
-        d_single_key = pmt::PMT_NIL;
+    if (single_key == "") {
+        d_single_key = "";
         d_single_key_set = false;
     } else {
-        d_single_key = pmt::intern(single_key);
+        d_single_key = single_key;
         d_single_key_set = true;
     }
 }
 
-std::string tag_gate_impl::single_key() const
-{
-    if (pmt::equal(d_single_key, pmt::PMT_NIL)) {
-        return "";
-    } else {
-        return pmt::symbol_to_string(d_single_key);
-    }
-}
+std::string tag_gate_impl::single_key() const { return d_single_key; }
 
 int tag_gate_impl::work(int noutput_items,
                         gr_vector_const_void_star& input_items,
@@ -91,7 +84,7 @@ int tag_gate_impl::work(int noutput_items,
     if (d_single_key_set && (!d_propagate_tags)) {
         get_tags_in_range(tags, 0, nitems_read(0), nitems_read(0) + noutput_items);
         for (unsigned int i = 0; i < tags.size(); i++) {
-            if (!pmt::equal(tags[i].key, d_single_key))
+            if (tags[i].key != d_single_key)
                 add_item_tag(
                     0, tags[i].offset, tags[i].key, tags[i].value, tags[i].srcid);
         }

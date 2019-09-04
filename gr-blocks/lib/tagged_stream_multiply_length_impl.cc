@@ -38,7 +38,7 @@ tagged_stream_multiply_length_impl::tagged_stream_multiply_length_impl(
     : block("tagged_stream_multiply_length",
             io_signature::make(1, 1, itemsize),
             io_signature::make(1, 1, itemsize)),
-      d_lengthtag(pmt::mp(lengthtagname)),
+      d_lengthtag(lengthtagname),
       d_scalar(scalar),
       d_itemsize(itemsize)
 {
@@ -68,7 +68,7 @@ int tagged_stream_multiply_length_impl::general_work(
     std::vector<tag_t> tags;
     get_tags_in_range(tags, 0, nitems_read(0), nitems_read(0) + noutput_items);
     for (size_t i = 0; i < tags.size(); i++) {
-        if (pmt::eqv(tags[i].key, d_lengthtag)) {
+        if (tags[i].key == d_lengthtag) {
             // propagate with value update (scaled)
             add_item_tag(0,
                          tags[i].offset,

@@ -65,11 +65,11 @@ class qa_ofdm_chanest_vcvc (gr_unittest.TestCase):
                   shift_tuple(data_symbol, carr_offset)
         tag1 = gr.tag_t()
         tag1.offset = 0
-        tag1.key = pmt.string_to_symbol("test_tag_1")
+        tag1.key = "test_tag_1"
         tag1.value = pmt.from_long(23)
         tag2 = gr.tag_t()
         tag2.offset = 2
-        tag2.key = pmt.string_to_symbol("test_tag_2")
+        tag2.key = "test_tag_2"
         tag2.value = pmt.from_long(42)
         src = blocks.vector_source_c(tx_data, False, fft_len, (tag1, tag2))
         chanest = digital.ofdm_chanest_vcvc(sync_symbol1, sync_symbol2, 1)
@@ -113,7 +113,7 @@ class qa_ofdm_chanest_vcvc (gr_unittest.TestCase):
         self.assertEqual(shift_tuple(sink.data(), -carr_offset), data_symbol)
         tags = sink.tags()
         for tag in tags:
-            if pmt.symbol_to_string(tag.key) == 'ofdm_sync_carr_offset':
+            if tag.key == 'ofdm_sync_carr_offset':
                 carr_offset_hat = pmt.to_long(tag.value)
                 self.assertEqual(pmt.to_long(tag.value), carr_offset)
 
@@ -137,9 +137,9 @@ class qa_ofdm_chanest_vcvc (gr_unittest.TestCase):
         tags = sink.tags()
         self.assertEqual(shift_tuple(sink.data(), -carr_offset), tuple(numpy.multiply(data_symbol, channel)))
         for tag in tags:
-            if pmt.symbol_to_string(tag.key) == 'ofdm_sync_carr_offset':
+            if tag.key == 'ofdm_sync_carr_offset':
                 self.assertEqual(pmt.to_long(tag.value), carr_offset)
-            if pmt.symbol_to_string(tag.key) == 'ofdm_sync_chan_taps':
+            if tag.key == 'ofdm_sync_chan_taps':
                 self.assertEqual(pmt.c32vector_elements(tag.value), channel)
         self.assertEqual(sink_chanest.data(), channel)
 
@@ -164,9 +164,9 @@ class qa_ofdm_chanest_vcvc (gr_unittest.TestCase):
         self.assertEqual(sink_chanest.data(), channel)
         tags = sink.tags()
         for tag in tags:
-            if pmt.symbol_to_string(tag.key) == 'ofdm_sync_carr_offset':
+            if tag.key == 'ofdm_sync_carr_offset':
                 self.assertEqual(pmt.to_long(tag.value), carr_offset)
-            if pmt.symbol_to_string(tag.key) == 'ofdm_sync_chan_taps':
+            if tag.key == 'ofdm_sync_chan_taps':
                 self.assertEqual(pmt.c32vector_elements(tag.value), channel)
 
     def test_005_both_1sym_force (self):
@@ -187,9 +187,9 @@ class qa_ofdm_chanest_vcvc (gr_unittest.TestCase):
         self.tb.run()
         tags = sink.tags()
         for tag in tags:
-            if pmt.symbol_to_string(tag.key) == 'ofdm_sync_carr_offset':
+            if tag.key == 'ofdm_sync_carr_offset':
                 self.assertEqual(pmt.to_long(tag.value), carr_offset)
-            if pmt.symbol_to_string(tag.key) == 'ofdm_sync_chan_taps':
+            if tag.key == 'ofdm_sync_chan_taps':
                 self.assertEqual(pmt.c32vector_elements(tag.value), channel)
 
     def test_006_channel_and_carroffset (self):
@@ -216,9 +216,9 @@ class qa_ofdm_chanest_vcvc (gr_unittest.TestCase):
         tags = sink.tags()
         chan_est = None
         for tag in tags:
-            if pmt.symbol_to_string(tag.key) == 'ofdm_sync_carr_offset':
+            if tag.key == 'ofdm_sync_carr_offset':
                 self.assertEqual(pmt.to_long(tag.value), carr_offset)
-            if pmt.symbol_to_string(tag.key) == 'ofdm_sync_chan_taps':
+            if tag.key == 'ofdm_sync_chan_taps':
                 chan_est = pmt.c32vector_elements(tag.value)
         self.assertEqual(chan_est, chanest_exp)
         self.assertEqual(sink.data(), tuple(numpy.multiply(shift_tuple(data_symbol, carr_offset), channel)))
@@ -256,10 +256,10 @@ class qa_ofdm_chanest_vcvc (gr_unittest.TestCase):
             rx_sym_est = [0,] * fft_len
             tags = sink.tags()
             for tag in tags:
-                if pmt.symbol_to_string(tag.key) == 'ofdm_sync_carr_offset':
+                if tag.key == 'ofdm_sync_carr_offset':
                     carr_offset_hat = pmt.to_long(tag.value)
                     self.assertEqual(carr_offset, carr_offset_hat)
-                if pmt.symbol_to_string(tag.key) == 'ofdm_sync_chan_taps':
+                if tag.key == 'ofdm_sync_chan_taps':
                     channel_est = shift_tuple(pmt.c32vector_elements(tag.value), carr_offset)
             shifted_carrier_mask = shift_tuple(carrier_mask, carr_offset)
             for i in range(fft_len):

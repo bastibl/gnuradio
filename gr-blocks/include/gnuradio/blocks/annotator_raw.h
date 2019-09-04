@@ -50,7 +50,7 @@ public:
     static sptr make(size_t sizeof_stream_item);
 
     // insert a tag to be added
-    virtual void add_tag(uint64_t offset, pmt::pmt_t key, pmt::pmt_t val) = 0;
+    virtual void add_tag(uint64_t offset, std::string key, pmt::pmt_t val) = 0;
 };
 
 } /* namespace blocks */

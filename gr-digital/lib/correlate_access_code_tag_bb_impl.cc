@@ -54,10 +54,8 @@ correlate_access_code_tag_bb_impl::correlate_access_code_tag_bb_impl(
         throw std::out_of_range("access_code is > 64 bits");
     }
 
-    std::stringstream str;
-    str << name() << unique_id();
-    d_me = pmt::string_to_symbol(str.str());
-    d_key = pmt::string_to_symbol(tag_name);
+    d_me = unique_id();
+    d_key = tag_name;
 }
 
 correlate_access_code_tag_bb_impl::~correlate_access_code_tag_bb_impl() {}

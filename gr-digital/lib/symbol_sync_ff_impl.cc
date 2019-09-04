@@ -77,8 +77,8 @@ symbol_sync_ff_impl::symbol_sync_ff_impl(enum ted_type detector_type,
       d_osps_n(osps),
       d_tags(),
       d_new_tags(),
-      d_time_est_key(pmt::intern("time_est")),
-      d_clock_est_key(pmt::intern("clock_est")),
+      d_time_est_key("time_est"),
+      d_clock_est_key("clock_est"),
       d_noutputs(1),
       d_out_error(NULL),
       d_out_instantaneous_clock_period(NULL),
@@ -230,13 +230,13 @@ bool symbol_sync_ff_impl::find_sync_tag(uint64_t nitems_rd,
         if (t->offset < soffset) // tag is in the past of what we care about
             continue;
 
-        if (!pmt::eq(t->key, d_time_est_key) && // not a time_est tag
-            !pmt::eq(t->key, d_clock_est_key))  // not a clock_est tag
+        if (t->key != d_time_est_key && // not a time_est tag
+            t->key != d_clock_est_key)  // not a clock_est tag
             continue;
 
         found = true;
         tag_offset = t->offset;
-        if (pmt::eq(t->key, d_time_est_key)) {
+        if (t->key == d_time_est_key) {
             // got a time_est tag
             timing_offset = static_cast<float>(pmt::to_double(t->value));
             // next instantaneous clock period estimate will be nominal
@@ -247,7 +247,7 @@ bool symbol_sync_ff_impl::find_sync_tag(uint64_t nitems_rd,
             for (t2 = ++t; t2 != d_new_tags.end(); ++t2) {
                 if (t2->offset > t->offset) // search finished
                     break;
-                if (!pmt::eq(t->key, d_clock_est_key)) // not a clock_est
+                if (t->key != d_clock_est_key) // not a clock_est
                     continue;
                 // Found a clock_est tag at the same offset
                 tag_offset = t2->offset;

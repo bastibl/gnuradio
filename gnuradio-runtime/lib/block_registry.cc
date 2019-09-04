@@ -30,13 +30,13 @@ gr::block_registry global_block_registry;
 
 namespace gr {
 
-block_registry::block_registry() : d_seq_nr(0) {}
+block_registry::block_registry() : d_seq_nr(1) {}
 
-long block_registry::block_register(basic_block* block)
+uint64_t block_registry::block_register(basic_block* block)
 {
     gr::thread::scoped_lock guard(d_mutex);
 
-    long id = d_seq_nr++;
+    uint64_t id = d_seq_nr++;
 
     d_id_map[id] = block;
     d_name_map[(boost::format("%1%%2%") % block->name() % id).str()] = block;
@@ -93,21 +93,21 @@ basic_block::sptr block_registry::block_lookup(pmt::pmt_t symbol)
     return d_alias_map[name]->shared_from_this();
 }
 
-void block_registry::register_primitive(long id, block* ref)
+void block_registry::register_primitive(uint64_t id, block* ref)
 {
     gr::thread::scoped_lock guard(d_mutex);
 
     primitive_map[id] = ref;
 }
 
-void block_registry::unregister_primitive(long id)
+void block_registry::unregister_primitive(uint64_t id)
 {
     gr::thread::scoped_lock guard(d_mutex);
 
     primitive_map.erase(primitive_map.find(id));
 }
 
-void block_registry::notify_blk(long id)
+void block_registry::notify_blk(uint64_t id)
 {
     gr::thread::scoped_lock guard(d_mutex);
 

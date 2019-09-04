@@ -104,7 +104,7 @@ int dvbt_convolutional_deinterleaver_impl::general_work(
                             0,
                             nread,
                             nread + (noutput_items * d_I * d_blocks),
-                            pmt::string_to_symbol("superframe_start"));
+                            "superframe_start");
 
     if (!tags.empty()) {
         if (tags[0].offset - nread) {

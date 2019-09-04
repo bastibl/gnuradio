@@ -56,10 +56,8 @@ correlate_access_code_ff_ts_impl::correlate_access_code_ff_ts_impl(
         throw std::out_of_range("access_code is > 64 bits");
     }
 
-    std::stringstream str;
-    str << name() << unique_id();
-    d_me = pmt::string_to_symbol(str.str());
-    d_key = pmt::string_to_symbol(tag_name);
+    d_me = unique_id();
+    d_key = tag_name;
 
     d_state = STATE_SYNC_SEARCH;
     d_pkt_len = 0;

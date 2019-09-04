@@ -97,9 +97,9 @@ int decoder_impl::general_work(int noutput_items,
         add_item_tag(0,
                      nitems_written(0) +
                          ((i + 1) * d_decoder->get_output_size() * d_output_item_size),
-                     pmt::intern(d_decoder->alias()),
+                     d_decoder->alias(),
                      pmt::PMT_T,
-                     pmt::intern(alias()));
+                     unique_id());
     }
 
     int consumed = static_cast<int>(

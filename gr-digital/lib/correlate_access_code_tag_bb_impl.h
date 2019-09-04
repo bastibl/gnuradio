@@ -39,7 +39,8 @@ private:
     unsigned int d_threshold;         // how many bits may be wrong in sync vector
     unsigned int d_len;               // the length of the access code
 
-    pmt::pmt_t d_key, d_me; // d_key is the tag name, d_me is the block name + unique ID
+    std::string d_key;
+    uint64_t d_me; // d_key is the tag name, d_me is the block name + unique ID
 
     gr::thread::mutex d_mutex_access_code;
 
@@ -57,7 +58,7 @@ public:
     void set_threshold(int threshold) { d_threshold = threshold; };
     void set_tagname(const std::string& tag_name)
     {
-        d_key = pmt::string_to_symbol(tag_name);
+        d_key = tag_name;
     };
 };
 

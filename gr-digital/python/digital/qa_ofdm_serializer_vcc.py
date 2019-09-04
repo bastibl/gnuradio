@@ -83,7 +83,7 @@ class qa_ofdm_serializer_vcc (gr_unittest.TestCase):
         n_syms = len(tx_symbols) // fft_len
         offsettag = gr.tag_t()
         offsettag.offset = 0
-        offsettag.key = pmt.string_to_symbol("ofdm_sync_carr_offset")
+        offsettag.key = "ofdm_sync_carr_offset"
         offsettag.value = pmt.from_long(carr_offset)
         src = blocks.vector_source_c(tx_symbols, False, fft_len, (offsettag,))
         sink = blocks.tsb_vector_sink_c(tsb_key=self.tsb_key)
@@ -150,7 +150,7 @@ class qa_ofdm_serializer_vcc (gr_unittest.TestCase):
         tx_data = (1, 2, 3, 4)
         offsettag = gr.tag_t()
         offsettag.offset = 0
-        offsettag.key = pmt.string_to_symbol("ofdm_sync_carr_offset")
+        offsettag.key = "ofdm_sync_carr_offset"
         offsettag.value = pmt.from_long(carr_offset)
         src = blocks.vector_source_c(tx_data, False, 1, (offsettag,))
         alloc = digital.ofdm_carrier_allocator_cvc(fft_len,
@@ -194,7 +194,7 @@ class qa_ofdm_serializer_vcc (gr_unittest.TestCase):
         packet_len_tsb_key = "packet_len"
         tag2 = gr.tag_t()
         tag2.offset = 0
-        tag2.key = pmt.string_to_symbol("packet_len")
+        tag2.key = "packet_len"
         tag2.value = pmt.from_long(len(expected_result))
         src = blocks.vector_source_c(tx_symbols, False, fft_len, (tag2,))
         serializer = digital.ofdm_serializer_vcc(fft_len, occupied_carriers, self.tsb_key, packet_len_tsb_key , 0, "", False)

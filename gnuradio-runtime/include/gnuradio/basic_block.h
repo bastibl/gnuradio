@@ -65,7 +65,7 @@ public:
     typedef boost::shared_ptr<basic_block> sptr;
 
     virtual ~basic_block();
-    long unique_id() const { return d_unique_id; }
+    uint64_t unique_id() const { return d_unique_id; }
     std::string unique_name() const { return d_unique_name; }
 
     /*! Name of the block as defined in constructor */
@@ -200,7 +200,7 @@ protected:
     gr::io_signature::sptr d_output_signature;
 
     std::string d_name;
-    long d_unique_id;
+    uint64_t d_unique_id;
     std::string d_unique_name;
     std::string d_alias;
 

@@ -638,7 +638,7 @@ int dvbt_viterbi_decoder_impl::general_work(int noutput_items,
                                 0,
                                 nread,
                                 nread + (nblocks * d_nsymbols),
-                                pmt::string_to_symbol("superframe_start"));
+                                "superframe_start");
 
         if (!tags.empty()) {
             d_init = 0;
@@ -734,7 +734,7 @@ int dvbt_viterbi_decoder_impl::general_work(int noutput_items,
          * downstream
          */
         const uint64_t offset = this->nitems_written(0);
-        pmt::pmt_t key = pmt::string_to_symbol("superframe_start");
+        std::string key = "superframe_start";
         pmt::pmt_t value = pmt::from_long(1);
         this->add_item_tag(0, offset, key, value);
 

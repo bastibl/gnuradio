@@ -119,7 +119,7 @@ int msk_timing_recovery_cc_impl::general_work(int noutput_items,
 
     std::vector<tag_t> tags;
     get_tags_in_range(
-        tags, 0, nitems_read(0), nitems_read(0) + ninp, pmt::intern("time_est"));
+        tags, 0, nitems_read(0), nitems_read(0) + ninp, "time_est");
 
     gr_complex sq,     // Squared input
         dly_conj,      // Input delayed sps and conjugated

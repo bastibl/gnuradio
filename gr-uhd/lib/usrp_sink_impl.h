@@ -24,25 +24,23 @@
 #include <gnuradio/uhd/usrp_sink.h>
 #include <uhd/convert.hpp>
 
-static const pmt::pmt_t SOB_KEY = pmt::string_to_symbol("tx_sob");
-static const pmt::pmt_t EOB_KEY = pmt::string_to_symbol("tx_eob");
-static const pmt::pmt_t TIME_KEY = pmt::string_to_symbol("tx_time");
-static const pmt::pmt_t FREQ_KEY = pmt::string_to_symbol("tx_freq");
-static const pmt::pmt_t COMMAND_KEY = pmt::string_to_symbol("tx_command");
+static const std::string SOB_KEY = "tx_sob";
+static const std::string EOB_KEY = "tx_eob";
+static const std::string TIME_KEY = "tx_time";
+static const std::string FREQ_KEY = "tx_freq";
+static const std::string COMMAND_KEY = "tx_command";
 
 // Asynchronous message handling related PMTs
-static const pmt::pmt_t ASYNC_MSG_KEY = pmt::string_to_symbol("uhd_async_msg");
-static const pmt::pmt_t CHANNEL_KEY = pmt::string_to_symbol("channel");
-static const pmt::pmt_t TIME_SPEC_KEY = pmt::string_to_symbol("time_spec");
-static const pmt::pmt_t EVENT_CODE_KEY = pmt::string_to_symbol("event_code");
-static const pmt::pmt_t BURST_ACK_KEY = pmt::string_to_symbol("burst_ack");
-static const pmt::pmt_t UNDERFLOW_KEY = pmt::string_to_symbol("underflow");
-static const pmt::pmt_t UNDERFLOW_IN_PACKET_KEY =
-    pmt::string_to_symbol("underflow_in_packet");
-static const pmt::pmt_t SEQ_ERROR_KEY = pmt::string_to_symbol("seq_error");
-static const pmt::pmt_t SEQ_ERROR_IN_BURST_KEY =
-    pmt::string_to_symbol("seq_error_in_burst");
-static const pmt::pmt_t TIME_ERROR_KEY = pmt::string_to_symbol("time_error");
+static const std::string ASYNC_MSG_KEY = "uhd_async_msg";
+static const std::string CHANNEL_KEY = "channel";
+static const std::string TIME_SPEC_KEY = "time_spec";
+static const std::string EVENT_CODE_KEY = "event_code";
+static const std::string BURST_ACK_KEY = "burst_ack";
+static const std::string UNDERFLOW_KEY = "underflow";
+static const std::string UNDERFLOW_IN_PACKET_KEY = "underflow_in_packet";
+static const std::string SEQ_ERROR_KEY = "seq_error";
+static const std::string SEQ_ERROR_IN_BURST_KEY = "seq_error_in_burst";
+static const std::string TIME_ERROR_KEY = "time_error";
 static const std::string ASYNC_MSGS_PORT_KEY = "async_msgs";
 
 
@@ -136,7 +134,7 @@ private:
 
     // stream tags related stuff
     std::vector<tag_t> _tags;
-    const pmt::pmt_t _length_tag_key;
+    const std::string _length_tag_key;
     long _nitems_to_send;
 
     // asynchronous messages related stuff

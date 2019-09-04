@@ -221,7 +221,7 @@ void const_sink_c_impl::set_trigger_mode(trigger_mode mode,
     d_trigger_slope = slope;
     d_trigger_level = level;
     d_trigger_channel = channel;
-    d_trigger_tag_key = pmt::intern(tag_key);
+    d_trigger_tag_key = tag_key;
     d_triggered = false;
     d_trigger_count = 0;
 
@@ -349,7 +349,7 @@ void const_sink_c_impl::_gui_update_trigger()
     d_trigger_count = 0;
 
     std::string tagkey = d_main_gui->getTriggerTagKey();
-    d_trigger_tag_key = pmt::intern(tagkey);
+    d_trigger_tag_key = tagkey;
 }
 
 void const_sink_c_impl::_test_trigger_tags(int nitems)

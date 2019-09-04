@@ -33,13 +33,13 @@ class burst_tagger_impl : public burst_tagger
 private:
     size_t d_itemsize;
     bool d_state;
-    pmt::pmt_t d_true_key;
+    std::string d_true_key;
     pmt::pmt_t d_true_value;
 
-    pmt::pmt_t d_false_key;
+    std::string d_false_key;
     pmt::pmt_t d_false_value;
 
-    pmt::pmt_t d_id;
+    uint64_t d_id;
 
 public:
     burst_tagger_impl(size_t itemsize);

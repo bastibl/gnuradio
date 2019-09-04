@@ -40,7 +40,7 @@ namespace gr {
 
     virtual ~basic_block();
     std::string name() const;
-    long unique_id() const;
+    uint64_t unique_id() const;
     std::string unique_name() const;
     gr::io_signature::sptr input_signature() const;
     gr::io_signature::sptr output_signature() const;

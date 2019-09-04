@@ -39,7 +39,8 @@ private:
     mpsk_snr_est* d_snr_est;
 
     // d_key is the tag name, 'snr', d_me is the block name + unique ID
-    pmt::pmt_t d_key, d_me;
+    std::string d_key;
+    uint64_t d_me;
 
 public:
     mpsk_snr_est_cc_impl(snr_est_type_t type,

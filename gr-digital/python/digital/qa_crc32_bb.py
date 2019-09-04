@@ -68,23 +68,23 @@ class qa_crc32_bb(gr_unittest.TestCase):
         packets = list(range(pack_len*2))
         tag1 = gr.tag_t()
         tag1.offset = 0
-        tag1.key = pmt.string_to_symbol(tag_name)
+        tag1.key = tag_name
         tag1.value = pmt.from_long(pack_len)
         tag2 = gr.tag_t()
         tag2.offset = pack_len
-        tag2.key = pmt.string_to_symbol(tag_name)
+        tag2.key = tag_name
         tag2.value = pmt.from_long(pack_len)
         testtag1 = gr.tag_t()
         testtag1.offset = 1
-        testtag1.key = pmt.string_to_symbol("tag1")
+        testtag1.key = "tag1"
         testtag1.value = pmt.from_long(0)
         testtag2 = gr.tag_t()
         testtag2.offset = pack_len
-        testtag2.key = pmt.string_to_symbol("tag2")
+        testtag2.key = "tag2"
         testtag2.value = pmt.from_long(0)
         testtag3 = gr.tag_t()
         testtag3.offset = len(packets) - 1
-        testtag3.key = pmt.string_to_symbol("tag3")
+        testtag3.key = "tag3"
         testtag3.value = pmt.from_long(0)
         src = blocks.vector_source_b(packets, False, 1,
                                      (testtag1, testtag2, testtag3))
@@ -101,7 +101,7 @@ class qa_crc32_bb(gr_unittest.TestCase):
         correct_offsets = {'tag1': 1, 'tag2': 12, 'tag3': 19}
         tags_found = {'tag1': False, 'tag2': False, 'tag3': False}
         for tag in sink.tags():
-            key = pmt.symbol_to_string(tag.key)
+            key = tag.key
             if key in list(correct_offsets.keys()):
                 tags_found[key] = True
                 self.assertEqual(correct_offsets[key], tag.offset)
@@ -129,7 +129,7 @@ class qa_crc32_bb(gr_unittest.TestCase):
         data = (0, 1, 2, 3, 4, 5, 6, 7, 8, 2, 67, 225, 188)
         testtag = gr.tag_t()
         testtag.offset = len(data) - 1
-        testtag.key = pmt.string_to_symbol('tag1')
+        testtag.key = 'tag1'
         testtag.value = pmt.from_long(0)
         src = blocks.vector_source_b(data, False, 1, (testtag, ))
         crc_check = digital.crc32_bb(True, self.tsb_key)
@@ -141,7 +141,7 @@ class qa_crc32_bb(gr_unittest.TestCase):
         self.tb.run()
         self.assertEqual([len(data) - 5, ], [
             tag.offset for tag in sink.tags()
-            if pmt.symbol_to_string(tag.key) == 'tag1'
+            if tag.key == 'tag1'
         ])
 
     # NOTE: What follows are the same tests as before but with the packed flag set to False
@@ -230,23 +230,23 @@ class qa_crc32_bb(gr_unittest.TestCase):
         packets = list(range(pack_len*2))
         tag1 = gr.tag_t()
         tag1.offset = 0
-        tag1.key = pmt.string_to_symbol(tag_name)
+        tag1.key = tag_name
         tag1.value = pmt.from_long(pack_len)
         tag2 = gr.tag_t()
         tag2.offset = pack_len
-        tag2.key = pmt.string_to_symbol(tag_name)
+        tag2.key = tag_name
         tag2.value = pmt.from_long(pack_len)
         testtag1 = gr.tag_t()
         testtag1.offset = 1
-        testtag1.key = pmt.string_to_symbol("tag1")
+        testtag1.key = "tag1"
         testtag1.value = pmt.from_long(0)
         testtag2 = gr.tag_t()
         testtag2.offset = pack_len
-        testtag2.key = pmt.string_to_symbol("tag2")
+        testtag2.key = "tag2"
         testtag2.value = pmt.from_long(0)
         testtag3 = gr.tag_t()
         testtag3.offset = len(packets) - 1
-        testtag3.key = pmt.string_to_symbol("tag3")
+        testtag3.key = "tag3"
         testtag3.value = pmt.from_long(0)
         src = blocks.vector_source_b(packets, False, 1,
                                      (testtag1, testtag2, testtag3))
@@ -263,7 +263,7 @@ class qa_crc32_bb(gr_unittest.TestCase):
         correct_offsets = {'tag1': 1, 'tag2': 8 + 32, 'tag3': 15 + 32}
         tags_found = {'tag1': False, 'tag2': False, 'tag3': False}
         for tag in sink.tags():
-            key = pmt.symbol_to_string(tag.key)
+            key = tag.key
             if key in list(correct_offsets.keys()):
                 tags_found[key] = True
                 self.assertEqual(correct_offsets[key], tag.offset)
@@ -303,7 +303,7 @@ class qa_crc32_bb(gr_unittest.TestCase):
                 0, 0, 1, 1, 1, 1, 0, 1)
         testtag = gr.tag_t()
         testtag.offset = len(data) - 1
-        testtag.key = pmt.string_to_symbol('tag1')
+        testtag.key = 'tag1'
         testtag.value = pmt.from_long(0)
         src = blocks.vector_source_b(data, False, 1, (testtag, ))
         crc_check = digital.crc32_bb(True, self.tsb_key, False)
@@ -315,7 +315,7 @@ class qa_crc32_bb(gr_unittest.TestCase):
         self.tb.run()
         self.assertEqual([len(data) - 33, ], [
             tag.offset for tag in sink.tags()
-            if pmt.symbol_to_string(tag.key) == 'tag1'
+            if tag.key == 'tag1'
         ])
 
 

@@ -43,8 +43,7 @@ usrp_sink_impl::usrp_sink_impl(const ::uhd::device_addr_t& device_addr,
                                const std::string& length_tag_name)
     : usrp_block("usrp_sink", args_to_io_sig(stream_args), io_signature::make(0, 0, 0)),
       usrp_block_impl(device_addr, stream_args, length_tag_name),
-      _length_tag_key(length_tag_name.empty() ? pmt::PMT_NIL
-                                              : pmt::string_to_symbol(length_tag_name)),
+      _length_tag_key(length_tag_name),
       _nitems_to_send(0),
       _async_event_loop_running(true)
 {
@@ -387,7 +386,7 @@ int usrp_sink_impl::work(int noutput_items,
     if (not _tags.empty())
         this->tag_work(ninput_items);
 
-    if (not pmt::is_null(_length_tag_key)) {
+    if (_length_tag_key != "") {
         // check if there is data left to send from a burst tagged with length_tag
         // If a burst is started during this call to work(), tag_work() should have
         // been called and we should have _nitems_to_send > 0.
@@ -413,7 +412,7 @@ int usrp_sink_impl::work(int noutput_items,
     boost::this_thread::restore_interruption restore_interrupt(disable_interrupt);
 
     // if using length_tags, decrement items left to send by the number of samples sent
-    if (not pmt::is_null(_length_tag_key) && _nitems_to_send > 0) {
+    if (_length_tag_key != "" && _nitems_to_send > 0) {
         _nitems_to_send -= long(num_sent);
     }
 
@@ -454,7 +453,7 @@ void usrp_sink_impl::tag_work(int& ninput_items)
     uint64_t in_burst_cmd_offset = 0;          // Store its position
     BOOST_FOREACH (const tag_t& my_tag, _tags) {
         const uint64_t my_tag_count = my_tag.offset;
-        const pmt::pmt_t& key = my_tag.key;
+        const std::string& key = my_tag.key;
         const pmt::pmt_t& value = my_tag.value;
 
         if (my_tag_count >= max_count) {
@@ -472,7 +471,7 @@ void usrp_sink_impl::tag_work(int& ninput_items)
          * With these tags, we check if they're on the first item, otherwise,
          * we stop before that tag so they are on the first item the next time round.
          */
-        else if (pmt::equal(key, COMMAND_KEY)) {
+        else if (key == COMMAND_KEY) {
             if (my_tag_count != samp0_count) {
                 max_count = my_tag_count;
                 break;
@@ -482,7 +481,7 @@ void usrp_sink_impl::tag_work(int& ninput_items)
         }
 
         // set the time specification in the metadata
-        else if (pmt::equal(key, TIME_KEY)) {
+        else if (key == TIME_KEY) {
             if (my_tag_count != samp0_count) {
                 max_count = my_tag_count;
                 break;
@@ -496,7 +495,7 @@ void usrp_sink_impl::tag_work(int& ninput_items)
 
         // set the start of burst flag in the metadata; ignore if length_tag_key is not
         // null
-        else if (pmt::is_null(_length_tag_key) && pmt::equal(key, SOB_KEY)) {
+        else if (_length_tag_key == "" && key == SOB_KEY) {
             if (my_tag.offset != samp0_count) {
                 max_count = my_tag_count;
                 break;
@@ -507,7 +506,7 @@ void usrp_sink_impl::tag_work(int& ninput_items)
         }
 
         // length_tag found; set the start of burst flag in the metadata
-        else if (not pmt::is_null(_length_tag_key) && pmt::equal(key, _length_tag_key)) {
+        else if (key ==_length_tag_key) {
             if (my_tag_count != samp0_count) {
                 max_count = my_tag_count;
                 break;
@@ -531,14 +530,14 @@ void usrp_sink_impl::tag_work(int& ninput_items)
          * the appropriate action. Otherwise, make sure the corresponding sample
          * is the last one.
          */
-        else if (pmt::equal(key, FREQ_KEY) && my_tag_count == samp0_count) {
+        else if (key == FREQ_KEY && my_tag_count == samp0_count) {
             // If it's on the first sample, immediately do the tune:
             GR_LOG_DEBUG(d_debug_logger,
                          boost::format("Received tx_freq on start of burst."));
             pmt::pmt_t freq_cmd = pmt::make_dict();
             freq_cmd = pmt::dict_add(freq_cmd, cmd_freq_key(), value);
             msg_handler_command(freq_cmd);
-        } else if (pmt::equal(key, FREQ_KEY)) {
+        } else if (key == FREQ_KEY) {
             // If it's not on the first sample, queue this command and only tx until here:
             GR_LOG_DEBUG(d_debug_logger, boost::format("Received tx_freq mid-burst."));
             pmt::pmt_t freq_cmd = pmt::make_dict();
@@ -555,15 +554,14 @@ void usrp_sink_impl::tag_work(int& ninput_items)
          *
          * Make sure that no more samples are allowed through.
          */
-        else if (pmt::is_null(_length_tag_key) && pmt::equal(key, EOB_KEY)) {
+        else if (_length_tag_key == "" && key == EOB_KEY) {
             found_eob = true;
             max_count = my_tag_count + 1;
             _metadata.end_of_burst = pmt::to_bool(value);
         }
     } // end foreach
 
-    if (not pmt::is_null(_length_tag_key) &&
-        long(max_count - samp0_count) == _nitems_to_send) {
+    if (_length_tag_key != "" && long(max_count - samp0_count) == _nitems_to_send) {
         found_eob = true;
     }
 
@@ -611,10 +609,10 @@ bool usrp_sink_impl::start(void)
     _metadata.start_of_burst = true;
     _metadata.end_of_burst = false;
     // Bursty tx will need to send a tx_time to activate time spec
-    _metadata.has_time_spec = !_stream_now && pmt::is_null(_length_tag_key);
+    _metadata.has_time_spec = !_stream_now && _length_tag_key == "";
     _nitems_to_send = 0;
 
-    if (pmt::is_null(_length_tag_key)) { // don't execute this part in burst mode
+    if (_length_tag_key == "") { // don't execute this part in burst mode
         _metadata.start_of_burst = true;
         _metadata.end_of_burst = false;
         _metadata.has_time_spec = false;
@@ -673,35 +671,35 @@ void usrp_sink_impl::async_event_loop()
         pmt::pmt_t event_list = pmt::PMT_NIL;
 
         if (metadata.event_code & md_t::EVENT_CODE_BURST_ACK) {
-            event_list = pmt::list_add(event_list, BURST_ACK_KEY);
+            event_list = pmt::list_add(event_list, pmt::mp(BURST_ACK_KEY));
         }
         if (metadata.event_code & md_t::EVENT_CODE_UNDERFLOW) {
-            event_list = pmt::list_add(event_list, UNDERFLOW_KEY);
+            event_list = pmt::list_add(event_list, pmt::mp(UNDERFLOW_KEY));
         }
         if (metadata.event_code & md_t::EVENT_CODE_UNDERFLOW_IN_PACKET) {
-            event_list = pmt::list_add(event_list, UNDERFLOW_IN_PACKET_KEY);
+            event_list = pmt::list_add(event_list, pmt::mp(UNDERFLOW_IN_PACKET_KEY));
         }
         if (metadata.event_code & md_t::EVENT_CODE_SEQ_ERROR) {
-            event_list = pmt::list_add(event_list, SEQ_ERROR_KEY);
+            event_list = pmt::list_add(event_list, pmt::mp(SEQ_ERROR_KEY));
         }
         if (metadata.event_code & md_t::EVENT_CODE_SEQ_ERROR_IN_BURST) {
-            event_list = pmt::list_add(event_list, SEQ_ERROR_IN_BURST_KEY);
+            event_list = pmt::list_add(event_list, pmt::mp(SEQ_ERROR_IN_BURST_KEY));
         }
         if (metadata.event_code & md_t::EVENT_CODE_TIME_ERROR) {
-            event_list = pmt::list_add(event_list, TIME_ERROR_KEY);
+            event_list = pmt::list_add(event_list, pmt::mp(TIME_ERROR_KEY));
         }
 
         if (!pmt::eq(event_list, pmt::PMT_NIL)) {
             pmt::pmt_t value =
-                pmt::dict_add(pmt::make_dict(), EVENT_CODE_KEY, event_list);
+                pmt::dict_add(pmt::make_dict(), pmt::mp(EVENT_CODE_KEY), event_list);
             if (metadata.has_time_spec) {
                 pmt::pmt_t time_spec =
                     pmt::cons(pmt::from_long(metadata.time_spec.get_full_secs()),
                               pmt::from_double(metadata.time_spec.get_frac_secs()));
-                value = pmt::dict_add(value, TIME_SPEC_KEY, time_spec);
+                value = pmt::dict_add(value, pmt::mp(TIME_SPEC_KEY), time_spec);
             }
-            value = pmt::dict_add(value, CHANNEL_KEY, pmt::from_uint64(metadata.channel));
-            pmt::pmt_t msg = pmt::cons(ASYNC_MSG_KEY, value);
+            value = pmt::dict_add(value, pmt::mp(CHANNEL_KEY), pmt::from_uint64(metadata.channel));
+            pmt::pmt_t msg = pmt::cons(pmt::mp(ASYNC_MSG_KEY), value);
             message_port_pub(ASYNC_MSGS_PORT_KEY, msg);
         }
     }

@@ -39,9 +39,9 @@ class test_tag_utils (gr_unittest.TestCase):
     def test_001(self):
         t = gr.tag_t()
         t.offset = 10
-        t.key = pmt.string_to_symbol('key')
+        t.key = 'key'
         t.value = pmt.from_long(23)
-        t.srcid = pmt.from_bool(False)
+        t.srcid = 0
         pt = gr.tag_to_python(t)
         self.assertEqual(pt.key, 'key')
         self.assertEqual(pt.value, 23)
@@ -49,7 +49,7 @@ class test_tag_utils (gr_unittest.TestCase):
 
     def test_002(self):
         offset = 10
-        key = pmt.string_to_symbol('key')
+        key = 'key'
         value = pmt.from_long(23)
         srcid = pmt.from_bool(False)
 
@@ -64,22 +64,22 @@ class test_tag_utils (gr_unittest.TestCase):
         t_list = gr.python_to_tag(format_list)
         t_tuple = gr.python_to_tag(format_tuple)
 
-        self.assertTrue(pmt.equal(t_dict.key, key))
+        self.assertEqual(t_dict.key, key)
         self.assertTrue(pmt.equal(t_dict.value, value))
         self.assertEqual(t_dict.offset, offset)
 
-        self.assertTrue(pmt.equal(t_list.key, key))
+        self.assertEqual(t_list.key, key)
         self.assertTrue(pmt.equal(t_list.value, value))
         self.assertEqual(t_list.offset, offset)
 
-        self.assertTrue(pmt.equal(t_tuple.key, key))
+        self.assertEqual(t_tuple.key, key)
         self.assertTrue(pmt.equal(t_tuple.value, value))
         self.assertEqual(t_tuple.offset, offset)
 
     def test_003(self):
         offsets = (6, 3, 8)
-        key = pmt.string_to_symbol('key')
-        srcid = pmt.string_to_symbol('qa_tag_utils')
+        key = 'key'
+        srcid = 0
         tags = []
 
         for k in offsets:
@@ -93,21 +93,21 @@ class test_tag_utils (gr_unittest.TestCase):
         for k, t in zip(sorted(offsets),
                         sorted(tags, key=gr.tag_t_offset_compare_key())):
             self.assertEqual(t.offset, k)
-            self.assertTrue(pmt.equal(t.key, key))
+            self.assertEqual(t.key, key)
             self.assertTrue(pmt.equal(t.value, pmt.from_long(k)))
-            self.assertTrue(pmt.equal(t.srcid, srcid))
+            self.assertEqual(t.srcid, srcid)
 
         tmin = min(tags, key=gr.tag_t_offset_compare_key())
         self.assertEqual(tmin.offset, min(offsets))
-        self.assertTrue(pmt.equal(tmin.key, key))
+        self.assertEqual(tmin.key, key)
         self.assertTrue(pmt.equal(tmin.value, pmt.from_long(min(offsets))))
-        self.assertTrue(pmt.equal(tmin.srcid, srcid))
+        self.assertEqual(tmin.srcid, srcid)
 
         tmax = max(tags, key=gr.tag_t_offset_compare_key())
         self.assertEqual(tmax.offset, max(offsets))
-        self.assertTrue(pmt.equal(tmax.key, key))
+        self.assertEqual(tmax.key, key)
         self.assertTrue(pmt.equal(tmax.value, pmt.from_long(max(offsets))))
-        self.assertTrue(pmt.equal(tmax.srcid, srcid))
+        self.assertEqual(tmax.srcid, srcid)
 
 
 if __name__ == '__main__':

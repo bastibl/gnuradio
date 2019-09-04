@@ -45,7 +45,7 @@ class qa_tag_share(gr_unittest.TestCase):
         sink_data = in0_data
 
         tag = gr.tag_t()
-        tag.key = pmt.to_pmt(tag_key)
+        tag.key = tag_key
         tag.value = pmt.to_pmt(tag_value)
         tag.offset = tag_offset
 
@@ -65,7 +65,7 @@ class qa_tag_share(gr_unittest.TestCase):
         self.assertEqual(len(sink.tags()), 1)
         # print(sink.tags())
         received_tag = sink.tags()[0]
-        self.assertEqual(pmt.to_python(received_tag.key), tag_key)
+        self.assertEqual(received_tag.key, tag_key)
         self.assertEqual(pmt.to_python(received_tag.value), tag_value)
         self.assertEqual(received_tag.offset, tag_offset)
         self.assertEqual(sink.data(), sink_data)

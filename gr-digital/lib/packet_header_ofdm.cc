@@ -70,7 +70,7 @@ packet_header_ofdm::packet_header_ofdm(
           len_tag_key,
           num_tag_key,
           bits_per_header_sym),
-      d_frame_len_tag_key(pmt::string_to_symbol(frame_len_tag_key)),
+      d_frame_len_tag_key(frame_len_tag_key),
       d_occupied_carriers(occupied_carriers),
       d_bits_per_payload_sym(bits_per_payload_sym),
       d_scramble_mask(d_header_len, 0)
@@ -111,7 +111,7 @@ bool packet_header_ofdm::header_parser(const unsigned char* in, std::vector<tag_
     }
     int packet_len = 0; // # of complex symbols in this frame
     for (size_t i = 0; i < tags.size(); i++) {
-        if (pmt::equal(tags[i].key, d_len_tag_key)) {
+        if (tags[i].key == d_len_tag_key) {
             // Convert bytes to complex symbols:
             packet_len = pmt::to_long(tags[i].value) * 8 / d_bits_per_payload_sym;
             if (pmt::to_long(tags[i].value) * 8 % d_bits_per_payload_sym) {

@@ -25,9 +25,9 @@
 #include <uhd/convert.hpp>
 #include <boost/thread/mutex.hpp>
 
-static const pmt::pmt_t TIME_KEY = pmt::string_to_symbol("rx_time");
-static const pmt::pmt_t RATE_KEY = pmt::string_to_symbol("rx_rate");
-static const pmt::pmt_t FREQ_KEY = pmt::string_to_symbol("rx_freq");
+static const std::string TIME_KEY = "rx_time";
+static const std::string RATE_KEY = "rx_rate";
+static const std::string FREQ_KEY = "rx_freq";
 
 namespace gr {
 namespace uhd {
@@ -131,7 +131,7 @@ private:
 
     bool _tag_now;
     ::uhd::rx_metadata_t _metadata;
-    pmt::pmt_t _id;
+    uint64_t _id;
     bool _issue_stream_cmd_on_start;
 
     // tag shadows

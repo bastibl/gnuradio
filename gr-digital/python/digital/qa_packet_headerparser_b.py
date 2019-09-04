@@ -51,7 +51,7 @@ class qa_packet_headerparser_b (gr_unittest.TestCase):
         packet_len_tagname = "packet_len"
         random_tag = gr.tag_t()
         random_tag.offset = 5
-        random_tag.key = pmt.string_to_symbol("foo")
+        random_tag.key = "foo"
         random_tag.value = pmt.from_long(42)
         src = blocks.vector_source_b(encoded_headers, tags=(random_tag,))
         parser = digital.packet_headerparser_b(32, packet_len_tagname)

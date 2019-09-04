@@ -34,7 +34,7 @@ namespace digital {
 class corr_est_cc_impl : public corr_est_cc
 {
 private:
-    pmt::pmt_t d_src_id;
+    uint64_t d_src_id;
     std::vector<gr_complex> d_symbols;
     float d_sps;
     unsigned int d_mark_delay, d_stashed_mark_delay;

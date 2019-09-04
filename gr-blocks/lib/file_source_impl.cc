@@ -74,14 +74,12 @@ file_source_impl::file_source_impl(size_t itemsize,
       d_updated(false),
       d_file_begin(true),
       d_repeat_cnt(0),
-      d_add_begin_tag(pmt::PMT_NIL)
+      d_add_begin_tag("")
 {
     open(filename, repeat, start_offset_items, length_items);
     do_update();
 
-    std::stringstream str;
-    str << name() << unique_id();
-    _id = pmt::string_to_symbol(str.str());
+    _id = unique_id();
 }
 
 file_source_impl::~file_source_impl()
@@ -231,7 +229,7 @@ void file_source_impl::do_update()
     }
 }
 
-void file_source_impl::set_begin_tag(pmt::pmt_t val) { d_add_begin_tag = val; }
+void file_source_impl::set_begin_tag(std::string val) { d_add_begin_tag = val; }
 
 int file_source_impl::work(int noutput_items,
                            gr_vector_const_void_star& input_items,
@@ -253,7 +251,7 @@ int file_source_impl::work(int noutput_items,
     while (size) {
 
         // Add stream tag whenever the file starts again
-        if (d_file_begin && d_add_begin_tag != pmt::PMT_NIL) {
+        if (d_file_begin && d_add_begin_tag != "") {
             add_item_tag(0,
                          nitems_written(0) + noutput_items - size,
                          d_add_begin_tag,
@@ -279,7 +277,7 @@ int file_source_impl::work(int noutput_items,
             if (d_repeat && d_seekable) {
                 GR_FSEEK(d_fp, d_start_offset_items * d_itemsize, SEEK_SET);
                 d_items_remaining = d_length_items;
-                if (d_add_begin_tag != pmt::PMT_NIL) {
+                if (d_add_begin_tag != "") {
                     d_file_begin = true;
                     d_repeat_cnt++;
                 }

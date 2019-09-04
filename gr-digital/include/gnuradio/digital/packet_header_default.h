@@ -63,7 +63,7 @@ public:
 
     void set_header_num(unsigned header_num) { d_header_number = header_num; };
     long header_len() { return d_header_len; };
-    pmt::pmt_t len_tag_key() { return d_len_tag_key; };
+    std::string len_tag_key() { return d_len_tag_key; };
 
     /*!
      * \brief Encodes the header information in the given tags into bits and places them
@@ -99,8 +99,8 @@ public:
 
 protected:
     long d_header_len;
-    pmt::pmt_t d_len_tag_key;
-    pmt::pmt_t d_num_tag_key;
+    std::string d_len_tag_key;
+    std::string d_num_tag_key;
     int d_bits_per_byte;
     unsigned d_header_number;
     unsigned d_mask;

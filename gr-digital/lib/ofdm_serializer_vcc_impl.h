@@ -33,10 +33,10 @@ private:
     int d_fft_len; //!< FFT length
     std::vector<std::vector<int>>
         d_occupied_carriers;         //!< Which carriers/symbols carry data
-    pmt::pmt_t d_packet_len_tag_key; //!< Key of the length tag
-    pmt::pmt_t d_out_len_tag_key;    //!< Key of the length tag
+    std::string d_packet_len_tag_key; //!< Key of the length tag
+    std::string d_out_len_tag_key;    //!< Key of the length tag
     const int d_symbols_skipped;     //!< Start position in d_occupied_carriers
-    pmt::pmt_t d_carr_offset_key;    //!< Key of the carrier offset tag
+    std::string d_carr_offset_key;    //!< Key of the carrier offset tag
     int d_curr_set;                  //!< Current position in d_occupied_carriers
     int d_symbols_per_set;
 

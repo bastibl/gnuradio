@@ -113,9 +113,9 @@ class test_file_metadata(gr_unittest.TestCase):
         # were generated and received correctly.
         tags = tsnk.current_tags()
         for t in tags:
-            if(pmt.eq(t.key, pmt.intern("samp_rate"))):
+            if(t.key == "samp_rate"):
                 self.assertEqual(pmt.to_double(t.value), samp_rate)
-            elif(pmt.eq(t.key, pmt.intern("rx_rate"))):
+            elif(t.key == "rx_rate"):
                 self.assertEqual(pmt.to_double(t.value), samp_rate)
 
         # Test that the data portion was extracted and received correctly.
@@ -194,9 +194,9 @@ class test_file_metadata(gr_unittest.TestCase):
         # were generated and received correctly.
         tags = tsnk.current_tags()
         for t in tags:
-            if(pmt.eq(t.key, pmt.intern("samp_rate"))):
+            if(t.key == "samp_rate"):
                 self.assertEqual(pmt.to_double(t.value), samp_rate)
-            elif(pmt.eq(t.key, pmt.intern("rx_rate"))):
+            elif(t.key == "rx_rate"):
                 self.assertEqual(pmt.to_double(t.value), samp_rate)
 
         # Test that the data portion was extracted and received correctly.

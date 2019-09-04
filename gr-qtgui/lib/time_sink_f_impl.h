@@ -60,7 +60,7 @@ private:
     float d_trigger_level;
     int d_trigger_channel;
     int d_trigger_delay;
-    pmt::pmt_t d_trigger_tag_key;
+    std::string d_trigger_tag_key;
     bool d_triggered;
     int d_trigger_count;
     int d_initial_delay; // used for limiting d_trigger_delay

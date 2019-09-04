@@ -239,7 +239,7 @@ void block::get_tags_in_range(std::vector<tag_t>& v,
                               unsigned int which_input,
                               uint64_t start,
                               uint64_t end,
-                              const pmt::pmt_t& key)
+                              const std::string& key)
 {
     d_executor->get_tags_in_range(v, which_input, start, end, key, unique_id());
 }
@@ -260,7 +260,7 @@ void block::get_tags_in_window(std::vector<tag_t>& v,
                                unsigned int which_input,
                                uint64_t start,
                                uint64_t end,
-                               const pmt::pmt_t& key)
+                               const std::string& key)
 {
     d_executor->get_tags_in_range(v,
                                   which_input,

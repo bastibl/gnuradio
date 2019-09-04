@@ -240,11 +240,11 @@ int ofdm_chanest_vcvc_impl::general_work(int noutput_items,
     get_chan_taps(in, in + d_fft_len, carr_offset, chan_taps);
     add_item_tag(0,
                  nitems_written(0),
-                 pmt::string_to_symbol("ofdm_sync_carr_offset"),
+                 "ofdm_sync_carr_offset",
                  pmt::from_long(carr_offset));
     add_item_tag(0,
                  nitems_written(0),
-                 pmt::string_to_symbol("ofdm_sync_chan_taps"),
+                 "ofdm_sync_chan_taps",
                  pmt::init_c32vector(d_fft_len, chan_taps));
 
     // Copy data symbols

@@ -25,18 +25,17 @@ from gnuradio import gr, gr_unittest, blocks
 import pmt
 import math
 
-def make_tag(key, value, offset, srcid=None):
+def make_tag(key, value, offset, srcid=0):
     tag = gr.tag_t()
-    tag.key = pmt.string_to_symbol(key)
+    tag.key = key
     tag.value = pmt.to_pmt(value)
     tag.offset = offset
-    if srcid is not None:
-        tag.srcid = pmt.to_pmt(srcid)
+    tag.srcid = srcid
     return tag
 
 def compare_tags(a, b):
-    return a.offset == b.offset and pmt.equal(a.key, b.key) and \
-           pmt.equal(a.value, b.value) and pmt.equal(a.srcid, b.srcid)
+    return a.offset == b.offset and a.key == b.key and \
+           pmt.equal(a.value, b.value) and a.srcid == b.srcid
 
 class test_vector_sink_source(gr_unittest.TestCase):
 
@@ -83,7 +82,7 @@ class test_vector_sink_source(gr_unittest.TestCase):
         # Test sending and receiving tagged streams
         src_data = [float(x) for x in range(16)]
         expected_result = tuple(src_data)
-        src_tags = tuple([make_tag('key', 'val', 0, 'src')])
+        src_tags = tuple([make_tag('key', 'val', 0, 0)])
         expected_tags = src_tags[:]
 
         src = blocks.vector_source_f(src_data, repeat=False, tags=src_tags)
@@ -102,9 +101,9 @@ class test_vector_sink_source(gr_unittest.TestCase):
         length = 16
         src_data = [float(x) for x in range(length)]
         expected_result = tuple(src_data + src_data)
-        src_tags = tuple([make_tag('key', 'val', 0, 'src')])
-        expected_tags = tuple([make_tag('key', 'val', 0, 'src'),
-                               make_tag('key', 'val', length, 'src')])
+        src_tags = tuple([make_tag('key', 'val', 0, 0)])
+        expected_tags = tuple([make_tag('key', 'val', 0, 0),
+                               make_tag('key', 'val', length, 0)])
 
         src = blocks.vector_source_f(src_data, repeat=True, tags=src_tags)
         head = blocks.head(gr.sizeof_float, 2*length)

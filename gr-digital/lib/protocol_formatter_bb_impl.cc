@@ -98,9 +98,9 @@ int protocol_formatter_bb_impl::work(int noutput_items,
         for (size_t i = 0; i < pmt::length(mkeys); i++) {
             tag_t tag;
             tag.offset = nitems_written(0);
-            tag.key = pmt::nth(i, mkeys);
+            tag.key = pmt::symbol_to_string(pmt::nth(i, mkeys));
             tag.value = pmt::nth(i, mvals);
-            tag.srcid = alias_pmt();
+            tag.srcid = unique_id();
             add_item_tag(0, tag);
         }
     }

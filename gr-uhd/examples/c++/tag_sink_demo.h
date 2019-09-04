@@ -48,7 +48,7 @@ public:
                           0,
                           samp0_count,
                           samp0_count + ninput_items,
-                          pmt::string_to_symbol("rx_time"));
+                          "rx_time");
 
         // print all tags
         BOOST_FOREACH (const gr::tag_t& rx_time_tag, rx_time_tags) {

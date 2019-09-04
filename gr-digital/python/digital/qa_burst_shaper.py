@@ -30,18 +30,18 @@ import sys
 
 def make_length_tag(offset, length):
     return gr.python_to_tag({'offset' : offset,
-                             'key' : pmt.intern('packet_len'),
+                             'key' : 'packet_len',
                              'value' : pmt.from_long(length),
-                             'srcid' : pmt.intern('qa_burst_shaper')})
+                             'srcid' : 0})
 
 def make_tag(offset, key, value):
     return gr.python_to_tag({'offset' : offset,
-                             'key' : pmt.intern(key),
+                             'key' : key,
                              'value' : value,
-                             'srcid' : pmt.intern('qa_burst_shaper')})
+                             'srcid' : 0})
 
 def compare_tags(a, b):
-    return a.offset == b.offset and pmt.equal(a.key, b.key) and \
+    return a.offset == b.offset and a.key == b.key and \
            pmt.equal(a.value, b.value)
 
 class qa_burst_shaper (gr_unittest.TestCase):

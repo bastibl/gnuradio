@@ -131,7 +131,7 @@ def packets_to_vectors(packets, lengthtagname, vlen=1):
         data.extend(packet)
         tag = gr.tag_t()
         tag.offset = offset // vlen
-        tag.key = pmt.string_to_symbol(lengthtagname)
+        tag.key = lengthtagname
         tag.value = pmt.from_long(len(packet) // vlen)
         tags.append(tag)
         offset = offset + len(packet)

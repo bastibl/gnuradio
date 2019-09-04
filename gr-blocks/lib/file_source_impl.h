@@ -43,10 +43,10 @@ private:
     bool d_file_begin;
     bool d_seekable;
     long d_repeat_cnt;
-    pmt::pmt_t d_add_begin_tag;
+    std::string d_add_begin_tag;
 
     boost::mutex fp_mutex;
-    pmt::pmt_t _id;
+    uint64_t _id;
 
     void do_update();
 
@@ -66,7 +66,7 @@ public:
              gr_vector_const_void_star& input_items,
              gr_vector_void_star& output_items);
 
-    void set_begin_tag(pmt::pmt_t val);
+    void set_begin_tag(std::string val);
 };
 
 } /* namespace blocks */

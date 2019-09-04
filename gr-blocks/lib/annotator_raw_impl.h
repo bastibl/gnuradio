@@ -41,7 +41,7 @@ public:
     ~annotator_raw_impl();
 
     // insert a tag to be added
-    void add_tag(uint64_t offset, pmt::pmt_t key, pmt::pmt_t val);
+    void add_tag(uint64_t offset, std::string key, pmt::pmt_t val);
 
     int work(int noutput_items,
              gr_vector_const_void_star& input_items,

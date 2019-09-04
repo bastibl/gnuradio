@@ -42,20 +42,20 @@ burst_tagger_impl::burst_tagger_impl(size_t itemsize)
     std::stringstream str;
     str << name() << unique_id();
 
-    d_true_key = pmt::string_to_symbol("burst");
+    d_true_key = "burst";
     d_true_value = pmt::PMT_T;
 
-    d_false_key = pmt::string_to_symbol("burst");
+    d_false_key = "burst";
     d_false_value = pmt::PMT_F;
 
-    d_id = pmt::string_to_symbol(str.str());
+    d_id = unique_id();
 }
 
 burst_tagger_impl::~burst_tagger_impl() {}
 
 void burst_tagger_impl::set_true_tag(const std::string& key, bool value)
 {
-    d_true_key = pmt::string_to_symbol(key);
+    d_true_key = key;
     if (value == true) {
         d_true_value = pmt::PMT_T;
     } else {
@@ -65,7 +65,7 @@ void burst_tagger_impl::set_true_tag(const std::string& key, bool value)
 
 void burst_tagger_impl::set_false_tag(const std::string& key, bool value)
 {
-    d_false_key = pmt::string_to_symbol(key);
+    d_false_key = key;
     if (value == true) {
         d_false_value = pmt::PMT_T;
     } else {

@@ -41,7 +41,7 @@ private:
     std::string d_name;
     unsigned int d_nconnections;
 
-    const pmt::pmt_t d_tag_key;
+    const std::string d_tag_key;
 
     int d_index, d_start, d_end;
     std::vector<gr_complex*> d_cbuffers;
@@ -62,7 +62,7 @@ private:
     float d_trigger_level;
     int d_trigger_channel;
     int d_trigger_delay;
-    pmt::pmt_t d_trigger_tag_key;
+    std::string d_trigger_tag_key;
     bool d_triggered;
     int d_trigger_count;
     int d_initial_delay; // used for limiting d_trigger_delay

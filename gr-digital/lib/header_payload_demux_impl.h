@@ -36,25 +36,25 @@ private:
     const int d_header_padding_total_items; //!< Items header padding
     int d_items_per_symbol;                 //!< Bytes per symbol
     int d_gi;                               //!< Bytes per guard interval
-    pmt::pmt_t d_len_tag_key;               //!< Key of length tag
-    pmt::pmt_t d_trigger_tag_key;           //!< Key of trigger tag (if used)
+    std::string d_len_tag_key;              //!< Key of length tag
+    std::string d_trigger_tag_key;          //!< Key of trigger tag (if used)
     bool d_output_symbols;                  //!< If true, output is symbols, not items
     size_t d_itemsize;                      //!< Bytes per item
     bool d_uses_trigger_tag;                //!< If a trigger tag is used
     int d_state;                            //!< Current read state
     int d_curr_payload_len;                 //!< Length of the next payload (symbols)
     int d_curr_payload_offset;              //!< Offset of the next payload (symbols)
-    std::vector<pmt::pmt_t>
+    std::vector<std::string>
         d_payload_tag_keys; //!< Temporary buffer for PMTs that go on the payload (keys)
     std::vector<pmt::pmt_t> d_payload_tag_values; //!< Temporary buffer for PMTs that go
                                                   //!< on the payload (values)
     bool d_track_time;               //!< Whether or not to keep track of the rx time
-    pmt::pmt_t d_timing_key;         //!< Key of the timing tag (usually 'rx_time')
+    std::string d_timing_key;        //!< Key of the timing tag (usually 'rx_time')
     pmt::pmt_t d_payload_offset_key; //!< Key of payload offset (usually 'payload_offset')
     uint64_t d_last_time_offset;     //!< Item number of the last time tag
     pmt::pmt_t d_last_time;          //!< The actual time that was indicated
     double d_sampling_time;          //!< Inverse sampling rate
-    std::vector<pmt::pmt_t> d_special_tags; //!< List of special tags
+    std::vector<std::string> d_special_tags; //!< List of special tags
     std::vector<pmt::pmt_t>
         d_special_tags_last_value; //!< The current value of the special tags
 

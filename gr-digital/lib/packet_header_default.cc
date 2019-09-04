@@ -40,9 +40,8 @@ packet_header_default::packet_header_default(long header_len,
                                              const std::string& num_tag_key,
                                              int bits_per_byte)
     : d_header_len(header_len),
-      d_len_tag_key(pmt::string_to_symbol(len_tag_key)),
-      d_num_tag_key(num_tag_key.empty() ? pmt::PMT_NIL
-                                        : pmt::string_to_symbol(num_tag_key)),
+      d_len_tag_key(len_tag_key),
+      d_num_tag_key(num_tag_key),
       d_bits_per_byte(bits_per_byte),
       d_header_number(0)
 {
@@ -98,7 +97,7 @@ bool packet_header_default::header_parser(const unsigned char* in,
     if (k >= d_header_len) {
         return true;
     }
-    if (d_num_tag_key == pmt::PMT_NIL) {
+    if (d_num_tag_key == "") {
         k += 12;
     } else {
         for (int i = 0; i < 12 && k < d_header_len; i += d_bits_per_byte, k++) {

@@ -32,8 +32,8 @@ squelch_base_ff_impl::squelch_base_ff_impl(const char* name, int ramp, bool gate
     : block(name,
             io_signature::make(1, 1, sizeof(float)),
             io_signature::make(1, 1, sizeof(float))),
-      d_sob_key(pmt::intern("squelch_sob")),
-      d_eob_key(pmt::intern("squelch_eob")),
+      d_sob_key("squelch_sob"),
+      d_eob_key("squelch_eob"),
       d_tag_next_unmuted(true)
 {
     set_ramp(ramp);

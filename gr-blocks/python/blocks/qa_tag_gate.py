@@ -35,7 +35,7 @@ class qa_tag_gate (gr_unittest.TestCase):
 
     def test_001_t (self):
         tag = gr.tag_t()
-        tag.key = pmt.string_to_symbol('key')
+        tag.key = 'key'
         tag.value = pmt.from_long(42)
         tag.offset = 0
         src = blocks.vector_source_f(list(range(20)), False, 1, (tag,))
@@ -48,15 +48,15 @@ class qa_tag_gate (gr_unittest.TestCase):
     def test_002_t (self):
         tags = []
         tags.append(gr.tag_t())
-        tags[0].key = pmt.string_to_symbol('key')
+        tags[0].key = 'key'
         tags[0].value = pmt.from_long(42)
         tags[0].offset = 0
         tags.append(gr.tag_t())
-        tags[1].key = pmt.string_to_symbol('key')
+        tags[1].key = 'key'
         tags[1].value = pmt.from_long(42)
         tags[1].offset = 5
         tags.append(gr.tag_t())
-        tags[2].key = pmt.string_to_symbol('secondkey')
+        tags[2].key = 'secondkey'
         tags[2].value = pmt.from_long(42)
         tags[2].offset = 6
         src = blocks.vector_source_f(range(20), False, 1, tags)
@@ -71,15 +71,15 @@ class qa_tag_gate (gr_unittest.TestCase):
     def test_003_t (self):
         tags = []
         tags.append(gr.tag_t())
-        tags[0].key = pmt.string_to_symbol('key')
+        tags[0].key = 'key'
         tags[0].value = pmt.from_long(42)
         tags[0].offset = 0
         tags.append(gr.tag_t())
-        tags[1].key = pmt.string_to_symbol('key')
+        tags[1].key = 'key'
         tags[1].value = pmt.from_long(42)
         tags[1].offset = 5
         tags.append(gr.tag_t())
-        tags[2].key = pmt.string_to_symbol('secondkey')
+        tags[2].key = 'secondkey'
         tags[2].value = pmt.from_long(42)
         tags[2].offset = 6
         src = blocks.vector_source_f(range(20), False, 1, tags)
@@ -93,15 +93,15 @@ class qa_tag_gate (gr_unittest.TestCase):
     def test_004_t (self):
         tags = []
         tags.append(gr.tag_t())
-        tags[0].key = pmt.string_to_symbol('key')
+        tags[0].key = 'key'
         tags[0].value = pmt.from_long(42)
         tags[0].offset = 0
         tags.append(gr.tag_t())
-        tags[1].key = pmt.string_to_symbol('key')
+        tags[1].key = 'key'
         tags[1].value = pmt.from_long(42)
         tags[1].offset = 5
         tags.append(gr.tag_t())
-        tags[2].key = pmt.string_to_symbol('secondkey')
+        tags[2].key = 'secondkey'
         tags[2].value = pmt.from_long(42)
         tags[2].offset = 6
         src = blocks.vector_source_f(range(20), False, 1, tags)

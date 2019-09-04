@@ -94,7 +94,7 @@ class qa_packet_headergenerator_bb (gr_unittest.TestCase):
         src = blocks.vector_source_b(data, tags=tags)
         formatter_object = digital.packet_header_ofdm(occupied_carriers, 1, self.tsb_key)
         self.assertEqual(formatter_object.header_len(), 6)
-        self.assertEqual(pmt.symbol_to_string(formatter_object.len_tag_key()), self.tsb_key)
+        self.assertEqual(formatter_object.len_tag_key(), self.tsb_key)
         header = digital.packet_headergenerator_bb(formatter_object.formatter(), self.tsb_key)
         sink = blocks.vector_sink_b()
         self.tb.connect(src, header, sink)

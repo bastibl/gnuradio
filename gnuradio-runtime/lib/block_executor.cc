@@ -721,22 +721,12 @@ void block_executor::clear_tags()
 
 void block_executor::add_item_tag(unsigned int which_output, const tag_t& tag)
 {
-    if (!pmt::is_symbol(tag.key)) {
-        throw pmt::wrong_type("block_executor::add_item_tag key", tag.key);
-    } else {
-        // Add tag to gr_buffer's deque tags
-        d_output[which_output]->add_item_tag(tag);
-    }
+    d_output[which_output]->add_item_tag(tag);
 }
 
 void block_executor::remove_item_tag(unsigned int which_input, const tag_t& tag, long id)
 {
-    if (!pmt::is_symbol(tag.key)) {
-        throw pmt::wrong_type("block_executor::add_item_tag key", tag.key);
-    } else {
-        // Add tag to gr_buffer's deque tags
-        d_input[which_input]->buffer()->remove_item_tag(tag, id);
-    }
+    d_input[which_input]->buffer()->remove_item_tag(tag, id);
 }
 
 void block_executor::get_tags_in_range(std::vector<tag_t>& v,
@@ -753,7 +743,7 @@ void block_executor::get_tags_in_range(std::vector<tag_t>& v,
                                        unsigned int which_input,
                                        uint64_t abs_start,
                                        uint64_t abs_end,
-                                       const pmt::pmt_t& key,
+                                       const std::string& key,
                                        long id)
 {
     std::vector<tag_t> found_items;
@@ -764,11 +754,11 @@ void block_executor::get_tags_in_range(std::vector<tag_t>& v,
     d_input[which_input]->get_tags_in_range(found_items, abs_start, abs_end, id);
 
     // Filter further by key name
-    pmt::pmt_t itemkey;
+    std::string itemkey;
     std::vector<tag_t>::iterator itr;
     for (itr = found_items.begin(); itr != found_items.end(); itr++) {
         itemkey = (*itr).key;
-        if (pmt::eqv(key, itemkey)) {
+        if (key == itemkey) {
             v.push_back(*itr);
         }
     }

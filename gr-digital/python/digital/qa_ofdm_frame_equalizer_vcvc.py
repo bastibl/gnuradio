@@ -50,11 +50,11 @@ class qa_ofdm_frame_equalizer_vcvc (gr_unittest.TestCase):
         tx_data = (1,) * fft_len * n_syms
         chan_tag = gr.tag_t()
         chan_tag.offset = 0
-        chan_tag.key = pmt.string_to_symbol("ofdm_sync_chan_taps")
+        chan_tag.key = "ofdm_sync_chan_taps"
         chan_tag.value = pmt.init_c32vector(fft_len, (1,) * fft_len)
         random_tag = gr.tag_t()
         random_tag.offset = 1
-        random_tag.key = pmt.string_to_symbol("foo")
+        random_tag.key = "foo"
         random_tag.value = pmt.from_long(42)
         src = blocks.vector_source_c(tx_data, False, fft_len, (chan_tag, random_tag))
         eq = digital.ofdm_frame_equalizer_vcvc(equalizer.base(), 0, self.tsb_key)
@@ -88,7 +88,7 @@ class qa_ofdm_frame_equalizer_vcvc (gr_unittest.TestCase):
         tx_data = (1,) * fft_len * n_syms
         chan_tag = gr.tag_t()
         chan_tag.offset = 0
-        chan_tag.key = pmt.string_to_symbol("ofdm_sync_chan_taps")
+        chan_tag.key = "ofdm_sync_chan_taps"
         chan_tag.value = pmt.init_c32vector(fft_len, (1,) * fft_len)
         src = blocks.vector_source_c(tx_data, False, fft_len, (chan_tag,))
         eq = digital.ofdm_frame_equalizer_vcvc(equalizer.base(), 0, self.tsb_key)
@@ -120,12 +120,12 @@ class qa_ofdm_frame_equalizer_vcvc (gr_unittest.TestCase):
         equalizer = digital.ofdm_equalizer_static(fft_len, occupied_carriers)
         chan_tag = gr.tag_t()
         chan_tag.offset = 0
-        chan_tag.key = pmt.string_to_symbol("ofdm_sync_chan_taps")
+        chan_tag.key = "ofdm_sync_chan_taps"
         # Note: this is shifted to the correct position!
         chan_tag.value = pmt.init_c32vector(fft_len, (0, 0, -1j, -1j, 0, -1j, -1j, 0))
         offset_tag = gr.tag_t()
         offset_tag.offset = 0
-        offset_tag.key = pmt.string_to_symbol("ofdm_sync_carr_offset")
+        offset_tag.key = "ofdm_sync_carr_offset"
         offset_tag.value = pmt.from_long(carr_offset)
         src = blocks.vector_source_c(tx_data, False, fft_len, (chan_tag, offset_tag))
         eq = digital.ofdm_frame_equalizer_vcvc(equalizer.base(), cp_len, self.tsb_key)
@@ -161,11 +161,11 @@ class qa_ofdm_frame_equalizer_vcvc (gr_unittest.TestCase):
         equalizer = digital.ofdm_equalizer_static(fft_len, occupied_carriers)
         chan_tag = gr.tag_t()
         chan_tag.offset = 0
-        chan_tag.key = pmt.string_to_symbol("ofdm_sync_chan_taps")
+        chan_tag.key = "ofdm_sync_chan_taps"
         chan_tag.value = pmt.init_c32vector(fft_len, (0, 0, 1, 1, 0, 1, 1, 0))
         offset_tag = gr.tag_t()
         offset_tag.offset = 0
-        offset_tag.key = pmt.string_to_symbol("ofdm_sync_carr_offset")
+        offset_tag.key = "ofdm_sync_carr_offset"
         offset_tag.value = pmt.from_long(carr_offset)
         src = blocks.vector_source_c(tx_data, False, fft_len, (chan_tag, offset_tag))
         eq = digital.ofdm_frame_equalizer_vcvc(equalizer.base(), cp_len, self.tsb_key)
@@ -215,7 +215,7 @@ class qa_ofdm_frame_equalizer_vcvc (gr_unittest.TestCase):
             channel[idx] = channel[idx-fft_len] * numpy.exp(1j * .1 * numpy.pi * (numpy.random.rand()-.5))
         chan_tag = gr.tag_t()
         chan_tag.offset = 0
-        chan_tag.key = pmt.string_to_symbol("ofdm_sync_chan_taps")
+        chan_tag.key = "ofdm_sync_chan_taps"
         chan_tag.value = pmt.init_c32vector(fft_len, channel[:fft_len])
         src = blocks.vector_source_c(numpy.multiply(tx_signal, channel), False, fft_len, (chan_tag,))
         sink = blocks.tsb_vector_sink_c(vlen=fft_len, tsb_key=self.tsb_key)
@@ -355,7 +355,7 @@ class qa_ofdm_frame_equalizer_vcvc (gr_unittest.TestCase):
             channel[idx2] = channel[idx2] * numpy.exp(1j * 0 * numpy.pi * (numpy.random.rand()-.5))
         chan_tag = gr.tag_t()
         chan_tag.offset = 0
-        chan_tag.key = pmt.string_to_symbol("ofdm_sync_chan_taps")
+        chan_tag.key = "ofdm_sync_chan_taps"
         chan_tag.value = pmt.init_c32vector(fft_len, channel[:fft_len])
         src = blocks.vector_source_c(numpy.multiply(tx_signal, channel), False, fft_len, (chan_tag,))
         eq = digital.ofdm_frame_equalizer_vcvc(equalizer.base(), 0, self.tsb_key, True)
@@ -371,7 +371,7 @@ class qa_ofdm_frame_equalizer_vcvc (gr_unittest.TestCase):
         self.assertEqual(tx_data, rx_data)
         self.assertEqual(len(sink.tags()), 1)
         tag = sink.tags()[0]
-        self.assertEqual(pmt.symbol_to_string(tag.key), "ofdm_sync_chan_taps")
+        self.assertEqual(tag.key, "ofdm_sync_chan_taps")
         self.assertComplexTuplesAlmostEqual(list(pmt.c32vector_elements(tag.value)), channel[-fft_len:], places=1)
 
 

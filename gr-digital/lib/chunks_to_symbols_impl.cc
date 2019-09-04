@@ -119,7 +119,7 @@ int chunks_to_symbols_impl<IN_T, OUT_T>::work(int noutput_items,
             tchecker.get_tags(tags_now, i + this->nitems_read(m));
             for (unsigned int j = 0; j < tags_now.size(); j++) {
                 tag_t tag = tags_now[j];
-                this->dispatch_msg(pmt::symbol_to_string(tag.key), tag.value);
+                this->dispatch_msg(tag.key, tag.value);
             }
             assert(((unsigned int)in[i] * d_D + d_D) <= d_symbol_table.size());
             memcpy(out, &d_symbol_table[(unsigned int)in[i] * d_D], d_D * sizeof(OUT_T));

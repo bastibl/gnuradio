@@ -170,7 +170,7 @@ int dvbt_symbol_inner_interleaver_impl::general_work(
 
     // Read all tags on the input buffer
     this->get_tags_in_range(
-        tags, 0, nread, nread + noutput_items, pmt::string_to_symbol("symbol_index"));
+        tags, 0, nread, nread + noutput_items, "symbol_index");
 
     for (int k = 0; k < noutput_items; k++) {
         int blocks = k * d_nsize;

@@ -132,7 +132,7 @@ def packets_to_vectors(packets, tsb_tag_key, vlen=1):
         data.extend(packet)
         tag = gr.tag_t()
         tag.offset = offset // vlen
-        tag.key = pmt.string_to_symbol(tsb_tag_key)
+        tag.key = tsb_tag_key
         tag.value = pmt.from_long(len(packet) // vlen)
         tags.append(tag)
         offset = offset + len(packet)

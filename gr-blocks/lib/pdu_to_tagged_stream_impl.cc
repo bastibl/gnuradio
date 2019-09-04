@@ -90,9 +90,9 @@ int pdu_to_tagged_stream_impl::work(int noutput_items,
     if (!pmt::eq(d_curr_meta, pmt::PMT_NIL)) {
         pmt::pmt_t klist(pmt::dict_keys(d_curr_meta));
         for (size_t i = 0; i < pmt::length(klist); i++) {
-            pmt::pmt_t k(pmt::nth(i, klist));
-            pmt::pmt_t v(pmt::dict_ref(d_curr_meta, k, pmt::PMT_NIL));
-            add_item_tag(0, nitems_written(0), k, v, alias_pmt());
+            std::string k(pmt::symbol_to_string(pmt::nth(i, klist)));
+            pmt::pmt_t v(pmt::dict_ref(d_curr_meta, pmt::mp(k), pmt::PMT_NIL));
+            add_item_tag(0, nitems_written(0), k, v, unique_id());
         }
     }
 

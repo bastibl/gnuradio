@@ -229,9 +229,9 @@ class test_stream_mux (gr_unittest.TestCase):
                                      +sum(stream_sizes)*i for i in range(N)]
         expected_tag_offsets_src3 = [stream_sizes[0]+stream_sizes[1]
                                      +sum(stream_sizes)*i for i in range(N)]
-        tags_src1 = [tag for tag in tags if pmt.eq(tag.key, pmt.intern('src1'))]
-        tags_src2 = [tag for tag in tags if pmt.eq(tag.key, pmt.intern('src2'))]
-        tags_src3 = [tag for tag in tags if pmt.eq(tag.key, pmt.intern('src3'))]
+        tags_src1 = [tag for tag in tags if tag.key == 'src1']
+        tags_src2 = [tag for tag in tags if tag.key == 'src2']
+        tags_src3 = [tag for tag in tags if tag.key == 'src3']
 
         for i in range(len(expected_tag_offsets_src1)):
             self.assertTrue(expected_tag_offsets_src1[i] == tags_src1[i].offset)

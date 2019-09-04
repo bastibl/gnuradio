@@ -112,11 +112,11 @@ class test_pdu(gr_unittest.TestCase):
         src_data = list(range(packet_len))
         tag1 = gr.tag_t()
         tag1.offset = 0
-        tag1.key = pmt.string_to_symbol('spam')
+        tag1.key = 'spam'
         tag1.value = pmt.from_long(23)
         tag2 = gr.tag_t()
         tag2.offset = 10 # Must be < packet_len
-        tag2.key = pmt.string_to_symbol('eggs')
+        tag2.key = 'eggs'
         tag2.value = pmt.from_long(42)
         src = blocks.vector_source_f(src_data, tags=(tag1, tag2))
         s2ts = blocks.stream_to_tagged_stream(gr.sizeof_float, vlen=1, packet_len=packet_len, len_tag_key="packet_len")

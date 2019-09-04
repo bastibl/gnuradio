@@ -46,48 +46,46 @@ public:
           _samps_left_in_burst(1), // immediate EOB
           _do_new_burst(false),
           _firstrun(!length_tag_name.empty()),
-          _length_tag_key(length_tag_name.empty()
-                              ? pmt::PMT_NIL
-                              : pmt::string_to_symbol(length_tag_name))
+          _length_tag_key(length_tag_name)
     {
         // NOP
     }
 
     void make_time_tag(const uint64_t tag_count)
     {
-        const pmt::pmt_t key = pmt::string_to_symbol("tx_time");
+        const std::string key = "tx_time";
         const pmt::pmt_t value =
             pmt::make_tuple(pmt::from_uint64(_time_secs), pmt::from_double(_time_fracs));
-        const pmt::pmt_t srcid = pmt::string_to_symbol(this->name());
+        const uint64_t srcid = unique_id();
         this->add_item_tag(0 /*chan0*/, tag_count, key, value, srcid);
     }
 
     void make_sob_tag(const uint64_t tag_count)
     {
-        const pmt::pmt_t key = pmt::string_to_symbol("tx_sob");
+        const std::string key = "tx_sob";
         const pmt::pmt_t value = pmt::PMT_T;
-        const pmt::pmt_t srcid = pmt::string_to_symbol(this->name());
+        const uint64_t srcid = unique_id();
         this->add_item_tag(0 /*chan0*/, tag_count, key, value, srcid);
     }
 
     void make_eob_tag(const uint64_t tag_count)
     {
-        const pmt::pmt_t key = pmt::string_to_symbol("tx_eob");
+        const std::string key = "tx_eob";
         const pmt::pmt_t value = pmt::PMT_T;
-        const pmt::pmt_t srcid = pmt::string_to_symbol(this->name());
+        const uint64_t srcid = unique_id();
         this->add_item_tag(0 /*chan0*/, tag_count, key, value, srcid);
     }
 
     void make_length_tag(const uint64_t tag_count, const uint64_t burst_len)
     {
-        if (pmt::is_null(_length_tag_key)) {
+        if (_length_tag_key == "") {
             // no length_tag was specified at initialization; make a tx_sob tag instead
             this->make_sob_tag(tag_count);
             return;
         }
-        const pmt::pmt_t key = _length_tag_key;
+        const std::string key = _length_tag_key;
         const pmt::pmt_t value = pmt::from_long((long)burst_len);
-        const pmt::pmt_t srcid = pmt::string_to_symbol(this->name());
+        const uint64_t srcid = unique_id();
         this->add_item_tag(0 /*chan0*/, tag_count, key, value, srcid);
     }
 
@@ -109,7 +107,7 @@ public:
             _do_new_burst = false;
             _samps_left_in_burst = _samps_per_burst;
 
-            if (pmt::is_null(_length_tag_key))
+            if (_length_tag_key == "")
                 this->make_sob_tag(this->nitems_written(0));
             else
 #if 1
@@ -135,7 +133,7 @@ public:
         // Tag an end of burst and return early.
         // the next work call will be a start of burst.
         if (_samps_left_in_burst < size_t(noutput_items)) {
-            if (pmt::is_null(_length_tag_key))
+            if (_length_tag_key == "")
                 this->make_eob_tag(this->nitems_written(0) + _samps_left_in_burst - 1);
             else if (_firstrun) {
                 _firstrun = false;
@@ -158,5 +156,5 @@ private:
     uint64_t _samps_left_in_burst;
     bool _do_new_burst;
     bool _firstrun;
-    const pmt::pmt_t _length_tag_key;
+    const std::string _length_tag_key;
 };

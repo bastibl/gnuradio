@@ -110,7 +110,7 @@ int dvbt_demod_reference_signals_impl::is_sync_start(int nitems)
     std::vector<tag_t> tags;
     const uint64_t nread = this->nitems_read(0); // number of items read on port 0
     this->get_tags_in_range(
-        tags, 0, nread, nread + nitems, pmt::string_to_symbol("sync_start"));
+        tags, 0, nread, nread + nitems, "sync_start");
 
     return !tags.empty() ? 1 : 0;
 }
@@ -147,7 +147,7 @@ int dvbt_demod_reference_signals_impl::general_work(
             d_init = 1;
 
             const uint64_t offset = this->nitems_written(0);
-            pmt::pmt_t key = pmt::string_to_symbol("superframe_start");
+            std::string key = "superframe_start";
             pmt::pmt_t value = pmt::from_long(0xaa);
             this->add_item_tag(0, offset, key, value);
         } else {
@@ -159,7 +159,7 @@ int dvbt_demod_reference_signals_impl::general_work(
     // Send a tag for each OFDM symbol informing about
     // symbol index.
     const uint64_t offset = this->nitems_written(0);
-    pmt::pmt_t key = pmt::string_to_symbol("symbol_index");
+    std::string key = "symbol_index";
     pmt::pmt_t value = pmt::from_long(symbol_index);
     this->add_item_tag(0, offset, key, value);
 

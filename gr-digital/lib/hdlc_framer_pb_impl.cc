@@ -43,10 +43,8 @@ hdlc_framer_pb_impl::hdlc_framer_pb_impl(const std::string frame_tag_name)
       d_port("in")
 {
     message_port_register_in(d_port);
-    d_frame_tag = pmt::string_to_symbol(frame_tag_name);
-    std::stringstream str;
-    str << name() << unique_id();
-    d_me = pmt::string_to_symbol(str.str());
+    d_frame_tag = frame_tag_name;
+    d_me = unique_id();
 }
 
 /*

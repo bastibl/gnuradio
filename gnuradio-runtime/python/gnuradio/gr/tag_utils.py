@@ -15,18 +15,18 @@ def tag_to_python(tag):
     """ Convert a stream tag to a Python-readable object """
     newtag = PythonTag()
     newtag.offset = tag.offset
-    newtag.key = pmt.to_python(tag.key)
+    newtag.key = tag.key
     newtag.value = pmt.to_python(tag.value)
-    newtag.srcid = pmt.to_python(tag.srcid)
+    newtag.srcid = tag.srcid
     return newtag
 
 def tag_to_pmt(tag):
     """ Convert a Python-readable object to a stream tag """
     newtag = gr.tag_t()
     newtag.offset = tag.offset
-    newtag.key = pmt.to_python(tag.key)
+    newtag.key = tag.key
     newtag.value = pmt.from_python(tag.value)
-    newtag.srcid = pmt.from_python(tag.srcid)
+    newtag.srcid = tag.srcid
     return newtag
 
 def python_to_tag(tag_struct):
@@ -58,7 +58,7 @@ def python_to_tag(tag_struct):
                 good = True
 
         if('key' in tag_struct):
-            if(isinstance(tag_struct['key'], pmt.swig_pmt_ptr)):
+            if(isinstance(tag_struct['key'], str)):
                 tag.key = tag_struct['key']
                 good = True
 
@@ -68,7 +68,7 @@ def python_to_tag(tag_struct):
                 good = True
 
         if('srcid' in tag_struct):
-            if(isinstance(tag_struct['srcid'], pmt.swig_pmt_ptr)):
+            if(isinstance(tag_struct['srcid'], int)):
                 tag.srcid = tag_struct['srcid']
                 good = True
 
@@ -78,7 +78,7 @@ def python_to_tag(tag_struct):
                 tag.offset = tag_struct[0]
                 good = True
 
-            if(isinstance(tag_struct[1], pmt.swig_pmt_ptr)):
+            if(isinstance(tag_struct[1], str)):
                 tag.key = tag_struct[1]
                 good = True
 
@@ -86,7 +86,7 @@ def python_to_tag(tag_struct):
                 tag.value = tag_struct[2]
                 good = True
 
-            if(isinstance(tag_struct[3], pmt.swig_pmt_ptr)):
+            if(isinstance(tag_struct[3], int)):
                 tag.srcid = tag_struct[3]
                 good = True
 
@@ -95,7 +95,7 @@ def python_to_tag(tag_struct):
                 tag.offset = tag_struct[0]
                 good = True
 
-            if(isinstance(tag_struct[1], pmt.swig_pmt_ptr)):
+            if(isinstance(tag_struct[1], str)):
                 tag.key = tag_struct[1]
                 good = True
 
@@ -103,7 +103,7 @@ def python_to_tag(tag_struct):
                 tag.value = tag_struct[2]
                 good = True
 
-            tag.srcid = pmt.PMT_F
+            tag.srcid = 0
 
     if(good):
         return tag

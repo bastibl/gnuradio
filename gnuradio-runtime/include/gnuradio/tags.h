@@ -33,13 +33,13 @@ struct GR_RUNTIME_API tag_t {
     uint64_t offset;
 
     //! the key of \p tag (as a PMT symbol)
-    pmt::pmt_t key;
+    std::string key;
 
     //! the value of \p tag (as a PMT)
     pmt::pmt_t value;
 
     //! the source ID of \p tag (as a PMT)
-    pmt::pmt_t srcid;
+    uint64_t srcid;
 
     //! Used by gr_buffer to mark a tagged as deleted by a specific block. You can usually
     //! ignore this.
@@ -62,9 +62,9 @@ struct GR_RUNTIME_API tag_t {
 
     tag_t()
         : offset(0),
-          key(pmt::PMT_NIL),
+          key(""),
           value(pmt::PMT_NIL),
-          srcid(pmt::PMT_F) // consistent with default srcid value in block::add_item_tag
+          srcid(0) // consistent with default srcid value in block::add_item_tag
     {
     }
 

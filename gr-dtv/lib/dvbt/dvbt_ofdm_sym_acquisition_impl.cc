@@ -210,7 +210,7 @@ int dvbt_ofdm_sym_acquisition_impl::ml_sync(const gr_complex* in,
 void dvbt_ofdm_sym_acquisition_impl::send_sync_start()
 {
     const uint64_t offset = this->nitems_written(0);
-    pmt::pmt_t key = pmt::string_to_symbol("sync_start");
+    std::string key = "sync_start";
     pmt::pmt_t value = pmt::from_long(1);
     this->add_item_tag(0, offset, key, value);
 }

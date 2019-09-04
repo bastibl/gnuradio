@@ -74,11 +74,10 @@ ofdm_serializer_vcc_impl::ofdm_serializer_vcc_impl(
                           len_tag_key),
       d_fft_len(fft_len),
       d_occupied_carriers(occupied_carriers),
-      d_packet_len_tag_key(pmt::string_to_symbol(packet_len_tag_key)),
-      d_out_len_tag_key(pmt::string_to_symbol(
-          (packet_len_tag_key.empty() ? len_tag_key : packet_len_tag_key))),
+      d_packet_len_tag_key(packet_len_tag_key),
+      d_out_len_tag_key(packet_len_tag_key == "" ? len_tag_key : packet_len_tag_key),
       d_symbols_skipped(symbols_skipped % occupied_carriers.size()),
-      d_carr_offset_key(pmt::string_to_symbol(carr_offset_key)),
+      d_carr_offset_key(carr_offset_key),
       d_curr_set(symbols_skipped % occupied_carriers.size()),
       d_symbols_per_set(0)
 {

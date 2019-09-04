@@ -24,8 +24,8 @@
 #include <gnuradio/io_signature.h>
 #include <gnuradio/math.h>
 
-static const pmt::pmt_t CARR_OFFSET_KEY = pmt::mp("ofdm_sync_carr_offset");
-static const pmt::pmt_t CHAN_TAPS_KEY = pmt::mp("ofdm_sync_chan_taps");
+static const std::string CARR_OFFSET_KEY = "ofdm_sync_carr_offset";
+static const std::string CHAN_TAPS_KEY = "ofdm_sync_chan_taps";
 
 namespace gr {
 namespace digital {
@@ -82,7 +82,7 @@ void ofdm_frame_equalizer_vcvc_impl::parse_length_tags(
         n_input_items_reqd[0] = d_fixed_frame_len;
     } else {
         for (unsigned k = 0; k < tags[0].size(); k++) {
-            if (tags[0][k].key == pmt::string_to_symbol(d_length_tag_key_str)) {
+            if (tags[0][k].key == d_length_tag_key_str) {
                 n_input_items_reqd[0] = pmt::to_long(tags[0][k].value);
             }
         }
@@ -108,10 +108,10 @@ int ofdm_frame_equalizer_vcvc_impl::work(int noutput_items,
     std::vector<tag_t> tags;
     get_tags_in_window(tags, 0, 0, 1);
     for (unsigned i = 0; i < tags.size(); i++) {
-        if (pmt::symbol_to_string(tags[i].key) == "ofdm_sync_chan_taps") {
+        if (tags[i].key == "ofdm_sync_chan_taps") {
             d_channel_state = pmt::c32vector_elements(tags[i].value);
         }
-        if (pmt::symbol_to_string(tags[i].key) == "ofdm_sync_carr_offset") {
+        if (tags[i].key == "ofdm_sync_carr_offset") {
             carrier_offset = pmt::to_long(tags[i].value);
         }
     }
@@ -158,7 +158,7 @@ int ofdm_frame_equalizer_vcvc_impl::work(int noutput_items,
     get_tags_in_window(tags, 0, 0, frame_len);
     for (size_t i = 0; i < tags.size(); i++) {
         if (tags[i].key != CHAN_TAPS_KEY &&
-            tags[i].key != pmt::mp(d_length_tag_key_str)) {
+            tags[i].key != d_length_tag_key_str) {
             add_item_tag(0, tags[i]);
         }
     }
@@ -167,7 +167,7 @@ int ofdm_frame_equalizer_vcvc_impl::work(int noutput_items,
     if (d_propagate_channel_state) {
         add_item_tag(0,
                      nitems_written(0),
-                     pmt::string_to_symbol("ofdm_sync_chan_taps"),
+                     "ofdm_sync_chan_taps",
                      pmt::init_c32vector(d_fft_len, d_channel_state));
     }
 

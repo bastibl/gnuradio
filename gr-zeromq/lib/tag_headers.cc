@@ -56,9 +56,9 @@ std::string gen_tag_header(uint64_t offset, std::vector<gr::tag_t>& tags)
 
     for (size_t i = 0; i < tags.size(); i++) {
         ss.write((const char*)&tags[i].offset, sizeof(uint64_t));
-        pmt::serialize(tags[i].key, sb);
+        pmt::serialize(pmt::mp(tags[i].key), sb);
         pmt::serialize(tags[i].value, sb);
-        pmt::serialize(tags[i].srcid, sb);
+        pmt::serialize(pmt::from_long(tags[i].srcid), sb);
     }
 
     return sb.str();
@@ -95,9 +95,9 @@ size_t parse_tag_header(zmq::message_t& msg,
     for (size_t i = 0; i < rcv_ntags; i++) {
         gr::tag_t newtag;
         sb.sgetn((char*)&(newtag.offset), sizeof(uint64_t));
-        newtag.key = pmt::deserialize(sb);
+        newtag.key = pmt::symbol_to_string(pmt::deserialize(sb));
         newtag.value = pmt::deserialize(sb);
-        newtag.srcid = pmt::deserialize(sb);
+        newtag.srcid = pmt::to_long(pmt::deserialize(sb));
         tags_out.push_back(newtag);
     }
 

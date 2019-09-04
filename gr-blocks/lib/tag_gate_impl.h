@@ -35,7 +35,7 @@ private:
     bool d_propagate_tags;
     bool d_single_key_set;
 
-    pmt::pmt_t d_single_key;
+    std::string d_single_key;
 
 public:
     tag_gate_impl(size_t item_size, bool propagate_tags);

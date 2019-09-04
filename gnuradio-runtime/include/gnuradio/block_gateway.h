@@ -120,7 +120,7 @@ public:
     //! Provide access to the shared message object
     virtual block_gw_message_type& block_message(void) = 0;
 
-    long block__unique_id(void) const { return gr::block::unique_id(); }
+    uint64_t block__unique_id(void) const { return gr::block::unique_id(); }
 
     std::string block__name(void) const { return gr::block::name(); }
 
@@ -215,9 +215,9 @@ public:
 
     void block__add_item_tag(unsigned int which_output,
                              uint64_t abs_offset,
-                             const pmt::pmt_t& key,
+                             const std::string& key,
                              const pmt::pmt_t& value,
-                             const pmt::pmt_t& srcid = pmt::PMT_F)
+                             const uint64_t srcid = 0)
     {
         return gr::block::add_item_tag(which_output, abs_offset, key, value, srcid);
     }
@@ -234,7 +234,7 @@ public:
     std::vector<tag_t> block__get_tags_in_range(unsigned int which_input,
                                                 uint64_t abs_start,
                                                 uint64_t abs_end,
-                                                const pmt::pmt_t& key)
+                                                const std::string& key)
     {
         std::vector<gr::tag_t> tags;
         gr::block::get_tags_in_range(tags, which_input, abs_start, abs_end, key);
@@ -253,7 +253,7 @@ public:
     std::vector<tag_t> block__get_tags_in_window(unsigned int which_input,
                                                  uint64_t rel_start,
                                                  uint64_t rel_end,
-                                                 const pmt::pmt_t& key)
+                                                 const std::string& key)
     {
         std::vector<gr::tag_t> tags;
         gr::block::get_tags_in_window(tags, which_input, rel_start, rel_end, key);

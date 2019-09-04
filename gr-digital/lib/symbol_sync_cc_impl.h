@@ -110,8 +110,8 @@ private:
     uint64_t d_filter_delay; // interpolator filter delay
     std::vector<tag_t> d_tags;
     std::vector<tag_t> d_new_tags;
-    pmt::pmt_t d_time_est_key;
-    pmt::pmt_t d_clock_est_key;
+    std::string d_time_est_key;
+    std::string d_clock_est_key;
 
     // Optional Diagnostic Outputs
     int d_noutputs;

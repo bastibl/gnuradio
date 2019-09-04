@@ -295,7 +295,7 @@ void freq_sink_f_impl::set_trigger_mode(trigger_mode mode,
     d_trigger_mode = mode;
     d_trigger_level = level;
     d_trigger_channel = channel;
-    d_trigger_tag_key = pmt::intern(tag_key);
+    d_trigger_tag_key = tag_key;
     d_triggered = false;
     d_trigger_count = 0;
 
@@ -515,7 +515,7 @@ void freq_sink_f_impl::_gui_update_trigger()
     d_trigger_channel = d_main_gui->getTriggerChannel();
 
     std::string tagkey = d_main_gui->getTriggerTagKey();
-    d_trigger_tag_key = pmt::intern(tagkey);
+    d_trigger_tag_key = tagkey;
 
     if (new_trigger_mode != d_trigger_mode) {
         d_trigger_mode = new_trigger_mode;

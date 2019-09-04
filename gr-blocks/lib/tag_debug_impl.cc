@@ -43,9 +43,9 @@ tag_debug_impl::tag_debug_impl(size_t sizeof_stream_item,
                  io_signature::make(1, -1, sizeof_stream_item),
                  io_signature::make(0, 0, 0)),
       d_name(name),
-      d_display(true)
+      d_display(true),
+      d_filter(key_filter)
 {
-    set_key_filter(key_filter);
 }
 
 tag_debug_impl::~tag_debug_impl() {}
@@ -64,16 +64,6 @@ int tag_debug_impl::num_tags()
 }
 
 void tag_debug_impl::set_display(bool d) { d_display = d; }
-
-void tag_debug_impl::set_key_filter(const std::string& key_filter)
-{
-    if (key_filter.empty())
-        d_filter = pmt::PMT_NIL;
-    else
-        d_filter = pmt::intern(key_filter);
-}
-
-std::string tag_debug_impl::key_filter() const { return pmt::symbol_to_string(d_filter); }
 
 int tag_debug_impl::work(int noutput_items,
                          gr_vector_const_void_star& input_items,
@@ -95,7 +85,7 @@ int tag_debug_impl::work(int noutput_items,
         end_N = abs_N + (uint64_t)(noutput_items);
 
         d_tags.clear();
-        if (pmt::is_null(d_filter))
+        if (d_filter == "")
             get_tags_in_range(d_tags, i, abs_N, end_N);
         else
             get_tags_in_range(d_tags, i, abs_N, end_N, d_filter);
@@ -109,11 +99,9 @@ int tag_debug_impl::work(int noutput_items,
                  << std::setfill(' ') << std::endl;
             for (d_tags_itr = d_tags.begin(); d_tags_itr != d_tags.end(); d_tags_itr++) {
                 sout << std::setw(10) << "Offset: " << d_tags_itr->offset << std::setw(10)
-                     << "Source: "
-                     << (pmt::is_symbol(d_tags_itr->srcid)
-                             ? pmt::symbol_to_string(d_tags_itr->srcid)
-                             : "n/a")
-                     << std::setw(10) << "Key: " << pmt::symbol_to_string(d_tags_itr->key)
+                     << "Source ID: "
+                     << d_tags_itr->srcid
+                     << std::setw(10) << "Key: " << d_tags_itr->key
                      << std::setw(10) << "Value: ";
                 sout << d_tags_itr->value << std::endl;
             }

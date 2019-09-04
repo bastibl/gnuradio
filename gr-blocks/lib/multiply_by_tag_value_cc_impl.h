@@ -32,7 +32,7 @@ class BLOCKS_API multiply_by_tag_value_cc_impl : public multiply_by_tag_value_cc
 {
 private:
     size_t d_vlen;
-    pmt::pmt_t d_tag_key;
+    std::string d_tag_key;
     gr_complex d_k;
 
 public:

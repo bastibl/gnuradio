@@ -32,7 +32,7 @@ namespace blocks {
 class tagged_stream_multiply_length_impl : public tagged_stream_multiply_length
 {
 private:
-    pmt::pmt_t d_lengthtag;
+    std::string d_lengthtag;
     double d_scalar;
     size_t d_itemsize;
 

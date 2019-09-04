@@ -59,7 +59,7 @@ public:
     static sptr make(size_t sizeof_stream_item,
                      pmt::pmt_t value,
                      uint64_t nsamps,
-                     pmt::pmt_t key = pmt::intern("strobe"));
+                     std::string key = "strobe");
 
     /*!
      * Reset the value of the tags being sent.
@@ -70,7 +70,7 @@ public:
     /*!
      * Change the tag key we are sending
      */
-    virtual void set_key(pmt::pmt_t key) = 0;
+    virtual void set_key(std::string key) = 0;
 
     /*!
      * Get the value of the tags being sent.
@@ -80,7 +80,7 @@ public:
     /*!
      * Get the key of the tags being sent.
      */
-    virtual pmt::pmt_t key() const = 0;
+    virtual std::string key() const = 0;
 
     /*!
      * Reset the sending interval.

@@ -99,7 +99,7 @@ public:
 
 
 protected:
-    pmt::pmt_t d_frame_len_tag_key; //!< Tag key of the additional frame length tag
+    std::string d_frame_len_tag_key; //!< Tag key of the additional frame length tag
     const std::vector<std::vector<int>>
         d_occupied_carriers; //!< Which carriers/symbols carry data
     int d_bits_per_payload_sym;

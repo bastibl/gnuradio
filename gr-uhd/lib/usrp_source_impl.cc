@@ -53,7 +53,7 @@ usrp_source_impl::usrp_source_impl(const ::uhd::device_addr_t& device_addr,
 {
     std::stringstream str;
     str << name() << unique_id();
-    _id = pmt::string_to_symbol(str.str());
+    _id = unique_id();
 
     _samp_rate = this->get_samp_rate();
     _samps_per_packet = 1;

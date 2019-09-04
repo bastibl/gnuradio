@@ -371,7 +371,7 @@ int pfb_clock_sync_ccf_impl::general_work(int noutput_items,
     }
 
     std::vector<tag_t> tags;
-    get_tags_in_window(tags, 0, 0, d_sps * noutput_items, pmt::intern("time_est"));
+    get_tags_in_window(tags, 0, 0, d_sps * noutput_items, "time_est");
 
     int i = 0, count = 0;
     float error_r, error_i;

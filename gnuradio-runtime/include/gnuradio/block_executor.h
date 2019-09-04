@@ -195,7 +195,7 @@ public:
                            unsigned int which_input,
                            uint64_t abs_start,
                            uint64_t abs_end,
-                           const pmt::pmt_t& key,
+                           const std::string& key,
                            long id);
 
     /*!

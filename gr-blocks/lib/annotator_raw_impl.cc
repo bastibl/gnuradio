@@ -49,12 +49,12 @@ annotator_raw_impl::annotator_raw_impl(size_t sizeof_stream_item)
 
 annotator_raw_impl::~annotator_raw_impl() {}
 
-void annotator_raw_impl::add_tag(uint64_t offset, pmt_t key, pmt_t val)
+void annotator_raw_impl::add_tag(uint64_t offset, std::string key, pmt_t val)
 {
     gr::thread::scoped_lock l(d_mutex);
 
     tag_t tag;
-    tag.srcid = pmt::intern(name());
+    tag.srcid = unique_id();
     tag.key = key;
     tag.value = val;
     tag.offset = offset;

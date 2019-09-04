@@ -53,7 +53,7 @@ private:
 
 protected:
     void write_header(FILE* fp, pmt_t header, pmt_t extra);
-    void update_header(pmt_t key, pmt_t value);
+    void update_header(std::string key, pmt_t value);
     void update_last_header();
     void update_last_header_inline();
     void update_last_header_detached();

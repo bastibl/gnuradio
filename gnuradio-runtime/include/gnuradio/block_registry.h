@@ -39,24 +39,24 @@ class GR_RUNTIME_API block_registry
 public:
     block_registry();
 
-    long block_register(basic_block* block);
+    uint64_t block_register(basic_block* block);
     void block_unregister(basic_block* block);
 
     void update_alias(basic_block* block, std::string name);
     basic_block::sptr block_lookup(pmt::pmt_t symbol);
 
-    void register_primitive(long id, gr::block* ref);
-    void unregister_primitive(long id);
-    void notify_blk(long id);
+    void register_primitive(uint64_t id, gr::block* ref);
+    void unregister_primitive(uint64_t id);
+    void notify_blk(uint64_t id);
 
 private:
-    std::map<long, basic_block*> d_id_map;
+    std::map<uint64_t, basic_block*> d_id_map;
     std::map<std::string, basic_block*> d_name_map;
     std::map<std::string, basic_block*> d_alias_map;
 
-    long d_seq_nr;
+    uint64_t d_seq_nr;
 
-    std::map<long, block*> primitive_map;
+    std::map<uint64_t, block*> primitive_map;
     gr::thread::mutex d_mutex;
 };
 

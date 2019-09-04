@@ -58,7 +58,7 @@ time_sink_c_impl::time_sink_c_impl(int size,
       d_samp_rate(samp_rate),
       d_name(name),
       d_nconnections(2 * nconnections),
-      d_tag_key(pmt::mp("tags")),
+      d_tag_key("tags"),
       d_parent(parent)
 {
     if (nconnections > 12)
@@ -238,7 +238,7 @@ void time_sink_c_impl::set_trigger_mode(trigger_mode mode,
     d_trigger_level = level;
     d_trigger_delay = static_cast<int>(delay * d_samp_rate);
     d_trigger_channel = channel;
-    d_trigger_tag_key = pmt::intern(tag_key);
+    d_trigger_tag_key = tag_key;
     d_triggered = false;
     d_trigger_count = 0;
 
@@ -482,7 +482,7 @@ void time_sink_c_impl::_gui_update_trigger()
     }
 
     std::string tagkey = d_main_gui->getTriggerTagKey();
-    d_trigger_tag_key = pmt::intern(tagkey);
+    d_trigger_tag_key = tagkey;
 }
 
 void time_sink_c_impl::_test_trigger_tags(int nitems)
@@ -642,15 +642,15 @@ void time_sink_c_impl::handle_pdus(pmt::pmt_t msg)
 
     // add tag info if it is present in metadata
     if (pmt::is_dict(dict)) {
-        if (pmt::dict_has_key(dict, d_tag_key)) {
+        if (pmt::dict_has_key(dict, pmt::mp(d_tag_key))) {
             d_tags.clear();
-            pmt::pmt_t tags = pmt::dict_ref(dict, d_tag_key, pmt::PMT_NIL);
+            pmt::pmt_t tags = pmt::dict_ref(dict, pmt::mp(d_tag_key), pmt::PMT_NIL);
             int len = pmt::length(tags);
             for (int i = 0; i < len; i++) {
                 // get tag info from list
                 pmt::pmt_t tup = pmt::vector_ref(tags, i);
                 int tagval = pmt::to_long(pmt::tuple_ref(tup, 0));
-                pmt::pmt_t k = pmt::tuple_ref(tup, 1);
+                std::string k = pmt::symbol_to_string(pmt::tuple_ref(tup, 1));
                 pmt::pmt_t v = pmt::tuple_ref(tup, 2);
 
                 // add the tag
@@ -658,7 +658,7 @@ void time_sink_c_impl::handle_pdus(pmt::pmt_t msg)
                 t[0][t[0].size() - 1].offset = tagval;
                 t[0][t[0].size() - 1].key = k;
                 t[0][t[0].size() - 1].value = v;
-                t[0][t[0].size() - 1].srcid = pmt::PMT_NIL;
+                t[0][t[0].size() - 1].srcid = 0;
             }
         }
     }

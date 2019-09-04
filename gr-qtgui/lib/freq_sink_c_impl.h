@@ -90,7 +90,7 @@ private:
     trigger_mode d_trigger_mode;
     float d_trigger_level;
     int d_trigger_channel;
-    pmt::pmt_t d_trigger_tag_key;
+    std::string d_trigger_tag_key;
     bool d_triggered;
     int d_trigger_count;
 

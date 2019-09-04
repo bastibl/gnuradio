@@ -73,8 +73,8 @@ int annotator_1to1_impl::work(int noutput_items,
     }
 
     // Storing the current noutput_items as the value to the "noutput_items" key
-    pmt::pmt_t srcid = pmt::string_to_symbol(str.str());
-    pmt::pmt_t key = pmt::string_to_symbol("seq");
+    uint64_t srcid = unique_id();
+    std::string key = "seq";
 
     // Work does nothing to the data stream; just copy all inputs to outputs
     // Adds a new tag when the number of items read is a multiple of d_when

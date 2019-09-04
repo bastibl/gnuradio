@@ -54,7 +54,7 @@ burst_shaper_impl<T>::burst_shaper_impl(const std::vector<T>& taps,
       d_nprepad(pre_padding),
       d_npostpad(post_padding),
       d_insert_phasing(insert_phasing),
-      d_length_tag_key(pmt::string_to_symbol(length_tag_name)),
+      d_length_tag_key(length_tag_name),
       d_ncopy(0),
       d_limit(0),
       d_index(0),
@@ -305,7 +305,7 @@ void burst_shaper_impl<T>::add_length_tag(int offset)
                        this->nitems_written(0) + offset,
                        d_length_tag_key,
                        pmt::from_long(d_ncopy + prefix_length() + suffix_length()),
-                       pmt::string_to_symbol(this->name()));
+                       this->unique_id());
 }
 
 template <class T>
@@ -325,7 +325,7 @@ void burst_shaper_impl<T>::propagate_tags(int in_offset,
     this->get_tags_in_range(tags, 0, abs_start, abs_end);
 
     for (it = tags.begin(); it != tags.end(); it++) {
-        if (!pmt::equal(it->key, d_length_tag_key)) {
+        if (it->key != d_length_tag_key) {
             if (skip && (it->offset == d_length_tag_offset))
                 continue;
             temp_tag = *it;

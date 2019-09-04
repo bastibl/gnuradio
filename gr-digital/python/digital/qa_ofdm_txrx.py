@@ -79,7 +79,7 @@ class test_ofdm_txrx (gr_unittest.TestCase):
         # it should be transmitted first, too
         timing_tag = gr.tag_t()
         timing_tag.offset = 0
-        timing_tag.key = pmt.string_to_symbol('tx_timing')
+        timing_tag.key = 'tx_timing'
         timing_tag.value = pmt.to_pmt('now')
         len_tag_key = 'frame_len'
         n_bytes = 52

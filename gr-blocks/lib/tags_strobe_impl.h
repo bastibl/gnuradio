@@ -42,13 +42,13 @@ public:
     tags_strobe_impl(size_t sizeof_stream_item,
                      pmt::pmt_t value,
                      uint64_t nsamps,
-                     pmt::pmt_t key);
+                     std::string key);
     ~tags_strobe_impl();
 
     void set_value(pmt::pmt_t value);
-    void set_key(pmt::pmt_t key);
+    void set_key(std::string key);
     pmt::pmt_t value() const { return d_tag.value; }
-    pmt::pmt_t key() const { return d_tag.key; }
+    std::string key() const { return d_tag.key; }
     void set_nsamps(uint64_t nsamps);
     uint64_t nsamps() const { return d_nsamps; }
 

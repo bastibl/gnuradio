@@ -163,9 +163,9 @@ int freq_xlating_fir_filter_impl<IN_T, OUT_T, TAP_T>::work(
         // Tell downstream items where the frequency change was applied
         this->add_item_tag(0,
                            this->nitems_written(0),
-                           pmt::intern("freq"),
+                           "freq",
                            pmt::from_double(d_center_freq),
-                           this->alias_pmt());
+                           this->unique_id());
         return 0; // history requirements may have changed.
     }
 

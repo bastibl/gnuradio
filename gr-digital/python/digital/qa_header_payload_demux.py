@@ -37,7 +37,7 @@ def make_tag(key, value, offset):
     """Create a gr.tag_t() from key, value, offset."""
     tag = gr.tag_t()
     tag.offset = offset
-    tag.key = pmt.string_to_symbol(key)
+    tag.key = key
     tag.value = pmt.to_pmt(value)
     return tag
 

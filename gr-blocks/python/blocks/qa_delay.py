@@ -66,7 +66,7 @@ class test_delay(gr_unittest.TestCase):
         tb = self.tb
         vector_sink = blocks.vector_sink_f(1)
         ref_sink = blocks.vector_sink_f(1)
-        tags_strobe = blocks.tags_strobe(gr.sizeof_float*1, pmt.intern("TEST"), 100, pmt.intern("strobe"))
+        tags_strobe = blocks.tags_strobe(gr.sizeof_float*1, pmt.intern("TEST"), 100, "strobe")
         head = blocks.head(gr.sizeof_float*1, 10**5)
         delay = blocks.delay(gr.sizeof_float*1, 100)
         tb.connect((delay, 0), (head, 0))

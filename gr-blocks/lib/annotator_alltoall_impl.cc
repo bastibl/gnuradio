@@ -74,8 +74,8 @@ int annotator_alltoall_impl::work(int noutput_items,
     }
 
     // Source ID and key for any tag that might get applied from this block
-    pmt::pmt_t srcid = pmt::string_to_symbol(str.str());
-    pmt::pmt_t key = pmt::string_to_symbol("seq");
+    uint64_t srcid = unique_id();
+    std::string key = "seq";
 
     // Work does nothing to the data stream; just copy all inputs to
     // outputs Adds a new tag when the number of items read is a

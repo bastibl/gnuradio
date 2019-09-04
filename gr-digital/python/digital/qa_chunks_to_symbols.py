@@ -177,11 +177,11 @@ class test_chunks_to_symbols(gr_unittest.TestCase):
         expected_result = (-3, -1, 1, 3,
                             -6, 6, -12, 12)
         first_tag = gr.tag_t()
-        first_tag.key = pmt.intern("set_symbol_table")
+        first_tag.key = "set_symbol_table"
         first_tag.value = pmt.init_f32vector(len(constA), constA)
         first_tag.offset = 0
         second_tag = gr.tag_t()
-        second_tag.key = pmt.intern("set_symbol_table")
+        second_tag.key = "set_symbol_table"
         second_tag.value = pmt.init_f32vector(len(constB), constB)
         second_tag.offset = 4
 
@@ -203,11 +203,11 @@ class test_chunks_to_symbols(gr_unittest.TestCase):
         expected_result = (-3+1j, -1-1j, 1+1j, 3-1j,
                             -6-1j, 6+1j, -12-1j, 12+1j)
         first_tag = gr.tag_t()
-        first_tag.key = pmt.intern("set_symbol_table")
+        first_tag.key = "set_symbol_table"
         first_tag.value = pmt.init_c32vector(len(constA), constA)
         first_tag.offset = 0
         second_tag = gr.tag_t()
-        second_tag.key = pmt.intern("set_symbol_table")
+        second_tag.key = "set_symbol_table"
         second_tag.value = pmt.init_c32vector(len(constB), constB)
         second_tag.offset = 4
 

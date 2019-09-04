@@ -76,7 +76,7 @@ int packet_headerparser_b_impl::work(int noutput_items,
     } else {
         pmt::pmt_t dict(pmt::make_dict());
         for (unsigned i = 0; i < tags.size(); i++) {
-            dict = pmt::dict_add(dict, tags[i].key, tags[i].value);
+            dict = pmt::dict_add(dict, pmt::mp(tags[i].key), tags[i].value);
         }
         message_port_pub(d_port, dict);
     }

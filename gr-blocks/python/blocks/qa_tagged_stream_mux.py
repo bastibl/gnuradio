@@ -26,13 +26,12 @@ import pmt
 from gnuradio import gr, gr_unittest, blocks
 from gnuradio.gr import packet_utils
 
-def make_tag(key, value, offset, srcid=None):
+def make_tag(key, value, offset, srcid=0):
     tag = gr.tag_t()
-    tag.key = pmt.string_to_symbol(key)
+    tag.key = key
     tag.value = pmt.to_pmt(value)
     tag.offset = offset
-    if srcid is not None:
-        tag.srcid = pmt.to_pmt(srcid)
+    tag.srcid = srcid
     return tag
 
 class qa_tagged_stream_mux (gr_unittest.TestCase):

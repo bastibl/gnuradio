@@ -37,7 +37,7 @@ namespace gr {
 class GR_RUNTIME_API tagged_stream_block : public block
 {
 private:
-    pmt::pmt_t
+    std::string
         d_length_tag_key; //!< This is the key for the tag that stores the PDU length
     gr_vector_int
         d_n_input_items_reqd; //!< How many input items do I need to process the next PDU?

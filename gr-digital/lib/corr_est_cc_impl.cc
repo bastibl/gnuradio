@@ -50,7 +50,7 @@ corr_est_cc_impl::corr_est_cc_impl(const std::vector<gr_complex>& symbols,
     : sync_block("corr_est_cc",
                  io_signature::make(1, 1, sizeof(gr_complex)),
                  io_signature::make(1, 2, sizeof(gr_complex))),
-      d_src_id(pmt::intern(alias()))
+      d_src_id(unique_id())
 {
     d_sps = sps;
     d_threshold_method = threshold_method;
@@ -272,7 +272,7 @@ int corr_est_cc_impl::work(int noutput_items,
         // where the start of the correlated symbols are.
         add_item_tag(0,
                      nitems_written(0) + i,
-                     pmt::intern("corr_start"),
+                     "corr_start",
                      pmt::from_double(d_corr_mag[i]),
                      d_src_id);
 
@@ -329,23 +329,23 @@ int corr_est_cc_impl::work(int noutput_items,
 
         add_item_tag(0,
                      nitems_written(0) + index,
-                     pmt::intern("phase_est"),
+                     "phase_est",
                      pmt::from_double(phase),
                      d_src_id);
         add_item_tag(0,
                      nitems_written(0) + index,
-                     pmt::intern("time_est"),
+                     "time_est",
                      pmt::from_double(center),
                      d_src_id);
         // N.B. the appropriate d_corr_mag[] index is "i", not "index".
         add_item_tag(0,
                      nitems_written(0) + index,
-                     pmt::intern("corr_est"),
+                     "corr_est",
                      pmt::from_double(d_corr_mag[i]),
                      d_src_id);
         add_item_tag(0,
                      nitems_written(0) + index,
-                     pmt::intern("amp_est"),
+                     "amp_est",
                      pmt::from_double(d_scale),
                      d_src_id);
 
@@ -353,22 +353,22 @@ int corr_est_cc_impl::work(int noutput_items,
             // N.B. these debug tags are not offset to avoid walking off out buf
             add_item_tag(1,
                          nitems_written(0) + i,
-                         pmt::intern("phase_est"),
+                         "phase_est",
                          pmt::from_double(phase),
                          d_src_id);
             add_item_tag(1,
                          nitems_written(0) + i,
-                         pmt::intern("time_est"),
+                         "time_est",
                          pmt::from_double(center),
                          d_src_id);
             add_item_tag(1,
                          nitems_written(0) + i,
-                         pmt::intern("corr_est"),
+                         "corr_est",
                          pmt::from_double(d_corr_mag[i]),
                          d_src_id);
             add_item_tag(1,
                          nitems_written(0) + i,
-                         pmt::intern("amp_est"),
+                         "amp_est",
                          pmt::from_double(d_scale),
                          d_src_id);
         }

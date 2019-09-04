@@ -39,7 +39,7 @@ class qa_tsb_vector_sink (gr_unittest.TestCase):
         packet_len = 4
         data = list(range(2 * packet_len))
         tag = gr.tag_t()
-        tag.key = pmt.intern("foo")
+        tag.key = "foo"
         tag.offset = 5
         tag.value = pmt.intern("bar")
         src = blocks.vector_source_f(data, tags=(tag,))

@@ -42,7 +42,7 @@
 // particular order.
 #define QA_TAGS_DEBUG 0
 
-gr::tag_t make_tag(uint64_t offset, pmt::pmt_t key, pmt::pmt_t value, pmt::pmt_t srcid)
+gr::tag_t make_tag(uint64_t offset, std::string key, pmt::pmt_t value, uint64_t srcid)
 {
     gr::tag_t result;
     result.offset = offset;
@@ -126,24 +126,24 @@ BOOST_AUTO_TEST_CASE(t1)
     str2 << ann2->name() << ann2->unique_id();
 
     gr::tag_t expected_tags3[8];
-    expected_tags3[0] = make_tag(0, pmt::mp(str1.str()), pmt::mp("seq"), pmt::mp(0));
-    expected_tags3[1] = make_tag(0, pmt::mp(str0.str()), pmt::mp("seq"), pmt::mp(0));
-    expected_tags3[2] = make_tag(10000, pmt::mp(str1.str()), pmt::mp("seq"), pmt::mp(1));
-    expected_tags3[3] = make_tag(10000, pmt::mp(str0.str()), pmt::mp("seq"), pmt::mp(2));
-    expected_tags3[4] = make_tag(20000, pmt::mp(str1.str()), pmt::mp("seq"), pmt::mp(2));
-    expected_tags3[5] = make_tag(20000, pmt::mp(str0.str()), pmt::mp("seq"), pmt::mp(4));
-    expected_tags3[6] = make_tag(30000, pmt::mp(str1.str()), pmt::mp("seq"), pmt::mp(3));
-    expected_tags3[7] = make_tag(30000, pmt::mp(str0.str()), pmt::mp("seq"), pmt::mp(6));
+    expected_tags3[0] = make_tag(0, str1.str(), pmt::mp("seq"), 0);
+    expected_tags3[1] = make_tag(0, str0.str(), pmt::mp("seq"), 0);
+    expected_tags3[2] = make_tag(10000, str1.str(), pmt::mp("seq"), 1);
+    expected_tags3[3] = make_tag(10000, str0.str(), pmt::mp("seq"), 2);
+    expected_tags3[4] = make_tag(20000, str1.str(), pmt::mp("seq"), 2);
+    expected_tags3[5] = make_tag(20000, str0.str(), pmt::mp("seq"), 4);
+    expected_tags3[6] = make_tag(30000, str1.str(), pmt::mp("seq"), 3);
+    expected_tags3[7] = make_tag(30000, str0.str(), pmt::mp("seq"), 6);
 
     gr::tag_t expected_tags4[8];
-    expected_tags4[0] = make_tag(0, pmt::mp(str2.str()), pmt::mp("seq"), pmt::mp(0));
-    expected_tags4[1] = make_tag(0, pmt::mp(str0.str()), pmt::mp("seq"), pmt::mp(1));
-    expected_tags4[2] = make_tag(10000, pmt::mp(str2.str()), pmt::mp("seq"), pmt::mp(1));
-    expected_tags4[3] = make_tag(10000, pmt::mp(str0.str()), pmt::mp("seq"), pmt::mp(3));
-    expected_tags4[4] = make_tag(20000, pmt::mp(str2.str()), pmt::mp("seq"), pmt::mp(2));
-    expected_tags4[5] = make_tag(20000, pmt::mp(str0.str()), pmt::mp("seq"), pmt::mp(5));
-    expected_tags4[6] = make_tag(30000, pmt::mp(str2.str()), pmt::mp("seq"), pmt::mp(3));
-    expected_tags4[7] = make_tag(30000, pmt::mp(str0.str()), pmt::mp("seq"), pmt::mp(7));
+    expected_tags4[0] = make_tag(0, str2.str(), pmt::mp("seq"), 0);
+    expected_tags4[1] = make_tag(0, str0.str(), pmt::mp("seq"), 1);
+    expected_tags4[2] = make_tag(10000, str2.str(), pmt::mp("seq"), 1);
+    expected_tags4[3] = make_tag(10000, str0.str(), pmt::mp("seq"), 3);
+    expected_tags4[4] = make_tag(20000, str2.str(), pmt::mp("seq"), 2);
+    expected_tags4[5] = make_tag(20000, str0.str(), pmt::mp("seq"), 5);
+    expected_tags4[6] = make_tag(30000, str2.str(), pmt::mp("seq"), 3);
+    expected_tags4[7] = make_tag(30000, str0.str(), pmt::mp("seq"), 7);
 
     std::cout << std::endl << "qa_block_tags::t1" << std::endl;
 
@@ -222,32 +222,32 @@ BOOST_AUTO_TEST_CASE(t2)
     str1 << ann1->name() << ann1->unique_id();
 
     gr::tag_t expected_tags2[12];
-    expected_tags2[0] = make_tag(0, pmt::mp(str1.str()), pmt::mp("seq"), pmt::mp(0));
-    expected_tags2[1] = make_tag(0, pmt::mp(str0.str()), pmt::mp("seq"), pmt::mp(0));
-    expected_tags2[2] = make_tag(0, pmt::mp(str0.str()), pmt::mp("seq"), pmt::mp(1));
-    expected_tags2[3] = make_tag(10000, pmt::mp(str1.str()), pmt::mp("seq"), pmt::mp(3));
-    expected_tags2[4] = make_tag(10000, pmt::mp(str0.str()), pmt::mp("seq"), pmt::mp(2));
-    expected_tags2[5] = make_tag(10000, pmt::mp(str0.str()), pmt::mp("seq"), pmt::mp(3));
-    expected_tags2[6] = make_tag(20000, pmt::mp(str1.str()), pmt::mp("seq"), pmt::mp(6));
-    expected_tags2[7] = make_tag(20000, pmt::mp(str0.str()), pmt::mp("seq"), pmt::mp(4));
-    expected_tags2[8] = make_tag(20000, pmt::mp(str0.str()), pmt::mp("seq"), pmt::mp(5));
-    expected_tags2[9] = make_tag(30000, pmt::mp(str1.str()), pmt::mp("seq"), pmt::mp(9));
-    expected_tags2[10] = make_tag(30000, pmt::mp(str0.str()), pmt::mp("seq"), pmt::mp(6));
-    expected_tags2[11] = make_tag(30000, pmt::mp(str0.str()), pmt::mp("seq"), pmt::mp(7));
+    expected_tags2[0] = make_tag(0,      str1.str(), pmt::mp("seq"), 0);
+    expected_tags2[1] = make_tag(0,      str0.str(), pmt::mp("seq"), 0);
+    expected_tags2[2] = make_tag(0,      str0.str(), pmt::mp("seq"), 1);
+    expected_tags2[3] = make_tag(10000,  str1.str(), pmt::mp("seq"), 3);
+    expected_tags2[4] = make_tag(10000,  str0.str(), pmt::mp("seq"), 2);
+    expected_tags2[5] = make_tag(10000,  str0.str(), pmt::mp("seq"), 3);
+    expected_tags2[6] = make_tag(20000,  str1.str(), pmt::mp("seq"), 6);
+    expected_tags2[7] = make_tag(20000,  str0.str(), pmt::mp("seq"), 4);
+    expected_tags2[8] = make_tag(20000,  str0.str(), pmt::mp("seq"), 5);
+    expected_tags2[9] = make_tag(30000,  str1.str(), pmt::mp("seq"), 9);
+    expected_tags2[10] = make_tag(30000, str0.str(), pmt::mp("seq"), 6);
+    expected_tags2[11] = make_tag(30000, str0.str(), pmt::mp("seq"), 7);
 
     gr::tag_t expected_tags4[12];
-    expected_tags4[0] = make_tag(0, pmt::mp(str1.str()), pmt::mp("seq"), pmt::mp(2));
-    expected_tags4[1] = make_tag(0, pmt::mp(str0.str()), pmt::mp("seq"), pmt::mp(0));
-    expected_tags4[2] = make_tag(0, pmt::mp(str0.str()), pmt::mp("seq"), pmt::mp(1));
-    expected_tags4[3] = make_tag(10000, pmt::mp(str1.str()), pmt::mp("seq"), pmt::mp(5));
-    expected_tags4[4] = make_tag(10000, pmt::mp(str0.str()), pmt::mp("seq"), pmt::mp(2));
-    expected_tags4[5] = make_tag(10000, pmt::mp(str0.str()), pmt::mp("seq"), pmt::mp(3));
-    expected_tags4[6] = make_tag(20000, pmt::mp(str1.str()), pmt::mp("seq"), pmt::mp(8));
-    expected_tags4[7] = make_tag(20000, pmt::mp(str0.str()), pmt::mp("seq"), pmt::mp(4));
-    expected_tags4[8] = make_tag(20000, pmt::mp(str0.str()), pmt::mp("seq"), pmt::mp(5));
-    expected_tags4[9] = make_tag(30000, pmt::mp(str1.str()), pmt::mp("seq"), pmt::mp(11));
-    expected_tags4[10] = make_tag(30000, pmt::mp(str0.str()), pmt::mp("seq"), pmt::mp(6));
-    expected_tags4[11] = make_tag(30000, pmt::mp(str0.str()), pmt::mp("seq"), pmt::mp(7));
+    expected_tags4[0] = make_tag(0,      str1.str(), pmt::mp("seq"), 2);
+    expected_tags4[1] = make_tag(0,      str0.str(), pmt::mp("seq"), 0);
+    expected_tags4[2] = make_tag(0,      str0.str(), pmt::mp("seq"), 1);
+    expected_tags4[3] = make_tag(10000,  str1.str(), pmt::mp("seq"), 5);
+    expected_tags4[4] = make_tag(10000,  str0.str(), pmt::mp("seq"), 2);
+    expected_tags4[5] = make_tag(10000,  str0.str(), pmt::mp("seq"), 3);
+    expected_tags4[6] = make_tag(20000,  str1.str(), pmt::mp("seq"), 8);
+    expected_tags4[7] = make_tag(20000,  str0.str(), pmt::mp("seq"), 4);
+    expected_tags4[8] = make_tag(20000,  str0.str(), pmt::mp("seq"), 5);
+    expected_tags4[9] = make_tag(30000,  str1.str(), pmt::mp("seq"), 11);
+    expected_tags4[10] = make_tag(30000, str0.str(), pmt::mp("seq"), 6);
+    expected_tags4[11] = make_tag(30000, str0.str(), pmt::mp("seq"), 7);
 
     std::cout << std::endl << "qa_block_tags::t2" << std::endl;
 
@@ -322,24 +322,24 @@ BOOST_AUTO_TEST_CASE(t3)
     str2 << ann2->name() << ann2->unique_id();
 
     gr::tag_t expected_tags3[8];
-    expected_tags3[0] = make_tag(0, pmt::mp(str1.str()), pmt::mp("seq"), pmt::mp(0));
-    expected_tags3[1] = make_tag(0, pmt::mp(str0.str()), pmt::mp("seq"), pmt::mp(0));
-    expected_tags3[2] = make_tag(10000, pmt::mp(str1.str()), pmt::mp("seq"), pmt::mp(1));
-    expected_tags3[3] = make_tag(10000, pmt::mp(str0.str()), pmt::mp("seq"), pmt::mp(2));
-    expected_tags3[4] = make_tag(20000, pmt::mp(str1.str()), pmt::mp("seq"), pmt::mp(2));
-    expected_tags3[5] = make_tag(20000, pmt::mp(str0.str()), pmt::mp("seq"), pmt::mp(4));
-    expected_tags3[6] = make_tag(30000, pmt::mp(str1.str()), pmt::mp("seq"), pmt::mp(3));
-    expected_tags3[7] = make_tag(30000, pmt::mp(str0.str()), pmt::mp("seq"), pmt::mp(6));
+    expected_tags3[0] = make_tag(0,     str1.str(), pmt::mp("seq"), 0);
+    expected_tags3[1] = make_tag(0,     str0.str(), pmt::mp("seq"), 0);
+    expected_tags3[2] = make_tag(10000, str1.str(), pmt::mp("seq"), 1);
+    expected_tags3[3] = make_tag(10000, str0.str(), pmt::mp("seq"), 2);
+    expected_tags3[4] = make_tag(20000, str1.str(), pmt::mp("seq"), 2);
+    expected_tags3[5] = make_tag(20000, str0.str(), pmt::mp("seq"), 4);
+    expected_tags3[6] = make_tag(30000, str1.str(), pmt::mp("seq"), 3);
+    expected_tags3[7] = make_tag(30000, str0.str(), pmt::mp("seq"), 6);
 
     gr::tag_t expected_tags4[8];
-    expected_tags4[0] = make_tag(0, pmt::mp(str2.str()), pmt::mp("seq"), pmt::mp(0));
-    expected_tags4[1] = make_tag(0, pmt::mp(str0.str()), pmt::mp("seq"), pmt::mp(1));
-    expected_tags4[2] = make_tag(10000, pmt::mp(str2.str()), pmt::mp("seq"), pmt::mp(1));
-    expected_tags4[3] = make_tag(10000, pmt::mp(str0.str()), pmt::mp("seq"), pmt::mp(3));
-    expected_tags4[4] = make_tag(20000, pmt::mp(str2.str()), pmt::mp("seq"), pmt::mp(2));
-    expected_tags4[5] = make_tag(20000, pmt::mp(str0.str()), pmt::mp("seq"), pmt::mp(5));
-    expected_tags4[6] = make_tag(30000, pmt::mp(str2.str()), pmt::mp("seq"), pmt::mp(3));
-    expected_tags4[7] = make_tag(30000, pmt::mp(str0.str()), pmt::mp("seq"), pmt::mp(7));
+    expected_tags4[0] = make_tag(0,     str2.str(), pmt::mp("seq"), 0);
+    expected_tags4[1] = make_tag(0,     str0.str(), pmt::mp("seq"), 1);
+    expected_tags4[2] = make_tag(10000, str2.str(), pmt::mp("seq"), 1);
+    expected_tags4[3] = make_tag(10000, str0.str(), pmt::mp("seq"), 3);
+    expected_tags4[4] = make_tag(20000, str2.str(), pmt::mp("seq"), 2);
+    expected_tags4[5] = make_tag(20000, str0.str(), pmt::mp("seq"), 5);
+    expected_tags4[6] = make_tag(30000, str2.str(), pmt::mp("seq"), 3);
+    expected_tags4[7] = make_tag(30000, str0.str(), pmt::mp("seq"), 7);
 
     std::cout << std::endl << "qa_block_tags::t3" << std::endl;
 
@@ -437,22 +437,22 @@ BOOST_AUTO_TEST_CASE(t5)
     str2 << ann2->name() << ann2->unique_id();
 
     gr::tag_t expected_tags1[5];
-    expected_tags1[0] = make_tag(0, pmt::mp(str0.str()), pmt::mp("seq"), pmt::mp(0));
-    expected_tags1[1] = make_tag(10000, pmt::mp(str0.str()), pmt::mp("seq"), pmt::mp(1));
-    expected_tags1[2] = make_tag(20000, pmt::mp(str0.str()), pmt::mp("seq"), pmt::mp(2));
-    expected_tags1[3] = make_tag(30000, pmt::mp(str0.str()), pmt::mp("seq"), pmt::mp(3));
+    expected_tags1[0] = make_tag(0,     str0.str(), pmt::mp("seq"), 0);
+    expected_tags1[1] = make_tag(10000, str0.str(), pmt::mp("seq"), 1);
+    expected_tags1[2] = make_tag(20000, str0.str(), pmt::mp("seq"), 2);
+    expected_tags1[3] = make_tag(30000, str0.str(), pmt::mp("seq"), 3);
 
     gr::tag_t expected_tags2[10];
-    expected_tags2[0] = make_tag(0, pmt::mp(str1.str()), pmt::mp("seq"), pmt::mp(0));
-    expected_tags2[1] = make_tag(0, pmt::mp(str0.str()), pmt::mp("seq"), pmt::mp(0));
-    expected_tags2[2] = make_tag(1000, pmt::mp(str1.str()), pmt::mp("seq"), pmt::mp(1));
-    expected_tags2[3] = make_tag(1000, pmt::mp(str0.str()), pmt::mp("seq"), pmt::mp(1));
-    expected_tags2[4] = make_tag(2000, pmt::mp(str1.str()), pmt::mp("seq"), pmt::mp(2));
-    expected_tags2[5] = make_tag(2000, pmt::mp(str0.str()), pmt::mp("seq"), pmt::mp(2));
-    expected_tags2[6] = make_tag(3000, pmt::mp(str1.str()), pmt::mp("seq"), pmt::mp(3));
-    expected_tags2[7] = make_tag(3000, pmt::mp(str0.str()), pmt::mp("seq"), pmt::mp(3));
-    expected_tags2[8] = make_tag(4000, pmt::mp(str1.str()), pmt::mp("seq"), pmt::mp(4));
-    expected_tags2[9] = make_tag(4000, pmt::mp(str0.str()), pmt::mp("seq"), pmt::mp(4));
+    expected_tags2[0] = make_tag(0,     str1.str(), pmt::mp("seq"), 0);
+    expected_tags2[1] = make_tag(0,     str0.str(), pmt::mp("seq"), 0);
+    expected_tags2[2] = make_tag(1000,  str1.str(), pmt::mp("seq"), 1);
+    expected_tags2[3] = make_tag(1000,  str0.str(), pmt::mp("seq"), 1);
+    expected_tags2[4] = make_tag(2000,  str1.str(), pmt::mp("seq"), 2);
+    expected_tags2[5] = make_tag(2000,  str0.str(), pmt::mp("seq"), 2);
+    expected_tags2[6] = make_tag(3000,  str1.str(), pmt::mp("seq"), 3);
+    expected_tags2[7] = make_tag(3000,  str0.str(), pmt::mp("seq"), 3);
+    expected_tags2[8] = make_tag(4000,  str1.str(), pmt::mp("seq"), 4);
+    expected_tags2[9] = make_tag(4000,  str0.str(), pmt::mp("seq"), 4);
 
     std::cout << std::endl << "qa_block_tags::t5" << std::endl;
 

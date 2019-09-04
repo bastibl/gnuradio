@@ -52,7 +52,7 @@ additive_scrambler_bb_impl::additive_scrambler_bb_impl(int mask,
       d_len(len),
       d_seed(seed),
       d_bits_per_byte(bits_per_byte),
-      d_reset_tag_key(pmt::string_to_symbol(reset_tag_key))
+      d_reset_tag_key(reset_tag_key)
 {
     if (d_count < -1) {
         throw std::invalid_argument("count must be non-negative!");

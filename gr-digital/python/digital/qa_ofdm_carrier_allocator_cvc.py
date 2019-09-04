@@ -124,11 +124,11 @@ class qa_digital_carrier_allocator_cvc (gr_unittest.TestCase):
         expected_result = sync_word + (1j, 0, 1, 0, 2, 3) + (1j, 0, 4, 0, 5, 6)
         special_tag1 = gr.tag_t()
         special_tag1.offset = 0
-        special_tag1.key = pmt.string_to_symbol("spam")
+        special_tag1.key = "spam"
         special_tag1.value = pmt.to_pmt(23)
         special_tag2 = gr.tag_t()
         special_tag2.offset = 4
-        special_tag2.key = pmt.string_to_symbol("eggs")
+        special_tag2.key = "eggs"
         special_tag2.value = pmt.to_pmt(42)
         src = blocks.vector_source_c(
             tx_symbols, False, 1,
@@ -174,19 +174,19 @@ class qa_digital_carrier_allocator_cvc (gr_unittest.TestCase):
         fft_len = 16
         testtag1 = gr.tag_t()
         testtag1.offset = 0
-        testtag1.key = pmt.string_to_symbol('tag1')
+        testtag1.key = 'tag1'
         testtag1.value = pmt.from_long(0)
         testtag2 = gr.tag_t()
         testtag2.offset = 7 # On the 2nd OFDM symbol
-        testtag2.key = pmt.string_to_symbol('tag2')
+        testtag2.key = 'tag2'
         testtag2.value = pmt.from_long(0)
         testtag3 = gr.tag_t()
         testtag3.offset = len(tx_symbols)+1 # First OFDM symbol of packet 2
-        testtag3.key = pmt.string_to_symbol('tag3')
+        testtag3.key = 'tag3'
         testtag3.value = pmt.from_long(0)
         testtag4 = gr.tag_t()
         testtag4.offset = 2*len(tx_symbols)-1 # Last OFDM symbol of packet 2
-        testtag4.key = pmt.string_to_symbol('tag4')
+        testtag4.key = 'tag4'
         testtag4.value = pmt.from_long(0)
         src = blocks.vector_source_c(tx_symbols * 2, False, 1, (testtag1, testtag2, testtag3, testtag4))
         alloc = digital.ofdm_carrier_allocator_cvc(fft_len,
@@ -202,7 +202,7 @@ class qa_digital_carrier_allocator_cvc (gr_unittest.TestCase):
         tags_found = {'tag1': False, 'tag2': False, 'tag3': False, 'tag4': False}
         correct_offsets = {'tag1': 0, 'tag2': 1, 'tag3': 3, 'tag4': 5}
         for tag in sink.tags():
-            key = pmt.symbol_to_string(tag.key)
+            key = tag.key
             if key in list(tags_found.keys()):
                 tags_found[key] = True
                 self.assertEqual(correct_offsets[key], tag.offset)

@@ -786,9 +786,9 @@ protected:
      */
     inline void add_item_tag(unsigned int which_output,
                              uint64_t abs_offset,
-                             const pmt::pmt_t& key,
+                             const std::string& key,
                              const pmt::pmt_t& value,
-                             const pmt::pmt_t& srcid = pmt::PMT_F)
+                             const uint64_t srcid = 0)
     {
         tag_t tag;
         tag.offset = abs_offset;
@@ -820,9 +820,9 @@ protected:
      */
     inline void remove_item_tag(unsigned int which_input,
                                 uint64_t abs_offset,
-                                const pmt::pmt_t& key,
+                                const std::string& key,
                                 const pmt::pmt_t& value,
-                                const pmt::pmt_t& srcid = pmt::PMT_F)
+                                const uint64_t srcid = 0)
     {
         tag_t tag;
         tag.offset = abs_offset;
@@ -877,7 +877,7 @@ protected:
                            unsigned int which_input,
                            uint64_t abs_start,
                            uint64_t abs_end,
-                           const pmt::pmt_t& key);
+                           const std::string& key);
 
     /*!
      * \brief Gets all tags within the relative window of the current call to work.
@@ -921,7 +921,7 @@ protected:
                             unsigned int which_input,
                             uint64_t rel_start,
                             uint64_t rel_end,
-                            const pmt::pmt_t& key);
+                            const std::string& key);
 
     void enable_update_rate(bool en);
 

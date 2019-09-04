@@ -41,7 +41,7 @@ multiply_by_tag_value_cc_impl::multiply_by_tag_value_cc_impl(const std::string& 
       d_vlen(vlen),
       d_k(gr_complex(1, 0))
 {
-    d_tag_key = pmt::intern(tag_name);
+    d_tag_key = tag_name;
 
     const int alignment_multiple = volk_get_alignment() / sizeof(gr_complex);
     set_alignment(std::max(1, alignment_multiple));
@@ -81,7 +81,7 @@ int multiply_by_tag_value_cc_impl::work(int noutput_items,
         } else {
             GR_LOG_WARN(d_logger,
                         boost::format("Got key '%1%' with incompatible value of '%2%'") %
-                            pmt::write_string(d_tag_key) % pmt::write_string(k));
+                            d_tag_key % pmt::write_string(k));
         }
 
         itag++;

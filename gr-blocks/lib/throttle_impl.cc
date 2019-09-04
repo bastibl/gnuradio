@@ -26,7 +26,7 @@
 #include <cstring>
 #include <limits>
 
-pmt::pmt_t throttle_rx_rate_pmt(pmt::intern("rx_rate"));
+std::string throttle_rx_rate_pmt("rx_rate");
 
 namespace gr {
 namespace blocks {
@@ -78,7 +78,7 @@ int throttle_impl::work(int noutput_items,
         get_tags_in_range(all_tags, 0, abs_N, abs_N + noutput_items);
         std::vector<tag_t>::iterator itr;
         for (itr = all_tags.begin(); itr != all_tags.end(); itr++) {
-            if (pmt::eq((*itr).key, throttle_rx_rate_pmt)) {
+            if ((*itr).key == throttle_rx_rate_pmt) {
                 double new_rate = pmt::to_double((*itr).value);
                 set_sample_rate(new_rate);
             }

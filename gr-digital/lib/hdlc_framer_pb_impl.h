@@ -33,7 +33,8 @@ class hdlc_framer_pb_impl : public hdlc_framer_pb
 {
 private:
     std::vector<std::vector<unsigned char>> d_leftovers;
-    pmt::pmt_t d_frame_tag, d_me;
+    std::string d_frame_tag;
+    uint64_t d_me;
     unsigned int crc_ccitt(std::vector<unsigned char>& data);
     std::vector<unsigned char> unpack(std::vector<unsigned char>& pkt);
     void stuff(std::vector<unsigned char>& pkt);

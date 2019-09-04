@@ -174,34 +174,35 @@ void file_meta_source_impl::parse_header(pmt::pmt_t hdr,
                                          uint64_t offset,
                                          std::vector<tag_t>& tags)
 {
-    pmt::pmt_t r, key;
+    pmt::pmt_t r;
+    std::string key;
 
     // GET SAMPLE RATE
-    key = pmt::string_to_symbol("rx_rate");
-    if (pmt::dict_has_key(hdr, key)) {
-        r = pmt::dict_ref(hdr, key, pmt::PMT_NIL);
+    key = "rx_rate";
+    if (pmt::dict_has_key(hdr, pmt::mp(key))) {
+        r = pmt::dict_ref(hdr, pmt::mp(key), pmt::PMT_NIL);
         d_samp_rate = pmt::to_double(r);
 
         tag_t t;
         t.offset = offset;
         t.key = key;
         t.value = r;
-        t.srcid = alias_pmt();
+        t.srcid = unique_id();
         tags.push_back(t);
     } else {
         throw std::runtime_error("file_meta_source: Could not extract sample rate.\n");
     }
 
     // GET TIME STAMP
-    key = pmt::string_to_symbol("rx_time");
-    if (pmt::dict_has_key(hdr, key)) {
-        d_time_stamp = pmt::dict_ref(hdr, key, pmt::PMT_NIL);
+    key = "rx_time";
+    if (pmt::dict_has_key(hdr, pmt::mp(key))) {
+        d_time_stamp = pmt::dict_ref(hdr, pmt::mp(key), pmt::PMT_NIL);
 
         tag_t t;
         t.offset = offset;
         t.key = key;
         t.value = d_time_stamp;
-        t.srcid = alias_pmt();
+        t.srcid = unique_id();
         tags.push_back(t);
     } else {
         throw std::runtime_error("file_meta_source: Could not extract time stamp.\n");
@@ -241,9 +242,9 @@ void file_meta_source_impl::parse_extras(pmt::pmt_t extras,
 
         tag_t t;
         t.offset = offset;
-        t.key = key;
+        t.key = pmt::symbol_to_string(key);
         t.value = val;
-        t.srcid = alias_pmt();
+        t.srcid = unique_id();
         tags.push_back(t);
     }
 }

@@ -46,7 +46,8 @@ private:
     unsigned long long d_hdr_reg; // used to look for header
     int d_hdr_count;
 
-    pmt::pmt_t d_key, d_me; // d_key is the tag name, d_me is the block name + unique ID
+    std::string d_key;
+    uint64_t d_me; // d_key is the tag name, d_me is the block name + unique ID
     int d_pkt_len, d_pkt_count;
 
 

@@ -47,7 +47,7 @@ stream_to_tagged_stream_impl::stream_to_tagged_stream_impl(size_t itemsize,
       d_itemsize(itemsize * vlen),
       d_packet_len(packet_len),
       d_packet_len_pmt(pmt::from_long(packet_len)),
-      d_len_tag_key(pmt::string_to_symbol(len_tag_key)),
+      d_len_tag_key(len_tag_key),
       d_next_tag_pos(0)
 {
 }

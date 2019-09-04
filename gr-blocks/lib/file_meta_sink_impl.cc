@@ -266,11 +266,11 @@ void file_meta_sink_impl::write_header(FILE* fp, pmt::pmt_t header, pmt::pmt_t e
     fflush(fp);
 }
 
-void file_meta_sink_impl::update_header(pmt::pmt_t key, pmt::pmt_t value)
+void file_meta_sink_impl::update_header(std::string key, pmt::pmt_t value)
 {
     // Special handling caveat to transform rate from radio source into
     // the rate at this sink.
-    if (pmt::eq(key, mp("rx_rate"))) {
+    if (key == "rx_rate") {
         d_samp_rate = pmt::to_double(value);
         value = pmt::from_double(d_samp_rate * d_relative_rate);
     }
@@ -278,10 +278,10 @@ void file_meta_sink_impl::update_header(pmt::pmt_t key, pmt::pmt_t value)
     // If the tag is not part of the standard header, we put it into the
     // extra data, which either updates the current dictionary or adds a
     // new item.
-    if (pmt::dict_has_key(d_header, key)) {
-        d_header = pmt::dict_add(d_header, key, value);
+    if (pmt::dict_has_key(d_header, pmt::mp(key))) {
+        d_header = pmt::dict_add(d_header, pmt::mp(key), value);
     } else {
-        d_extra = pmt::dict_add(d_extra, key, value);
+        d_extra = pmt::dict_add(d_extra, pmt::mp(key), value);
         d_extra_size = pmt::serialize_str(d_extra).size();
     }
 }
@@ -305,8 +305,8 @@ void file_meta_sink_impl::update_last_header_inline()
     size_t hdrlen = pmt::to_uint64(pmt::dict_ref(d_header, mp("strt"), pmt::PMT_NIL));
     size_t seg_size = d_itemsize * d_total_seg_size;
     pmt::pmt_t s = pmt::from_uint64(seg_size);
-    update_header(mp("bytes"), s);
-    update_header(mp("strt"), pmt::from_uint64(METADATA_HEADER_SIZE + d_extra_size));
+    update_header("bytes", s);
+    update_header("strt", pmt::from_uint64(METADATA_HEADER_SIZE + d_extra_size));
     fseek(d_fp, -seg_size - hdrlen, SEEK_CUR);
     write_header(d_fp, d_header, d_extra);
     fseek(d_fp, seg_size, SEEK_CUR);
@@ -319,8 +319,8 @@ void file_meta_sink_impl::update_last_header_detached()
     size_t hdrlen = pmt::to_uint64(pmt::dict_ref(d_header, mp("strt"), pmt::PMT_NIL));
     size_t seg_size = d_itemsize * d_total_seg_size;
     pmt::pmt_t s = pmt::from_uint64(seg_size);
-    update_header(mp("bytes"), s);
-    update_header(mp("strt"), pmt::from_uint64(METADATA_HEADER_SIZE + d_extra_size));
+    update_header("bytes", s);
+    update_header("strt", pmt::from_uint64(METADATA_HEADER_SIZE + d_extra_size));
     fseek(d_hdr_fp, -hdrlen, SEEK_CUR);
     write_header(d_hdr_fp, d_header, d_extra);
 }
@@ -331,13 +331,13 @@ void file_meta_sink_impl::write_and_update()
     // based on current index + header size.
     // uint64_t loc = get_last_header_loc();
     pmt::pmt_t s = pmt::from_uint64(0);
-    update_header(mp("bytes"), s);
+    update_header("bytes", s);
 
     // If we have multiple tags on the same offset, this makes
     // sure we just overwrite the same header each time instead
     // of creating a new header per tag.
     s = pmt::from_uint64(METADATA_HEADER_SIZE + d_extra_size);
-    update_header(mp("strt"), s);
+    update_header("strt", s);
 
     if (d_state == STATE_DETACHED)
         write_header(d_hdr_fp, d_header, d_extra);

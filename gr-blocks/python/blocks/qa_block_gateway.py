@@ -129,7 +129,7 @@ class tag_source(gr.sync_block):
 
         #make a new tag on the middle element every time work is called
         count = self.nitems_written(0) + num_output_items // 2
-        key = pmt.string_to_symbol("example_key")
+        key = "example_key"
         value = pmt.string_to_symbol("example_value")
         self.add_item_tag(0, count, key, value)
 
@@ -157,7 +157,7 @@ class tag_sink(gr.sync_block):
             #print tag.offset
             #print pmt.symbol_to_string(tag.key)
             #print pmt.symbol_to_string(tag.value)
-            self.key = pmt.symbol_to_string(tag.key)
+            self.key = tag.key
 
         return num_input_items
 
@@ -172,7 +172,7 @@ class tag_sink_win(gr.sync_block):
         num_input_items = len(input_items[0])
         tags = self.get_tags_in_window(0, 0, num_input_items)
         for tag in tags:
-            self.key = pmt.symbol_to_string(tag.key)
+            self.key = tag.key
         return num_input_items
 
 class fc32_to_f32_2(gr.sync_block):

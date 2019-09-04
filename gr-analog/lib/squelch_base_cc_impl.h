@@ -36,7 +36,7 @@ private:
     bool d_gate;
     double d_envelope;
     enum { ST_MUTED, ST_ATTACK, ST_UNMUTED, ST_DECAY } d_state;
-    const pmt::pmt_t d_sob_key, d_eob_key;
+    const std::string d_sob_key, d_eob_key;
     bool d_tag_next_unmuted;
 
 protected:

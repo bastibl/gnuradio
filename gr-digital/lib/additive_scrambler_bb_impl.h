@@ -38,7 +38,7 @@ private:
     int d_len;
     int d_seed;
     int d_bits_per_byte;
-    pmt::pmt_t d_reset_tag_key; //!< Reset the LFSR when this tag is received
+    std::string d_reset_tag_key; //!< Reset the LFSR when this tag is received
 
     int _get_next_reset_index(int noutput_items, int last_reset_index = -1);
 

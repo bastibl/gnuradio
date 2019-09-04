@@ -53,10 +53,8 @@ mpsk_snr_est_cc_impl::mpsk_snr_est_cc_impl(snr_est_type_t type,
     // at least 1 estimator has to look back
     set_history(2);
 
-    std::stringstream str;
-    str << name() << unique_id();
-    d_me = pmt::string_to_symbol(str.str());
-    d_key = pmt::string_to_symbol("snr");
+    d_me = unique_id();
+    d_key = "snr";
 }
 
 mpsk_snr_est_cc_impl::~mpsk_snr_est_cc_impl()

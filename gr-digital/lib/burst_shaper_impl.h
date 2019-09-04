@@ -47,7 +47,7 @@ private:
     const int d_nprepad;
     const int d_npostpad;
     const bool d_insert_phasing;
-    const pmt::pmt_t d_length_tag_key;
+    const std::string d_length_tag_key;
     std::vector<T> d_up_phasing;
     std::vector<T> d_down_phasing;
     int d_ncopy;

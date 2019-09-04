@@ -39,7 +39,7 @@ tagged_stream_align_impl::tagged_stream_align_impl(size_t itemsize,
             io_signature::make(1, 1, itemsize),
             io_signature::make(1, 1, itemsize)),
       d_itemsize(itemsize),
-      d_lengthtag(pmt::mp(lengthtagname)),
+      d_lengthtag(lengthtagname),
       d_have_sync(false)
 {
     set_tag_propagation_policy(TPP_DONT);

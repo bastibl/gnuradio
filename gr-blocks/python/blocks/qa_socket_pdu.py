@@ -78,7 +78,7 @@ class qa_socket_pdu (gr_unittest.TestCase):
         port = str(random.Random().randint(0, 30000) + 10000)
         srcdata = (0x73, 0x75, 0x63, 0x68, 0x74, 0x65, 0x73, 0x74, 0x76, 0x65, 0x72, 0x79, 0x70, 0x61, 0x73, 0x73)
         tag_dict = {"offset": 0}
-        tag_dict["key"] = pmt.intern("len")
+        tag_dict["key"] = "len"
         tag_dict["value"] = pmt.from_long(8)
         tag1 = gr.python_to_tag(tag_dict)
         tag_dict["offset"] = 8

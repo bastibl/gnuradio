@@ -37,7 +37,7 @@ private:
     std::vector<tag_t> d_tags;
     std::vector<tag_t>::iterator d_tags_itr;
     bool d_display;
-    pmt::pmt_t d_filter;
+    std::string d_filter;
     gr::thread::mutex d_mutex;
 
 public:
@@ -51,10 +51,10 @@ public:
     std::vector<tag_t> current_tags();
     int num_tags();
 
-    void set_display(bool d);
+    std::string key_filter() const { return d_filter; };
+    void set_key_filter(const std::string& key_filter) { d_filter = key_filter; };
 
-    void set_key_filter(const std::string& key_filter);
-    std::string key_filter() const;
+    void set_display(bool d);
 
     int work(int noutput_items,
              gr_vector_const_void_star& input_items,

@@ -108,8 +108,8 @@ header_payload_demux_impl::header_payload_demux_impl(
       d_header_padding_total_items(header_padding),
       d_items_per_symbol(items_per_symbol),
       d_gi(guard_interval),
-      d_len_tag_key(pmt::string_to_symbol(length_tag_key)),
-      d_trigger_tag_key(pmt::string_to_symbol(trigger_tag_key)),
+      d_len_tag_key(length_tag_key),
+      d_trigger_tag_key(trigger_tag_key),
       d_output_symbols(output_symbols),
       d_itemsize(itemsize),
       d_uses_trigger_tag(!trigger_tag_key.empty()),
@@ -119,7 +119,7 @@ header_payload_demux_impl::header_payload_demux_impl(
       d_payload_tag_keys(0),
       d_payload_tag_values(0),
       d_track_time(!timing_tag_key.empty()),
-      d_timing_key(pmt::intern(timing_tag_key)),
+      d_timing_key(timing_tag_key),
       d_payload_offset_key(pmt::intern("payload_offset")),
       d_last_time_offset(0),
       d_last_time(pmt::make_tuple(pmt::from_uint64(0L), pmt::from_double(0.0))),
@@ -149,7 +149,7 @@ header_payload_demux_impl::header_payload_demux_impl(
         msg_port_id(),
         boost::bind(&header_payload_demux_impl::parse_header_data_msg, this, _1));
     for (size_t i = 0; i < special_tags.size(); i++) {
-        d_special_tags.push_back(pmt::string_to_symbol(special_tags[i]));
+        d_special_tags.push_back(special_tags[i]);
         d_special_tags_last_value.push_back(pmt::PMT_NIL);
     }
 }
@@ -414,9 +414,9 @@ void header_payload_demux_impl::parse_header_data_msg(pmt::pmt_t header_data)
         pmt::pmt_t dict_items(pmt::dict_items(header_data));
         while (!pmt::is_null(dict_items)) {
             pmt::pmt_t this_item(pmt::car(dict_items));
-            d_payload_tag_keys.push_back(pmt::car(this_item));
+            d_payload_tag_keys.push_back(pmt::symbol_to_string(pmt::car(this_item)));
             d_payload_tag_values.push_back(pmt::cdr(this_item));
-            if (pmt::equal(pmt::car(this_item), d_len_tag_key)) {
+            if (d_len_tag_key == pmt::symbol_to_string(pmt::car(this_item))) {
                 d_curr_payload_len = pmt::to_long(pmt::cdr(this_item));
                 d_state = STATE_HEADER_RX_SUCCESS;
             }

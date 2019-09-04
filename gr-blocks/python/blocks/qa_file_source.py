@@ -119,7 +119,7 @@ class test_file_source(gr_unittest.TestCase):
         expected_result = self._vector
 
         src = blocks.file_source(gr.sizeof_float, self._datafilename)
-        src.set_begin_tag(pmt.string_to_symbol("file_begin"))
+        src.set_begin_tag("file_begin")
         snk = blocks.vector_sink_f()
         self.tb.connect(src, snk)
         self.tb.run()
@@ -132,7 +132,7 @@ class test_file_source(gr_unittest.TestCase):
         expected_result = self._vector + self._vector
 
         src = blocks.file_source(gr.sizeof_float, self._datafilename, True)
-        src.set_begin_tag(pmt.string_to_symbol("file_begin"))
+        src.set_begin_tag("file_begin")
         head = blocks.head(gr.sizeof_float, 2 * len(self._vector))
         snk = blocks.vector_sink_f()
         self.tb.connect(src, head, snk)

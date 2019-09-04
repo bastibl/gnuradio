@@ -57,7 +57,7 @@ int tagged_stream_to_pdu_impl::work(int noutput_items,
     get_tags_in_range(d_tags, 0, nitems_read(0), nitems_read(0) + ninput_items[0]);
     d_pdu_meta = pmt::make_dict();
     for (d_tags_itr = d_tags.begin(); d_tags_itr != d_tags.end(); d_tags_itr++) {
-        d_pdu_meta = dict_add(d_pdu_meta, (*d_tags_itr).key, (*d_tags_itr).value);
+        d_pdu_meta = dict_add(d_pdu_meta, pmt::mp((*d_tags_itr).key), (*d_tags_itr).value);
     }
 
     // Grab data, throw into vector

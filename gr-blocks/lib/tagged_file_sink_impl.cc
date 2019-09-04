@@ -77,8 +77,8 @@ int tagged_file_sink_impl::work(int noutput_items,
 
     uint64_t start_N = nitems_read(0);
     uint64_t end_N = start_N + (uint64_t)(noutput_items);
-    pmt::pmt_t bkey = pmt::string_to_symbol("burst");
-    pmt::pmt_t tkey = pmt::string_to_symbol("rx_time"); // use gr_tags::key_time
+    std::string bkey = "burst";
+    std::string tkey = "rx_time"; // use gr_tags::key_time
 
     std::vector<tag_t> all_tags;
     get_tags_in_range(all_tags, 0, start_N, end_N);
@@ -105,7 +105,7 @@ int tagged_file_sink_impl::work(int noutput_items,
     while (idx < noutput_items) {
         if (d_state == NOT_IN_BURST) {
             while (vitr != all_tags.end()) {
-                if ((pmt::eqv((*vitr).key, bkey)) && pmt::is_true((*vitr).value)) {
+                if ((*vitr).key == bkey && pmt::is_true((*vitr).value)) {
 
                     uint64_t N = (*vitr).offset;
                     idx = (int)(N - start_N);
@@ -183,7 +183,7 @@ int tagged_file_sink_impl::work(int noutput_items,
                 return noutput_items;
         } else { // In burst
             while (vitr != all_tags.end()) {
-                if ((pmt::eqv((*vitr).key, bkey)) && pmt::is_false((*vitr).value)) {
+                if ((*vitr).key == bkey && pmt::is_false((*vitr).value)) {
                     uint64_t N = (*vitr).offset;
                     idx_stop = (int)N - start_N;
 
