@@ -949,13 +949,10 @@ protected:
     const pmt::pmt_t d_pmt_done;
 
     typedef boost::function<void(pmt::pmt_t)> msg_handler_t;
-
     std::map<std::string, msg_handler_t> d_msg_handlers;
 
     typedef std::deque<pmt::pmt_t> msg_queue_t;
     typedef std::map<std::string, msg_queue_t> msg_queue_map_t;
-    std::map<std::string, boost::shared_ptr<boost::condition_variable>> d_msg_queue_ready;
-
     msg_queue_map_t d_msg_queue;
 
     /*
@@ -975,10 +972,7 @@ protected:
 
 public:
     block_executor* executor() const { return d_executor.get(); }
-    void set_executor(block_executor_uptr executor)
-    {
-        d_executor = std::move(executor);
-    }
+    void set_executor(block_executor_uptr executor) { d_executor = std::move(executor); }
     void reset_executor() { d_executor.reset(); }
 
     void message_port_register_in(const std::string& port_id) override;
@@ -1047,17 +1041,10 @@ public:
         return d_msg_queue[which_port].size();
     }
 
-    //| Acquires and release the mutex
-    void insert_tail(const std::string& which_port, const pmt::pmt_t& msg);
     /*!
      * \returns returns pmt at head of queue or pmt::pmt_t() if empty.
      */
     pmt::pmt_t delete_head_nowait(const std::string& which_port);
-
-    void erase_msg(const std::string& which_port, msg_queue_t::iterator it)
-    {
-        d_msg_queue[which_port].erase(it);
-    }
 
     //! is the queue empty?
     bool empty_p(const std::string& which_port)
@@ -1066,18 +1053,10 @@ public:
             throw std::runtime_error("port does not exist!");
         return d_msg_queue[which_port].empty();
     }
-    bool empty_p()
-    {
-        bool rv = true;
-        BOOST_FOREACH (msg_queue_map_t::value_type& i, d_msg_queue) {
-            rv &= d_msg_queue[i.first].empty();
-        }
-        return rv;
-    }
 
     /*! \brief Tell msg neighbors we are finished
      */
-    void notify_msg_neighbors() const;
+    void shutdown_msg_neighbors() const;
 
     /*! \brief Make sure we don't think we are finished
      */

@@ -607,11 +607,9 @@ void block::reset_perf_counters()
 
 void block::system_handler(pmt::pmt_t msg)
 {
-    // std::cout << "system_handler " << msg << "\n";
     pmt::pmt_t op = pmt::car(msg);
     if (pmt::eqv(op, d_pmt_done)) {
         d_finished = pmt::to_long(pmt::cdr(msg));
-        global_block_registry.notify_blk(unique_id());
     } else {
         std::cout << "WARNING: bad message op on system port!\n";
         pmt::print(msg);
@@ -627,7 +625,7 @@ std::string block::log_level()
     return level;
 }
 
-void block::notify_msg_neighbors() const
+void block::shutdown_msg_neighbors() const
 {
     for (const auto port_it : d_message_subscribers) {
         for (const auto ep_it : port_it.second) {
@@ -651,8 +649,6 @@ void block::message_port_register_in(const std::string& port_id)
         throw std::runtime_error("block::message_port_register_in: already registered");
     }
     d_msg_queue[port_id] = msg_queue_t();
-    d_msg_queue_ready[port_id] =
-        boost::shared_ptr<boost::condition_variable>(new boost::condition_variable());
 }
 
 std::vector<std::string> block::message_ports_in() const
@@ -665,19 +661,15 @@ std::vector<std::string> block::message_ports_in() const
     return port_names;
 }
 
-void block::post(const std::string& which_port, const pmt::pmt_t& msg) { insert_tail(which_port, msg); }
+void block::post(const std::string& which_port, const pmt::pmt_t& msg) {
 
-void block::insert_tail(const std::string& which_port, const pmt::pmt_t& msg)
-{
     gr::thread::scoped_lock guard(d_mutex);
 
-    if ((d_msg_queue.find(which_port) == d_msg_queue.end()) ||
-        (d_msg_queue_ready.find(which_port) == d_msg_queue_ready.end())) {
-        throw std::runtime_error("attempted to insert_tail on invalid queue!");
+    if ((d_msg_queue.find(which_port) == d_msg_queue.end())) {
+        throw std::runtime_error("attempted to post to invalid queue!");
     }
 
     d_msg_queue[which_port].push_back(msg);
-    d_msg_queue_ready[which_port]->notify_one();
 
     // wake up thread if BLKD_IN or BLKD_OUT
     global_block_registry.notify_blk(unique_id());

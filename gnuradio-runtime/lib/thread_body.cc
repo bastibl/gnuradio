@@ -97,7 +97,8 @@ void thread_body::execute_block(block_sptr block, gr::thread::barrier_sptr start
 
     // Set thread affinity if it was set before fg was started.
     if (!block->processor_affinity().empty()) {
-        gr::thread::thread_bind_to_processor(executor->d_thread, block->processor_affinity());
+        gr::thread::thread_bind_to_processor(executor->d_thread,
+                                             block->processor_affinity());
     }
 
     // Set thread priority if it was set before fg was started
@@ -138,10 +139,11 @@ void thread_body::execute_block(block_sptr block, gr::thread::barrier_sptr start
         if (executor->noutputs() > 0 || executor->ninputs() > 0) {
             s = executor->run_one_iteration();
         } else {
-            s = block_executor::BLKD_IN;
-            // a msg port only block wants to shutdown
             if (block->finished()) {
+                // a msg port only block wants to shutdown
                 s = block_executor::DONE;
+            } else {
+                s = block_executor::BLKD_IN;
             }
         }
 
@@ -164,7 +166,7 @@ void thread_body::execute_block(block_sptr block, gr::thread::barrier_sptr start
             break;
 
         case block_executor::DONE: // Game over.
-            block->notify_msg_neighbors();
+            block->shutdown_msg_neighbors();
             executor->notify_neighbors();
             return;
 
