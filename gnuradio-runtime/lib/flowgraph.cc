@@ -27,7 +27,7 @@
 
 namespace gr {
 
-#define FLOWGRAPH_DEBUG 1
+#define FLOWGRAPH_DEBUG 0
 
 edge::~edge() {}
 

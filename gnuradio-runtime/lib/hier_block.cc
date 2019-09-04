@@ -26,7 +26,7 @@
 #include <gnuradio/io_signature.h>
 #include <iostream>
 
-#define HIER_BLOCK_DEBUG 1
+#define HIER_BLOCK_DEBUG 0
 
 namespace gr {
 
