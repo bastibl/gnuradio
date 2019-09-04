@@ -40,7 +40,7 @@ class qa_zeromq_pushpull (gr_unittest.TestCase):
         src = blocks.vector_source_f(src_data, False, vlen)
         zeromq_push_sink = zeromq.push_sink(gr.sizeof_float, vlen, "tcp://127.0.0.1:0")
         address = zeromq_push_sink.last_endpoint()
-        zeromq_pull_source = zeromq.pull_source(gr.sizeof_float, vlen, address, 0)
+        zeromq_pull_source = zeromq.pull_source(gr.sizeof_float, vlen, address, 1000)
         sink = blocks.vector_sink_f(vlen)
         self.send_tb.connect(src, zeromq_push_sink)
         self.recv_tb.connect(zeromq_pull_source, sink)
