@@ -20,13 +20,9 @@
  */
 
 #include "thread_body.h"
-#include <gnuradio/block_executor.h>
 #include <gnuradio/prefs.h>
 #include <pmt/pmt.h>
 #include <boost/foreach.hpp>
-#include <exception>
-#include <iostream>
-#include <string>
 
 #ifdef HAVE_SIGNAL_H
 #include <signal.h>

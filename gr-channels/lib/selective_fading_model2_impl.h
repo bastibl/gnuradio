@@ -28,6 +28,7 @@
 #include <gnuradio/sync_block.h>
 
 //#include <iostream>
+#include <boost/foreach.hpp>
 #include <boost/format.hpp>
 #include <boost/random.hpp>
 

@@ -21,21 +21,14 @@
  */
 
 #include <gnuradio/flat_flowgraph.h>
-#include <gnuradio/top_block.h>
 #include <gnuradio/prefs.h>
 #include <gnuradio/top_block.h>
+
 #ifdef GR_CTRLPORT
 #include <gnuradio/rpcregisterhelpers.h>
 #endif
 
-#include <stdlib.h>
-#include <string.h>
-#include <unistd.h>
-#include <iostream>
-#include <stdexcept>
-
 namespace gr {
-
 
 top_block_sptr make_top_block(const std::string& name)
 {

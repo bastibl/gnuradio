@@ -25,10 +25,7 @@
 #include <gnuradio/flat_flowgraph.h>
 #include <gnuradio/logger.h>
 #include <gnuradio/prefs.h>
-#include <volk/volk.h>
 #include <boost/format.hpp>
-#include <iostream>
-#include <map>
 
 namespace gr {
 

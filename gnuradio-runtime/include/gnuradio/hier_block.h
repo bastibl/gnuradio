@@ -25,7 +25,6 @@
 
 #include <gnuradio/api.h>
 #include <gnuradio/basic_block.h>
-#include <gnuradio/block.h>
 #include <gnuradio/flowgraph.h>
 
 namespace gr {

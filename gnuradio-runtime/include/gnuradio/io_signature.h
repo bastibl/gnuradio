@@ -24,7 +24,8 @@
 #define INCLUDED_IO_SIGNATURE_H
 
 #include <gnuradio/api.h>
-#include <gnuradio/runtime_types.h>
+#include <boost/shared_ptr.hpp>
+#include <vector>
 
 namespace gr {
 

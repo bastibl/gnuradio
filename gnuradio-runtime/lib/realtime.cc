@@ -26,13 +26,8 @@
 #include <sched.h>
 #endif
 
-#include <errno.h>
 #include <math.h>
-#include <stdio.h>
 #include <string.h>
-#include <algorithm>
-
-#include <iostream>
 
 #if defined(HAVE_PTHREAD_SETSCHEDPARAM) || defined(HAVE_SCHED_SETSCHEDULER)
 #include <pthread.h>

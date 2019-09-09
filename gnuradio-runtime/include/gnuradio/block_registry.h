@@ -24,15 +24,12 @@
 #define GR_RUNTIME_BLOCK_REGISTRY_H
 
 #include <gnuradio/api.h>
-#include <gnuradio/basic_block.h>
+#include <gnuradio/runtime_types.h>
+#include <gnuradio/thread/thread.h>
+#include <pmt/pmt.h>
 #include <map>
 
 namespace gr {
-
-#ifndef GR_BASIC_BLOCK_H
-class basic_block;
-class block;
-#endif
 
 class GR_RUNTIME_API block_registry
 {

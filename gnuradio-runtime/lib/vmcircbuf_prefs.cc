@@ -23,12 +23,6 @@
 #include "vmcircbuf.h"
 #include "vmcircbuf_prefs.h"
 #include <gnuradio/sys_paths.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <sys/stat.h>
-#include <sys/types.h>
-#include <unistd.h>
 
 #include <boost/filesystem/operations.hpp>
 #include <boost/filesystem/path.hpp>

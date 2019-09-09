@@ -20,16 +20,11 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#include <gnuradio/block.h>
 #include <gnuradio/block_executor.h>
 #include <gnuradio/buffer.h>
 #include <gnuradio/prefs.h>
 #include <assert.h>
-#include <stdio.h>
 #include <boost/format.hpp>
-#include <boost/thread.hpp>
-#include <iostream>
-#include <limits>
 
 namespace gr {
 

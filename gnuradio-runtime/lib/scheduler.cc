@@ -20,7 +20,6 @@
  */
 
 #include "thread_body.h"
-#include <gnuradio/block_executor.h>
 #include <gnuradio/scheduler.h>
 
 namespace gr {

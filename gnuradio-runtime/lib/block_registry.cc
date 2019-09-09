@@ -20,11 +20,8 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#include <gnuradio/basic_block.h>
-#include <gnuradio/block.h>
-#include <gnuradio/block_executor.h>
 #include <gnuradio/block_registry.h>
-#include <stdio.h>
+#include <gnuradio/block.h>
 
 gr::block_registry global_block_registry;
 

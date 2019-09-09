@@ -21,7 +21,6 @@
  */
 
 #include <gnuradio/messages/msg_queue.h>
-#include <stdexcept>
 
 namespace gr {
 namespace messages {

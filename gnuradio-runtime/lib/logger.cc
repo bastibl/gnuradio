@@ -28,8 +28,6 @@
 
 #include <gnuradio/logger.h>
 #include <gnuradio/prefs.h>
-#include <algorithm>
-#include <stdexcept>
 
 namespace gr {
 

@@ -21,9 +21,6 @@
  */
 
 #include <gnuradio/flowgraph.h>
-#include <iterator>
-#include <sstream>
-#include <stdexcept>
 
 namespace gr {
 

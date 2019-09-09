@@ -21,14 +21,10 @@
  */
 
 #include <gnuradio/block.h>
-#include <gnuradio/block_executor.h>
 #include <gnuradio/block_registry.h>
 #include <gnuradio/buffer.h>
-#include <gnuradio/prefs.h>
-#include <iostream>
-#include <stdexcept>
 
-#if defined(GR_CTRLPORT) && defined(GR_PERFORMANCE_COUNTERS)
+#if defined(GR_CTRLPORT)
 #include <gnuradio/rpcregisterhelpers.h>
 #endif
 

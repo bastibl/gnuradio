@@ -26,8 +26,6 @@
 #include <gnuradio/api.h>
 #include <gnuradio/basic_block.h>
 #include <gnuradio/logger.h>
-#include <gnuradio/messages/msg_accepter.h>
-#include <gnuradio/runtime_types.h>
 #include <gnuradio/tags.h>
 #ifdef GR_MPLIB_MPIR
 #include <mpirxx.h>

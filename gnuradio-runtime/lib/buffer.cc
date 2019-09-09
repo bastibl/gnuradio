@@ -23,10 +23,7 @@
 #include "vmcircbuf.h"
 #include <gnuradio/buffer.h>
 #include <gnuradio/math.h>
-#include <assert.h>
-#include <algorithm>
 #include <iostream>
-#include <stdexcept>
 
 // the following header is deprecated as of Boost 1.66.0, and the
 // other API was introduced in Boost 1.58.0. Since we still support

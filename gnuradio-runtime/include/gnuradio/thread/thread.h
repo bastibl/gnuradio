@@ -26,7 +26,6 @@
 #include <boost/shared_ptr.hpp>
 #include <boost/thread/barrier.hpp>
 #include <boost/thread/condition_variable.hpp>
-#include <boost/thread/locks.hpp>
 #include <boost/thread/mutex.hpp>
 #include <boost/thread/thread.hpp>
 #include <vector>

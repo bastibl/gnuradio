@@ -20,21 +20,8 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#include <assert.h>
-#include <fcntl.h>
-#include <unistd.h>
-#include <stdexcept>
-#ifdef HAVE_SYS_TYPES_H
-#include <sys/types.h>
-#endif
-#ifdef HAVE_SYS_MMAN_H
-#include <sys/mman.h>
-#endif
 #include "pagesize.h"
 #include "vmcircbuf_createfilemapping.h"
-#include <errno.h>
-#include <stdio.h>
-#include <boost/format.hpp>
 
 namespace gr {
 

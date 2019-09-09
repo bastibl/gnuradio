@@ -24,11 +24,7 @@
 #include "vmcircbuf.h"
 #include "vmcircbuf_prefs.h"
 #include <assert.h>
-#include <stdio.h>
-#include <string.h>
 #include <boost/format.hpp>
-#include <stdexcept>
-#include <vector>
 
 // all the factories we know about
 #include "vmcircbuf_createfilemapping.h"

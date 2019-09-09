@@ -24,8 +24,6 @@
 #include <gnuradio/prefs.h>
 #include <gnuradio/sys_paths.h>
 
-#include <algorithm>
-#include <fstream>
 #include <iostream>
 
 #include <boost/filesystem/fstream.hpp>

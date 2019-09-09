@@ -25,21 +25,13 @@
 
 #include <gnuradio/api.h>
 #include <gnuradio/io_signature.h>
-#include <gnuradio/runtime_types.h>
-#include <gnuradio/thread/thread.h>
 #include <pmt/pmt.h>
 #include <boost/enable_shared_from_this.hpp>
-#include <boost/foreach.hpp>
-#include <boost/function.hpp>
-#include <boost/thread/condition_variable.hpp>
-#include <deque>
-#include <iostream>
 #include <map>
 #include <string>
 
 #ifdef GR_CTRLPORT
-class rpcbasic_base;
-typedef boost::shared_ptr<rpcbasic_base> rpcbasic_sptr;
+#include <gnuradio/rpcregisterhelpers.h>
 #endif
 
 namespace gr {
@@ -300,9 +292,5 @@ boost::shared_ptr<T> get_initial_sptr(T* p)
 } // namespace gnuradio
 
 } /* namespace gr */
-
-#ifdef GR_CTRLPORT
-#include <gnuradio/rpcregisterhelpers.h>
-#endif
 
 #endif /* INCLUDED_GR_BASIC_BLOCK_H */

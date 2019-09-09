@@ -23,7 +23,6 @@
 #define INCLUDED_GR_SCHEDULER_H
 
 #include <gnuradio/api.h>
-#include <gnuradio/block.h>
 #include <gnuradio/flat_flowgraph.h>
 #include <gnuradio/thread/thread_group.h>
 #include <boost/utility.hpp>

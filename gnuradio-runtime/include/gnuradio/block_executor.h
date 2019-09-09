@@ -26,8 +26,7 @@
 #include <gnuradio/api.h>
 #include <gnuradio/block.h>
 #include <gnuradio/high_res_timer.h>
-#include <gnuradio/runtime_types.h>
-#include <gnuradio/tags.h>
+#include <gnuradio/thread/thread.h>
 #include <fstream>
 
 namespace gr {

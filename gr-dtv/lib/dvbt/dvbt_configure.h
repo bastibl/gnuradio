@@ -23,6 +23,7 @@
 
 #include <gnuradio/dtv/dvb_config.h>
 #include <gnuradio/dtv/dvbt_config.h>
+#include <math.h>
 
 namespace gr {
 namespace dtv {
