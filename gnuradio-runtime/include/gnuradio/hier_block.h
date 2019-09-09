@@ -31,6 +31,13 @@
 namespace gr {
 
 /*!
+ * \brief public constructor for hier_block
+ */
+GR_RUNTIME_API hier_block_sptr make_hier_block(const std::string& name,
+                                               gr::io_signature::sptr input_signature,
+                                               gr::io_signature::sptr output_signature);
+
+/*!
  * \brief Hierarchical container class for gr::block's and gr::hier_block's
  * \ingroup container_blk
  * \ingroup base_blk
@@ -38,11 +45,6 @@ namespace gr {
 class GR_RUNTIME_API hier_block : public basic_block
 {
 public:
-    typedef boost::shared_ptr<hier_block> sptr;
-    static sptr make(const std::string& name,
-                     gr::io_signature::sptr input_signature,
-                     gr::io_signature::sptr output_signature);
-
     virtual ~hier_block();
 
     /*!
@@ -52,7 +54,7 @@ public:
      * This adds a gr-block or hierarchical block to the internal
      * graph without wiring it to anything else.
      */
-    void connect(basic_block::sptr block);
+    void connect(basic_block_sptr block);
 
     /*!
      * \brief Add gr-blocks or hierarchical blocks to internal graph
@@ -62,8 +64,7 @@ public:
      * gr-blocks or hierarchical blocks to the internal flowgraph, and
      * wires the specified output port to the specified input port.
      */
-    void
-    connect(basic_block::sptr src, int src_port, basic_block::sptr dst, int dst_port);
+    void connect(basic_block_sptr src, int src_port, basic_block_sptr dst, int dst_port);
 
 
     void message_port_register_in(const std::string& port_id) override;
@@ -79,13 +80,13 @@ public:
      * gr-blocks or hierarchical blocks to the internal message port
      * subscription
      */
-    void msg_connect(basic_block::sptr src,
+    void msg_connect(basic_block_sptr src,
                      std::string srcport,
-                     basic_block::sptr dst,
+                     basic_block_sptr dst,
                      std::string dstport);
-    void msg_disconnect(basic_block::sptr src,
+    void msg_disconnect(basic_block_sptr src,
                         std::string srcport,
-                        basic_block::sptr dst,
+                        basic_block_sptr dst,
                         std::string dstport = 0);
 
     /*!
@@ -95,7 +96,7 @@ public:
      * This removes a gr-block or hierarchical block from the internal
      * flowgraph, disconnecting it from other blocks as needed.
      */
-    void disconnect(basic_block::sptr block);
+    void disconnect(basic_block_sptr block);
 
     /*!
      * \brief Disconnect a pair of gr-blocks or hierarchical blocks in
@@ -105,7 +106,7 @@ public:
      * output port of a pair of gr-blocks or hierarchical blocks.
      */
     void
-    disconnect(basic_block::sptr src, int src_port, basic_block::sptr dst, int dst_port);
+    disconnect(basic_block_sptr src, int src_port, basic_block_sptr dst, int dst_port);
 
     /*!
      * \brief Disconnect all connections in the internal flowgraph.
@@ -115,10 +116,10 @@ public:
      */
     void disconnect_all();
 
-    void connect_input(int my_port, int port, basic_block::sptr block);
-    void connect_output(int my_port, int port, basic_block::sptr block);
-    void disconnect_input(int my_port, int port, basic_block::sptr block);
-    void disconnect_output(int my_port, int port, basic_block::sptr block);
+    void connect_input(int my_port, int port, basic_block_sptr block);
+    void connect_output(int my_port, int port, basic_block_sptr block);
+    void disconnect_input(int my_port, int port, basic_block_sptr block);
+    void disconnect_output(int my_port, int port, basic_block_sptr block);
 
     /*!
      * \brief Returns max buffer size (itemcount) on output port \p i.
@@ -215,6 +216,10 @@ public:
     bool all_max_output_buffer_p() const;
 
 protected:
+    friend GR_RUNTIME_API hier_block_sptr
+    make_hier_block(const std::string& name,
+                    gr::io_signature::sptr input_signature,
+                    gr::io_signature::sptr output_signature);
     hier_block(const std::string& name,
                gr::io_signature::sptr input_signature,
                gr::io_signature::sptr output_signature);
@@ -241,7 +246,7 @@ private:
     endpoint_vector_t resolve_endpoint(const endpoint& endp, bool is_input) const;
 };
 
-inline hier_block_sptr cast_to_hier_block_sptr(basic_block::sptr block)
+inline hier_block_sptr cast_to_hier_block_sptr(basic_block_sptr block)
 {
     return boost::dynamic_pointer_cast<hier_block, basic_block>(block);
 }

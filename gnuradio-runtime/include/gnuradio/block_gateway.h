@@ -276,12 +276,12 @@ public:
         gr::block::message_port_pub(port_id, msg);
     }
 
-    void block__message_port_sub(std::string port_id, basic_block::sptr target, std::string target_port)
+    void block__message_port_sub(std::string port_id, basic_block_sptr target, std::string target_port)
     {
         gr::basic_block::message_port_sub(port_id, target, target_port);
     }
 
-    void block__message_port_unsub(std::string port_id, basic_block::sptr target, std::string target_port)
+    void block__message_port_unsub(std::string port_id, basic_block_sptr target, std::string target_port)
     {
         gr::basic_block::message_port_unsub(port_id, target, target_port);
     }

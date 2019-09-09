@@ -53,7 +53,7 @@ private:
     QWidget* qtgui_histogram_sink_win;
 
 #ifndef Q_MOC_RUN
-    top_block::sptr tb;
+    top_block_sptr tb;
     analog::sig_source_f::sptr src0;
     analog::noise_source_f::sptr src1;
     blocks::add_ff::sptr src;

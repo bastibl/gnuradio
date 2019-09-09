@@ -55,7 +55,7 @@ ${class_name}::${class_name} (${param_str}) : QWidget() {
 % endif
 
 
-    this->tb = gr::top_block::make("${title}");
+    this->tb = gr::make_top_block("${title}");
 
 
 % if blocks:

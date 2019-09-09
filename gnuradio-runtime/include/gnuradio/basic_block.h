@@ -62,8 +62,6 @@ class GR_RUNTIME_API basic_block : public messages::msg_accepter,
                                    public boost::enable_shared_from_this<basic_block>
 {
 public:
-    typedef boost::shared_ptr<basic_block> sptr;
-
     virtual ~basic_block();
     uint64_t unique_id() const { return d_unique_id; }
     std::string unique_name() const { return d_unique_name; }
@@ -73,7 +71,7 @@ public:
 
     gr::io_signature::sptr input_signature() const { return d_input_signature; }
     gr::io_signature::sptr output_signature() const { return d_output_signature; }
-    basic_block::sptr to_basic_block(); // Needed for Python type coercion
+    basic_block_sptr to_basic_block(); // Needed for Python type coercion
 
     /*!
      * True if the block has an alias (see set_block_alias).
@@ -106,8 +104,8 @@ public:
     virtual std::vector<std::string> message_ports_in() const = 0;
 
     void message_port_register_out(const std::string& port_id);
-    void message_port_sub(const std::string& port_id, basic_block::sptr target, const std::string& target_port);
-    void message_port_unsub(const std::string& port_id, basic_block::sptr target, const std::string& target_port);
+    void message_port_sub(const std::string& port_id, basic_block_sptr target, const std::string& target_port);
+    void message_port_unsub(const std::string& port_id, basic_block_sptr target, const std::string& target_port);
     std::vector<msg_endpoint> message_subscribers(const std::string& port_id);
 
     /*!
@@ -210,15 +208,15 @@ protected:
     std::map<std::string, std::vector<msg_endpoint>> d_message_subscribers;
 };
 
-inline bool operator<(basic_block::sptr lhs, basic_block::sptr rhs)
+inline bool operator<(basic_block_sptr lhs, basic_block_sptr rhs)
 {
     return lhs->unique_id() < rhs->unique_id();
 }
 
-typedef std::vector<basic_block::sptr> basic_block_vector_t;
-typedef std::vector<basic_block::sptr>::iterator basic_block_viter_t;
+typedef std::vector<basic_block_sptr> basic_block_vector_t;
+typedef std::vector<basic_block_sptr>::iterator basic_block_viter_t;
 
-inline std::ostream& operator<<(std::ostream& os, basic_block::sptr basic_block)
+inline std::ostream& operator<<(std::ostream& os, basic_block_sptr basic_block)
 {
     os << basic_block->unique_name();
     return os;
@@ -231,17 +229,17 @@ inline std::ostream& operator<<(std::ostream& os, basic_block::sptr basic_block)
 class GR_RUNTIME_API endpoint
 {
 private:
-    basic_block::sptr d_basic_block;
+    basic_block_sptr d_basic_block;
     int d_port;
 
 public:
     endpoint() : d_basic_block(), d_port(0) {}
-    endpoint(basic_block::sptr block, int port)
+    endpoint(basic_block_sptr block, int port)
     {
         d_basic_block = block;
         d_port = port;
     }
-    basic_block::sptr block() const { return d_basic_block; }
+    basic_block_sptr block() const { return d_basic_block; }
     int port() const { return d_port; }
     std::string identifier() const
     {
@@ -259,17 +257,17 @@ inline bool endpoint::operator==(const endpoint& other) const
 class GR_RUNTIME_API msg_endpoint
 {
 private:
-    basic_block::sptr d_basic_block;
+    basic_block_sptr d_basic_block;
     std::string d_port;
 
 public:
     msg_endpoint() : d_basic_block(nullptr), d_port("") {}
-    msg_endpoint(basic_block::sptr block, std::string port)
+    msg_endpoint(basic_block_sptr block, std::string port)
     {
         d_basic_block = block;
         d_port = port;
     }
-    basic_block::sptr block() const { return d_basic_block; }
+    basic_block_sptr block() const { return d_basic_block; }
     std::string port() const { return d_port; }
     std::string identifier() const
     {
@@ -297,7 +295,7 @@ namespace gnuradio {
 template <class T>
 boost::shared_ptr<T> get_initial_sptr(T* p)
 {
-    return boost::dynamic_pointer_cast<T, gr::basic_block>(gr::basic_block::sptr(p));
+    return boost::dynamic_pointer_cast<T, gr::basic_block>(gr::basic_block_sptr(p));
 }
 } // namespace gnuradio
 

@@ -88,7 +88,7 @@ int UHD_SAFE_MAIN(int argc, char* argv[])
     //------------------------------------------------------------------
     //-- make a top block
     //------------------------------------------------------------------
-    gr::top_block::sptr tb = gr::top_block::make("tags_demo");
+    gr::top_block_sptr tb = gr::make_top_block("tags_demo");
 
     //------------------------------------------------------------------
     //-- make the usrp source test blocks

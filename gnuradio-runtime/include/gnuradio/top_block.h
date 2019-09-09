@@ -29,6 +29,8 @@
 
 namespace gr {
 
+GR_RUNTIME_API top_block_sptr make_top_block(const std::string& name);
+
 /*!
  *\brief Top-level hierarchical block representing a flowgraph
  * \ingroup container_blk
@@ -37,10 +39,6 @@ class GR_RUNTIME_API top_block : public hier_block
 {
 
 public:
-
-    typedef boost::shared_ptr<top_block> sptr;
-    static sptr make(const std::string& name);
-
     virtual ~top_block();
 
     /*!
@@ -132,12 +130,11 @@ public:
     virtual std::string dot_graph();
 
 protected:
-    top_block(const std::string& name);
 
     enum tb_state { IDLE, RUNNING };
 
     flat_flowgraph_sptr d_ffg;
-    scheduler::sptr d_scheduler;
+    scheduler_sptr d_scheduler;
 
     gr::thread::mutex d_mutex; // protects d_state and d_lock_count
     tb_state d_state;
@@ -147,6 +144,9 @@ protected:
     int d_max_noutput_items;
 
 private:
+    friend GR_RUNTIME_API top_block_sptr make_top_block(const std::string& name);
+    top_block(const std::string& name);
+
     void restart();
     void wait_for_jobs();
 };

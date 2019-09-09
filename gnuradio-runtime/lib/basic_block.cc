@@ -43,7 +43,7 @@ basic_block::basic_block(const std::string& name,
 
 basic_block::~basic_block() { global_block_registry.block_unregister(this); }
 
-basic_block::sptr basic_block::to_basic_block() { return shared_from_this(); }
+basic_block_sptr basic_block::to_basic_block() { return shared_from_this(); }
 
 void basic_block::set_block_alias(const std::string& name)
 {
@@ -75,7 +75,7 @@ std::vector<std::string> basic_block::message_ports_out() const
 }
 
 //  - subscribe to a message port
-void basic_block::message_port_sub(const std::string& port_id, basic_block::sptr target, const std::string& target_port)
+void basic_block::message_port_sub(const std::string& port_id, basic_block_sptr target, const std::string& target_port)
 {
     // check if port exists
     if (!d_message_subscribers.count(port_id)) {
@@ -93,7 +93,7 @@ void basic_block::message_port_sub(const std::string& port_id, basic_block::sptr
     }
 }
 
-void basic_block::message_port_unsub(const std::string& port_id, basic_block::sptr target, const std::string& target_port)
+void basic_block::message_port_unsub(const std::string& port_id, basic_block_sptr target, const std::string& target_port)
 {
     // check if port exists
     if (!d_message_subscribers.count(port_id)) {

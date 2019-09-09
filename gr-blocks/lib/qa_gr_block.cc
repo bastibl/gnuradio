@@ -77,7 +77,7 @@ BOOST_AUTO_TEST_CASE(t2)
     gr::block_sptr nop(gr::blocks::nop::make(sizeof(int)));
     gr::block_sptr dst1(gr::blocks::null_sink::make(sizeof(int)));
 
-    gr::top_block::sptr tb(gr::top_block::make("t2"));
+    gr::top_block_sptr tb(gr::make_top_block("t2"));
     tb->connect(src1, 0, nop, 0);
     tb->connect(nop, 0, dst1, 0);
     tb->start();

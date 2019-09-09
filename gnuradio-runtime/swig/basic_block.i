@@ -26,6 +26,8 @@
 #define SWIG_PYTHON_2_UNICODE
 %}
 
+%template(basic_block_sptr) boost::shared_ptr<gr::basic_block>;
+
 namespace gr {
 
   class msg_endpoint;
@@ -36,15 +38,13 @@ namespace gr {
     basic_block();
 
   public:
-    typedef boost::shared_ptr<gr::basic_block> sptr;
-
     virtual ~basic_block();
     std::string name() const;
     uint64_t unique_id() const;
     std::string unique_name() const;
     gr::io_signature::sptr input_signature() const;
     gr::io_signature::sptr output_signature() const;
-    gr::basic_block::sptr to_basic_block();
+    gr::basic_block_sptr to_basic_block();
     virtual bool check_topology(int ninputs, int noutputs);
     std::string alias() const;
     void set_block_alias(const std::string& name);
@@ -57,17 +57,17 @@ namespace gr {
   class msg_endpoint
   {
   private:
-      basic_block::sptr d_basic_block;
+      basic_block_sptr d_basic_block;
       std::string d_port;
 
   public:
       msg_endpoint() : d_basic_block(nullptr), d_port("") {}
-      msg_endpoint(basic_block::sptr block, std::string port)
+      msg_endpoint(basic_block_sptr block, std::string port)
       {
           d_basic_block = block;
           d_port = port;
       }
-      basic_block::sptr block() const { return d_basic_block; }
+      basic_block_sptr block() const { return d_basic_block; }
       std::string port() const { return d_port; }
       std::string identifier() const
       {
@@ -89,8 +89,6 @@ namespace gr {
 }
 
 %template(msg_endpoint_vector_t) std::vector<gr::msg_endpoint>;
-
-%template(basic_block_sptr) boost::shared_ptr<gr::basic_block>;
 
 #ifdef SWIGPYTHON
 %import py3compat.i

@@ -43,7 +43,7 @@ public:
     void block_unregister(basic_block* block);
 
     void update_alias(basic_block* block, std::string name);
-    basic_block::sptr block_lookup(pmt::pmt_t symbol);
+    basic_block_sptr block_lookup(pmt::pmt_t symbol);
 
     void register_primitive(uint64_t id, gr::block* ref);
     void unregister_primitive(uint64_t id);

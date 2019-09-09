@@ -27,9 +27,9 @@
 BOOST_AUTO_TEST_CASE(test_make)
 {
     gr::hier_block_sptr src1(
-        gr::hier_block::make("test",
-                             gr::io_signature::make(1, 1, 1 * sizeof(int)),
-                             gr::io_signature::make(1, 1, 1 * sizeof(int))));
+        gr::make_hier_block("test",
+                            gr::io_signature::make(1, 1, 1 * sizeof(int)),
+                            gr::io_signature::make(1, 1, 1 * sizeof(int))));
 
     BOOST_REQUIRE(src1);
     BOOST_REQUIRE_EQUAL(std::string("test"), src1->name());

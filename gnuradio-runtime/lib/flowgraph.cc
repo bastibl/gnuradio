@@ -171,10 +171,10 @@ basic_block_vector_t flowgraph::calc_used_blocks()
         tmp.push_back(p->dst().block());
     }
 
-    return unique_vector<basic_block::sptr>(tmp);
+    return unique_vector<basic_block_sptr>(tmp);
 }
 
-std::vector<int> flowgraph::calc_used_ports(basic_block::sptr block, bool check_inputs)
+std::vector<int> flowgraph::calc_used_ports(basic_block_sptr block, bool check_inputs)
 {
     std::vector<int> tmp;
 
@@ -190,7 +190,7 @@ std::vector<int> flowgraph::calc_used_ports(basic_block::sptr block, bool check_
     return unique_vector<int>(tmp);
 }
 
-edge_vector_t flowgraph::calc_connections(basic_block::sptr block, bool check_inputs)
+edge_vector_t flowgraph::calc_connections(basic_block_sptr block, bool check_inputs)
 {
     edge_vector_t result;
 
@@ -207,7 +207,7 @@ edge_vector_t flowgraph::calc_connections(basic_block::sptr block, bool check_in
     return result; // assumes no duplicates
 }
 
-void flowgraph::check_contiguity(basic_block::sptr block,
+void flowgraph::check_contiguity(basic_block_sptr block,
                                  const std::vector<int>& used_ports,
                                  bool check_inputs)
 {
@@ -248,7 +248,7 @@ void flowgraph::check_contiguity(basic_block::sptr block,
     }
 }
 
-basic_block_vector_t flowgraph::calc_downstream_blocks(basic_block::sptr block, int port)
+basic_block_vector_t flowgraph::calc_downstream_blocks(basic_block_sptr block, int port)
 {
     basic_block_vector_t tmp;
 
@@ -256,10 +256,10 @@ basic_block_vector_t flowgraph::calc_downstream_blocks(basic_block::sptr block, 
         if (p->src() == endpoint(block, port))
             tmp.push_back(p->dst().block());
 
-    return unique_vector<basic_block::sptr>(tmp);
+    return unique_vector<basic_block_sptr>(tmp);
 }
 
-basic_block_vector_t flowgraph::calc_downstream_blocks(basic_block::sptr block)
+basic_block_vector_t flowgraph::calc_downstream_blocks(basic_block_sptr block)
 {
     basic_block_vector_t tmp;
 
@@ -267,10 +267,10 @@ basic_block_vector_t flowgraph::calc_downstream_blocks(basic_block::sptr block)
         if (p->src().block() == block)
             tmp.push_back(p->dst().block());
 
-    return unique_vector<basic_block::sptr>(tmp);
+    return unique_vector<basic_block_sptr>(tmp);
 }
 
-edge_vector_t flowgraph::calc_upstream_edges(basic_block::sptr block)
+edge_vector_t flowgraph::calc_upstream_edges(basic_block_sptr block)
 {
     edge_vector_t result;
 
@@ -281,14 +281,14 @@ edge_vector_t flowgraph::calc_upstream_edges(basic_block::sptr block)
     return result; // Assume no duplicates
 }
 
-bool flowgraph::has_block_p(basic_block::sptr block)
+bool flowgraph::has_block_p(basic_block_sptr block)
 {
     basic_block_viter_t result;
     result = std::find(d_blocks.begin(), d_blocks.end(), block);
     return (result != d_blocks.end());
 }
 
-edge flowgraph::calc_upstream_edge(basic_block::sptr block, int port)
+edge flowgraph::calc_upstream_edge(basic_block_sptr block, int port)
 {
     edge result;
 

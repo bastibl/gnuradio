@@ -76,7 +76,7 @@ void block_registry::update_alias(basic_block* block, std::string name)
     d_alias_map[name] = block;
 }
 
-basic_block::sptr block_registry::block_lookup(pmt::pmt_t symbol)
+basic_block_sptr block_registry::block_lookup(pmt::pmt_t symbol)
 {
     gr::thread::scoped_lock guard(d_mutex);
 

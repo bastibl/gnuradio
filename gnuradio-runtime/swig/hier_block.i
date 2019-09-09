@@ -22,16 +22,23 @@
 
 %include <basic_block.i>
 
-// Rename connect and disconnect so that we can more easily build a
-// better interface in scripting land.
-%rename(primitive_connect) gr::hier_block::connect;
-%rename(primitive_disconnect) gr::hier_block::disconnect;
-%rename(primitive_msg_connect) gr::hier_block::msg_connect;
-%rename(primitive_msg_disconnect) gr::hier_block::msg_disconnect;
-%rename(primitive_message_port_register_in) gr::hier_block::message_port_register_in;
-%rename(primitive_message_port_register_out) gr::hier_block::message_port_register_out;
-
 namespace gr {
+
+  gr::hier_block_sptr
+  make_hier_block(const std::string name,
+                  gr::io_signature::sptr input_signature,
+                  gr::io_signature::sptr output_signature) noexcept(false);
+
+
+  // Rename connect and disconnect so that we can more easily build a
+  // better interface in scripting land.
+  %rename(primitive_connect) hier_block::connect;
+  %rename(primitive_disconnect) hier_block::disconnect;
+  %rename(primitive_msg_connect) hier_block::msg_connect;
+  %rename(primitive_msg_disconnect) hier_block::msg_disconnect;
+  %rename(primitive_message_port_register_in) hier_block::message_port_register_in;
+  %rename(primitive_message_port_register_out) hier_block::message_port_register_out;
+
   class hier_block : public gr::basic_block
   {
   private:
@@ -41,30 +48,19 @@ namespace gr {
 
   public:
 
-    typedef boost::shared_ptr<hier_block> sptr;
-    static sptr make(const std::string& name,
-                     gr::io_signature::sptr input_signature,
-                     gr::io_signature::sptr output_signature);
-
     ~hier_block ();
 
-    void connect(gr::basic_block::sptr block)
-      noexcept(false);
-    void connect(gr::basic_block::sptr src, int src_port,
-                 gr::basic_block::sptr dst, int dst_port)
-      noexcept(false);
-    void msg_connect(gr::basic_block::sptr src, std::string srcport,
-                     gr::basic_block::sptr dst,  std::string dstport)
-      noexcept(false);
-    void msg_disconnect(gr::basic_block::sptr src, std::string srcport,
-                        gr::basic_block::sptr dst, std::string dstport)
-      noexcept(false);
+    void connect(gr::basic_block_sptr block) noexcept(false);
+    void connect(gr::basic_block_sptr src, int src_port,
+                 gr::basic_block_sptr dst, int dst_port) noexcept(false);
+    void msg_connect(gr::basic_block_sptr src, std::string srcport,
+                     gr::basic_block_sptr dst,  std::string dstport) noexcept(false);
+    void msg_disconnect(gr::basic_block_sptr src, std::string srcport,
+                        gr::basic_block_sptr dst, std::string dstport) noexcept(false);
 
-    void disconnect(gr::basic_block::sptr block)
-      noexcept(false);
-    void disconnect(gr::basic_block::sptr src, int src_port,
-                    gr::basic_block::sptr dst, int dst_port)
-      noexcept(false);
+    void disconnect(gr::basic_block_sptr block) noexcept(false);
+    void disconnect(gr::basic_block_sptr src, int src_port,
+                    gr::basic_block_sptr dst, int dst_port) noexcept(false);
     void disconnect_all();
 
     void message_port_register_in(std::string port_id);

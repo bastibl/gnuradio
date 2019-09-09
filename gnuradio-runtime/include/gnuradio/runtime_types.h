@@ -31,6 +31,7 @@ namespace gr {
 /*
  * typedefs for smart pointers we use throughout the runtime system
  */
+class basic_block;
 class block;
 class block_executor;
 class buffer;
@@ -38,7 +39,10 @@ class buffer_reader;
 class hier_block;
 class flat_flowgraph;
 class flowgraph;
+class scheduler;
+class top_block;
 
+typedef boost::shared_ptr<basic_block> basic_block_sptr;
 typedef boost::shared_ptr<block> block_sptr;
 typedef std::unique_ptr<block_executor> block_executor_uptr;
 typedef std::unique_ptr<buffer> buffer_uptr;
@@ -46,6 +50,8 @@ typedef std::unique_ptr<buffer_reader> buffer_reader_uptr;
 typedef boost::shared_ptr<hier_block> hier_block_sptr;
 typedef boost::shared_ptr<flat_flowgraph> flat_flowgraph_sptr;
 typedef boost::shared_ptr<flowgraph> flowgraph_sptr;
+typedef boost::shared_ptr<scheduler> scheduler_sptr;
+typedef boost::shared_ptr<top_block> top_block_sptr;
 
 } /* namespace gr */
 

@@ -218,7 +218,7 @@ void flat_flowgraph::connect_block_inputs(block_sptr grblock)
         // buffer on the source port
         int dst_port = e->dst().port();
         int src_port = e->src().port();
-        basic_block::sptr src_block = e->src().block();
+        basic_block_sptr src_block = e->src().block();
         block_sptr src_grblock = cast_to_block_sptr(src_block);
         if (!src_grblock)
             throw std::runtime_error("connect_block_inputs found non-gr::block");

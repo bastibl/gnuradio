@@ -44,7 +44,7 @@
 
 namespace gr {
 namespace digital {
-std::vector<gr_complex> modulate_vector_bc(basic_block::sptr modulator,
+std::vector<gr_complex> modulate_vector_bc(basic_block_sptr modulator,
                                            std::vector<uint8_t> data,
                                            std::vector<float> taps)
 {
@@ -52,7 +52,7 @@ std::vector<gr_complex> modulate_vector_bc(basic_block::sptr modulator,
     filter::fir_filter_ccf::sptr filter = filter::fir_filter_ccf::make(1, taps);
     blocks::vector_sink_c::sptr vector_sink = blocks::vector_sink_c::make();
 
-    top_block::sptr tb = top_block::make("modulate_vector");
+    top_block_sptr tb = make_top_block("modulate_vector");
 
     tb->connect(vector_src, 0, modulator, 0);
     tb->connect(modulator, 0, filter, 0);

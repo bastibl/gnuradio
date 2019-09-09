@@ -1073,7 +1073,7 @@ public:
 typedef std::vector<block_sptr> block_vector_t;
 typedef std::vector<block_sptr>::iterator block_viter_t;
 
-inline block_sptr cast_to_block_sptr(basic_block::sptr p)
+inline block_sptr cast_to_block_sptr(basic_block_sptr p)
 {
     return boost::dynamic_pointer_cast<block, basic_block>(p);
 }

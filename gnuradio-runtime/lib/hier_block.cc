@@ -30,7 +30,7 @@
 
 namespace gr {
 
-hier_block::sptr hier_block::make(const std::string& name,
+hier_block_sptr make_hier_block(const std::string& name,
                                   gr::io_signature::sptr input_signature,
                                   gr::io_signature::sptr output_signature)
 {
@@ -67,7 +67,7 @@ hier_block::hier_block(const std::string& name,
 
 hier_block::~hier_block() { disconnect_all(); }
 
-void hier_block::connect(basic_block::sptr block)
+void hier_block::connect(basic_block_sptr block)
 {
     std::stringstream msg;
 
@@ -87,9 +87,9 @@ void hier_block::connect(basic_block::sptr block)
     d_blocks.push_back(block);
 }
 
-void hier_block::connect(basic_block::sptr src,
+void hier_block::connect(basic_block_sptr src,
                          int src_port,
-                         basic_block::sptr dst,
+                         basic_block_sptr dst,
                          int dst_port)
 {
     if (HIER_BLOCK_DEBUG)
@@ -124,9 +124,9 @@ void hier_block::connect(basic_block::sptr src,
     d_fg->connect(src, src_port, dst, dst_port);
 }
 
-void hier_block::msg_connect(basic_block::sptr src,
+void hier_block::msg_connect(basic_block_sptr src,
                              std::string srcport,
-                             basic_block::sptr dst,
+                             basic_block_sptr dst,
                              std::string dstport)
 {
     if (HIER_BLOCK_DEBUG)
@@ -147,9 +147,9 @@ void hier_block::msg_connect(basic_block::sptr src,
     d_fg->connect(msg_endpoint(src, srcport), msg_endpoint(dst, dstport));
 }
 
-void hier_block::msg_disconnect(basic_block::sptr src,
+void hier_block::msg_disconnect(basic_block_sptr src,
                                 std::string srcport,
-                                basic_block::sptr dst,
+                                basic_block_sptr dst,
                                 std::string dstport)
 {
     if (HIER_BLOCK_DEBUG)
@@ -208,7 +208,7 @@ void hier_block::post(const std::string& which_port, const pmt::pmt_t& msg)
     throw std::runtime_error("not implemented yet");
 }
 
-void hier_block::disconnect(basic_block::sptr block)
+void hier_block::disconnect(basic_block_sptr block)
 {
     // Check on singleton list
     for (basic_block_viter_t p = d_blocks.begin(); p != d_blocks.end(); p++) {
@@ -243,9 +243,9 @@ void hier_block::disconnect(basic_block::sptr block)
     }
 }
 
-void hier_block::disconnect(basic_block::sptr src,
+void hier_block::disconnect(basic_block_sptr src,
                             int src_port,
-                            basic_block::sptr dst,
+                            basic_block_sptr dst,
                             int dst_port)
 {
     if (HIER_BLOCK_DEBUG)
@@ -295,7 +295,7 @@ void hier_block::refresh_io_signature()
     }
 }
 
-void hier_block::connect_input(int my_port, int port, basic_block::sptr block)
+void hier_block::connect_input(int my_port, int port, basic_block_sptr block)
 {
     std::stringstream msg;
 
@@ -318,7 +318,7 @@ void hier_block::connect_input(int my_port, int port, basic_block::sptr block)
     endps.push_back(endp);
 }
 
-void hier_block::connect_output(int my_port, int port, basic_block::sptr block)
+void hier_block::connect_output(int my_port, int port, basic_block_sptr block)
 {
     std::stringstream msg;
 
@@ -338,7 +338,7 @@ void hier_block::connect_output(int my_port, int port, basic_block::sptr block)
     d_outputs[my_port] = endpoint(block, port);
 }
 
-void hier_block::disconnect_input(int my_port, int port, basic_block::sptr block)
+void hier_block::disconnect_input(int my_port, int port, basic_block_sptr block)
 {
     std::stringstream msg;
 
@@ -361,7 +361,7 @@ void hier_block::disconnect_input(int my_port, int port, basic_block::sptr block
     endps.erase(p);
 }
 
-void hier_block::disconnect_output(int my_port, int port, basic_block::sptr block)
+void hier_block::disconnect_output(int my_port, int port, basic_block_sptr block)
 {
     std::stringstream msg;
 
@@ -505,7 +505,7 @@ void hier_block::flatten_aux(flat_flowgraph_sptr sfg) const
     // For every block (gr::block and gr::hier_block), set up the RPC
     // interface.
     for (p = edges.begin(); p != edges.end(); p++) {
-        basic_block::sptr b;
+        basic_block_sptr b;
         b = p->src().block();
 
         if (set_all_min_buff) {
@@ -681,7 +681,7 @@ void hier_block::flatten_aux(flat_flowgraph_sptr sfg) const
     basic_block_vector_t tmp = d_fg->calc_used_blocks();
 
     // First add the list of singleton blocks
-    std::vector<basic_block::sptr>::const_iterator b; // Because flatten_aux is const
+    std::vector<basic_block_sptr>::const_iterator b; // Because flatten_aux is const
     for (b = d_blocks.begin(); b != d_blocks.end(); b++) {
         tmp.push_back(*b);
     }
@@ -700,7 +700,7 @@ void hier_block::flatten_aux(flat_flowgraph_sptr sfg) const
     }
 
     for (unsigned int i = 0; i < d_outputs.size(); i++) {
-        basic_block::sptr blk = d_outputs[i].block();
+        basic_block_sptr blk = d_outputs[i].block();
         if (!blk) {
             msg << "In hierarchical block " << name() << ", output " << i
                 << " is not connected internally";

@@ -37,7 +37,7 @@
 namespace gr {
 
 
-top_block::sptr top_block::make(const std::string& name)
+top_block_sptr make_top_block(const std::string& name)
 {
     return gnuradio::get_initial_sptr(new top_block(name));
 }
@@ -100,7 +100,7 @@ void top_block::start(int max_noutput_items)
         p->get_bool("PerfCounters", "export", false))
         d_ffg->enable_pc_rpc();
 
-    d_scheduler = scheduler::make(d_ffg);
+    d_scheduler = make_scheduler(d_ffg);
     d_state = RUNNING;
 
     if (prefs::singleton()->get_bool("ControlPort", "on", false)) {
@@ -209,7 +209,7 @@ void top_block::restart()
     d_ffg->setup_connections(d_max_noutput_items);
 
     // Create a new scheduler to execute it
-    d_scheduler = scheduler::make(d_ffg);
+    d_scheduler = make_scheduler(d_ffg);
     d_retry_wait = true;
 }
 

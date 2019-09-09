@@ -31,6 +31,15 @@
 namespace gr {
 
 /*!
+ * \brief Construct a scheduler and begin evaluating the graph.
+ *
+ * The scheduler will continue running until all blocks
+ * report that they are done or the stop method is called.
+ */
+GR_RUNTIME_API scheduler_sptr make_scheduler(flat_flowgraph_sptr ffg);
+
+
+/*!
  * \brief Abstract scheduler that takes a flattened flow graph and
  * runs it.
  *
@@ -41,8 +50,7 @@ class GR_RUNTIME_API scheduler : boost::noncopyable
 {
 
 private:
-    gr::thread::thread_group d_threads;
-
+    friend GR_RUNTIME_API scheduler_sptr make_scheduler(flat_flowgraph_sptr ffg);
     /*!
      * \brief Construct a scheduler and begin evaluating the graph.
      *
@@ -51,17 +59,9 @@ private:
      */
     scheduler(flat_flowgraph_sptr ffg);
 
+    gr::thread::thread_group d_threads;
+
 public:
-    typedef boost::shared_ptr<scheduler> sptr;
-
-    /*!
-     * \brief Construct a scheduler and begin evaluating the graph.
-     *
-     * The scheduler will continue running until all blocks
-     * report that they are done or the stop method is called.
-     */
-    static sptr make(flat_flowgraph_sptr ffg);
-
     virtual ~scheduler();
 
     /*!

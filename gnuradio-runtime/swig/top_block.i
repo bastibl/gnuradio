@@ -22,19 +22,24 @@
 
 namespace gr {
 
-  class top_block : virtual public gr::hier_block
+  gr::top_block_sptr make_top_block(const std::string name)
+    throw (std::logic_error);
+
+  class top_block : public gr::hier_block
   {
+  private:
+    top_block(const std::string &name);
+
   public:
-    typedef boost::shared_ptr<top_block> sptr;
-    static sptr make(const std::string& name);
+    ~top_block();
 
-    virtual void lock() = 0;
-    virtual void dump() = 0;
+    void lock();
+    void dump();
 
-    virtual std::string dot_graph() = 0;
+    std::string dot_graph();
 
-    int max_noutput_items() = 0;
-    void set_max_noutput_items(int nmax) = 0;
+    int max_noutput_items();
+    void set_max_noutput_items(int nmax);
 
   };
 
@@ -42,10 +47,11 @@ namespace gr {
 
 %template(top_block_sptr) boost::shared_ptr<gr::top_block>;
 
+
 #ifdef SWIGPYTHON
 
 %inline %{
-void top_block_run_unlocked(gr::top_block::sptr r) noexcept(false)
+void top_block_run_unlocked(gr::top_block_sptr r) noexcept(false)
 {
     GR_PYTHON_BLOCKING_CODE
     (
@@ -53,7 +59,7 @@ void top_block_run_unlocked(gr::top_block::sptr r) noexcept(false)
     )
 }
 
-void top_block_start_unlocked(gr::top_block::sptr r, int max_noutput_items) noexcept(false)
+void top_block_start_unlocked(gr::top_block_sptr r, int max_noutput_items) noexcept(false)
 {
     GR_PYTHON_BLOCKING_CODE
     (
@@ -61,7 +67,7 @@ void top_block_start_unlocked(gr::top_block::sptr r, int max_noutput_items) noex
     )
 }
 
-void top_block_wait_unlocked(gr::top_block::sptr r) noexcept(false)
+void top_block_wait_unlocked(gr::top_block_sptr r) noexcept(false)
 {
     GR_PYTHON_BLOCKING_CODE
     (
@@ -69,7 +75,7 @@ void top_block_wait_unlocked(gr::top_block::sptr r) noexcept(false)
     )
 }
 
-void top_block_stop_unlocked(gr::top_block::sptr r) noexcept(false)
+void top_block_stop_unlocked(gr::top_block_sptr r) noexcept(false)
 {
     GR_PYTHON_BLOCKING_CODE
     (
@@ -77,7 +83,7 @@ void top_block_stop_unlocked(gr::top_block::sptr r) noexcept(false)
     )
 }
 
-void top_block_unlock_unlocked(gr::top_block::sptr r) noexcept(false)
+void top_block_unlock_unlocked(gr::top_block_sptr r) noexcept(false)
 {
     GR_PYTHON_BLOCKING_CODE
     (

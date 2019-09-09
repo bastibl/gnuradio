@@ -25,9 +25,9 @@
 
 namespace gr {
 
-scheduler::sptr scheduler::make(flat_flowgraph_sptr ffg)
+scheduler_sptr make_scheduler(flat_flowgraph_sptr ffg)
 {
-    return scheduler::sptr(new scheduler(ffg));
+    return scheduler_sptr(new scheduler(ffg));
 }
 
 scheduler::scheduler(flat_flowgraph_sptr ffg)

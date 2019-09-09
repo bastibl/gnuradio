@@ -22,7 +22,7 @@ from __future__ import unicode_literals
 
 import functools
 
-from .runtime_swig import hier_block_make
+from .runtime_swig import make_hier_block
 import pmt
 
 
@@ -80,7 +80,7 @@ class hier_block(object):
         """
         Create a hierarchical block with a given name and I/O signatures.
         """
-        self._impl = hier_block_make(name, input_signature, output_signature)
+        self._impl = make_hier_block(name, input_signature, output_signature)
 
     def __getattr__(self, name):
         """
