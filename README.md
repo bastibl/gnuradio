@@ -1,135 +1,59 @@
-<p align="center">
-<img src="https://github.com/gnuradio/gnuradio/blob/master/docs/gnuradio.png" width="75%" />
-</p>
+# GNU Radio Yolo
 
-[![Build](https://shield.lwan.ws/img/p5UKbS/weekly_runner)](https://ci.gnuradio.org/buildbot/#/)
-![Version](https://img.shields.io/github/tag/gnuradio/gnuradio.svg)
-[![AUR](https://img.shields.io/aur/license/yaourt.svg)](https://github.com/gnuradio/gnuradio/blob/master/COPYING) 
-[![Docs](https://img.shields.io/badge/docs-doxygen-orange.svg)](https://www.gnuradio.org/doc/doxygen/)
-[![Packaging status](https://repology.org/badge/tiny-repos/gnuradio.svg)](https://repology.org/project/gnuradio/badges)
+This is an experimental branch towards a more modern runtime environment for GNU Radio.
 
-GNU Radio is a free & open-source software development toolkit that 
-provides signal processing blocks to implement software radios. It can 
-be used with readily-available, low-cost external RF hardware to create 
-software-defined radios, or without hardware in a simulation-like 
-environment. It is widely used in hobbyist, academic, and commercial 
-environments to support both wireless communications research and real-world 
-radio systems.
+## Problem
 
-Please visit the GNU Radio website at https://www.gnuradio.org/ and the 
-wiki at https://wiki.gnuradio.org/. Bugs and feature requests are 
-tracked on GitHub's [Issue Tracker](https://github.com/gnuradio/gnuradio/issues). 
-If you have questions about GNU Radio, please search the **discuss-gnuradio** 
-mailing list [archive](https://lists.gnu.org/archive/html/discuss-gnuradio/), 
-as many questions have already been asked and answered. Please also 
-[subscribe](https://lists.gnu.org/mailman/listinfo/discuss-gnuradio) to 
-the mailing list and post your new questions there.
+- **complex runtime environment** that is hard to maintain and extend
+- **lack of a scheduler** (GNU Radio just starts one thread per block and leaves actual scheduling to the operating system)
 
+The latter has inherent limitations:
 
-## How to Build GNU Radio
+- We cannot control the order in which blocks are scheduled and, therefore, cannot exploit cache coherency.
+- We cannot control when and for how long threads are scheduled. A thread might, therefore, be interrupted while holding locks on data, which can lead to suboptimal process sequences.
+- We cannot assign multiple blocks to one thread and, therefore, have to use synchronization primitives (like mutexes and semaphores) for all shared data structures.
 
-### PyBOMBS
-PyBOMBS (Python Build Overlay Managed Bundle System) is the recommended 
-method for building and installing GNU Radio. Please see 
-https://github.com/gnuradio/pybombs for detailed instructions. Abbreviated 
-instructions are duplicated below.
+## Vision
 
-1. Install PyBOMBS:
-    ```
-    $ [sudo] pip install PyBOMBS
-    ```
-    or
-    ```
-    $ git clone https://github.com/gnuradio/pybombs.git
-    $ cd pybombs
-    $ sudo python setup.py install
-    ```
+- modular scheduler
+- custom buffers to support heterogeneous DSP
+- distributed DSP
 
-2. Add PyBOMBS recipes:
-    ```
-    $ pybombs recipes add gr-recipes git+https://github.com/gnuradio/gr-recipes.git  
-    $ pybombs recipes add gr-etcetera git+https://github.com/gnuradio/gr-etcetera.git
-    ```
+## Road Map
 
-3. Configure an installation prefix:
-    ```
-    $ pybombs prefix init ~/prefix/default/
-    ```
+- **Benchmarking**: We need to tool to evaluate the performance of different approaches. This was already started:
 
-4. Install GNU Radio:
-    ```
-    $ pybombs install gnuradio
-    ```
+  - Bastian Bloessl, Marcus Müller and Matthias Hollick, “Benchmarking and Profiling the GNU Radio Scheduler,” Proceedings of 9th GNU Radio Conference (GRCon 2019), Huntsville, AL, Sep 2019. [[BibTeX](https://www.bastibl.net/bib/bloessl2019benchmarking/bloessl2019benchmarking.bib), [PDF and Details…](https://www.bastibl.net/bib/bloessl2019benchmarking/)]
 
-5. Run GNU Radio Companion from your new prefix:
-    ```
-    $ source ~/prefix/default/setup_env.sh
-    $ gnuradio-companion
-    ```
-    or execute it without changing the current environment
-    ```
-    $ pybombs run gnuradio-companion
-    ```
+There is also a [repository](https://github.com/bastibl/gr-sched) with tools for performance measurements and a  work-in-progress [series of blog posts](https://www.bastibl.net/gnuradio-performance-1/).
+What we still lack are more flowgraphs and configurations that are tested on more architectures.
 
-### Manual Source Build
-Complete build instructions are detailed in the 
-[GNU Radio Build Guide](https://www.gnuradio.org/doc/doxygen/build_guide.html). 
-Abbreviated instructions are duplicated below.
+- **Refactoring**: The code base grew organically, is hard to maintain, and hard to extend. We already refactored quite a lot of stuff in this branch. See highlights.
+- Use **message passing** for thread synchronization. This simplifies code structure further and makes the following steps possible.
+- **Decouple blocks from threads**
+- Add **scheduler interface** to allow plugging in different schedulers.
+- Work on **advanced scheduling algorithms** Your science goes here.
+- **Custom buffers**: native support for FPGA, GPU, and DMA buffers
+- **Distributed DSP**: make GNU Radio an SDR systems framework
 
-1. Ensure that you have satisfied the external dependencies, see 
-[GNU Radio Dependencies](https://www.gnuradio.org/doc/doxygen/build_guide.html).
+## Highlights
 
-2. Checkout the latest code:
-    ```
-    $ git clone --recursive https://github.com/gnuradio/gnuradio.git
-    ```
+- The message passing API and implementation was refactored to use standard types instead of PMTs. Now, only the actual message is a PMT. This lead to considerable performance improvements. See the paper cited above for the experiment setup.
 
-3. Build with CMake:
-    ```
-    $ cd gnuradio
-    $ mkdir build
-    $ cd build
-    $ cmake [OPTIONS] ../
-    $ make
-    $ make test
-    $ sudo make install
-    ```
-    Useful `[OPTIONS]` include setting the install prefix 
-    `-DCMAKE_INSTALL_PREFIX=<directory to install to>` and the build type 
-    `-DCMAKE_BUILD_TYPE=<type>`. Currently, GNU Radio has a `"Debug"` type 
-    that builds with `-g -O2` which is useful for debugging the software, 
-    and a `"Release"` type that builds with `-O3`, which is the default.
+![Message Passing Performance](/msg_performance.png?raw=true)
 
+- GNU Radio had multiple message passing interfaces. We removed redundant `gr::message` types and ported the blocks that used them to PMTs.
 
-### PyBOMBS with support of python 3.x
-PyBOMBS currently builds GNU Radio with support of python 2.7, so to make it work with python 3.x, instructions are given below.
+- Removed some `xxx_detail` and `xxx_impl` that were (1) not consistently used in the code base and (2) unnecessary indirections.
 
-1. Change the PYTHONPATH line in setup_env.sh, to just 3.x paths.
+- Clean up OOT inheritance. See for example `message_accepter` in the original code base, to see how bad things can be.
 
+- Get rid of `shared_ptr` magic (used in the hier block).
 
-2.  Find the PyBOMBS recipe "gnuradio.lwr" in .pybombs directory, check this for reference
-    ```
-    https://github.com/gnuradio/gr-recipes/blob/master/gnuradio.lwr
-    ```
+- Refactor `block` naming mess. (Each block had a name, an alias, a symbolic_id, and identifier, a unique id, a symbol_name, ...)
 
+- Start introducing an ownership model to avoid excessive (ab)use of `shared_ptr`, which introduces overhead (due to atomic operations in the constructor and destructors).
 
-3. Change the "gitbranch" to "master".
+- Rename `hier_block2` to `hier_block`.
 
-
-4. In gnuradio.lwr recipe file, add "-DENABLE_CTRLPORT_THRIFT=OFF" in "config_opt".
-
-
-5. Clear out your prior GR PyBOMBS build(s) and tell PyBOMBS to install via this recipe.
-    ```
-    pybombs install gnuradio
-    ```
-
-
-## Legal Matters
-
-Some files have been changed many times throughout the years. Copyright 
-notices at the top of source files list which years changes have been 
-made. For some files, changes have occurred in many consecutive years. 
-These files may often have the format of a year range (e.g., "2006 - 2011"), 
-which indicates that these files have had copyrightable changes made 
-during each year in the range, inclusive.
+- Removed tons of cruft.
