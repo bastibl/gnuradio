@@ -30,7 +30,7 @@
 #include <iostream>
 
 #include "thrift/ControlPort.h"
-#include <thrift/concurrency/PlatformThreadFactory.h>
+#include <thrift/concurrency/ThreadFactory.h>
 #include <thrift/concurrency/ThreadManager.h>
 #include <thrift/server/TSimpleServer.h>
 #include <thrift/server/TThreadPoolServer.h>
@@ -138,8 +138,8 @@ thrift_server_template<TserverBase, TserverClass, TImplClass>::thrift_server_tem
             thrift::concurrency::ThreadManager::newSimpleThreadManager(nthreads));
 
         threadManager->threadFactory(
-            GR_RPC_SHARED_PTR<thrift::concurrency::PlatformThreadFactory>(
-                new thrift::concurrency::PlatformThreadFactory()));
+            GR_RPC_SHARED_PTR<thrift::concurrency::ThreadFactory>(
+                new thrift::concurrency::ThreadFactory()));
 
         threadManager->start();
 
