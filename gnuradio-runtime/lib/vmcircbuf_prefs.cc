@@ -48,13 +48,13 @@ namespace gr {
 static std::string pathname(const char* key)
 {
     static fs::path path;
-    path = fs::path(gr::appdata_path()) / ".gnuradio" / "prefs" / key;
+    path = fs::path(gr::userconf_path()) / "prefs" / key;
     return path.string();
 }
 
 static void ensure_dir_path()
 {
-    fs::path path = fs::path(gr::appdata_path()) / ".gnuradio";
+    fs::path path = fs::path(gr::userconf_path());
     if (!fs::is_directory(path))
         fs::create_directory(path);
 
