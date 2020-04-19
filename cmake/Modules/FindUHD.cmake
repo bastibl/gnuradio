@@ -75,6 +75,33 @@ if(NOT "$ENV{UHD_CONFIG_VERSION_USED}" STREQUAL "TRUE")
   )
 endif(NOT "$ENV{UHD_CONFIG_VERSION_USED}" STREQUAL "TRUE")
 
+find_library(
+LIBUSB_LIBRARIES
+NAMES  usb1.0
+HINTS $ENV{UHD_DIR}/lib
+        ${PC_UHD_LIBDIR}
+PATHS /usr/local/lib
+        /usr/lib
+)
+
+find_library(
+ANDROID_LIBRARIES
+NAMES  android
+HINTS $ENV{UHD_DIR}/lib
+        ${PC_UHD_LIBDIR}
+PATHS /usr/local/lib
+        /usr/lib
+)
+
+find_library(
+LOG_LIBRARIES
+NAMES  log
+HINTS $ENV{UHD_DIR}/lib
+        ${PC_UHD_LIBDIR}
+PATHS /usr/local/lib
+        /usr/lib
+)
+
 if(UHD_LIBRARIES AND UHD_INCLUDE_DIRS)
 
   # if UHDConfig set UHD_FOUND==TRUE, then these have already been
@@ -90,6 +117,9 @@ if(UHD_LIBRARIES AND UHD_INCLUDE_DIRS)
       INTERFACE_INCLUDE_DIRECTORIES "${UHD_INCLUDE_DIRS}"
       INTERFACE_LINK_LIBRARIES "${UHD_LIBRARIES}"
       )
+    target_link_libraries(UHD::UHD INTERFACE ${LIBUSB_LIBRARIES})
+    target_link_libraries(UHD::UHD INTERFACE ${ANDROID_LIBRARIES})
+    target_link_libraries(UHD::UHD INTERFACE ${LOG_LIBRARIES})
   endif()
 
 elseif(UHD_FIND_REQUIRED)
