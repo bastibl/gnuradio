@@ -449,7 +449,9 @@ endif(NOT Volk_FOUND)
 message(STATUS "  Override with -DENABLE_INTERNAL_VOLK=ON/OFF")
 
 # Handle logging
-find_package(LOG4CPP REQUIRED)
+if(!ANDROID)
+    find_package(LOG4CPP REQUIRED)
+endif()
 
 ########################################################################
 # Distribute the README file
