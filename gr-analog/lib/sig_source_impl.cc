@@ -319,6 +319,39 @@ void sig_source_impl<T>::set_phase(float phase)
     d_nco.set_phase(phase);
 }
 
+template <class T>
+void sig_source_impl<T>::setup_rpc()
+{
+#ifdef GR_CTRLPORT
+    this->add_rpc_variable(
+            rpcbasic_sptr(new rpcbasic_register_get<sig_source<T>, double>(
+            this->alias(),
+            "frequency",
+                    &sig_source<T>::frequency,
+            pmt::mp(-1024.0),
+            pmt::mp(1024.0),
+            pmt::mp(0.0),
+            "",
+            "Frequency",
+            RPC_PRIVLVL_MIN,
+            DISPTIME | DISPOPTSTRIP)));
+
+    this->add_rpc_variable(
+            rpcbasic_sptr(new rpcbasic_register_set<sig_source<T>, double>(
+            this->alias(),
+            "frequency",
+                    &sig_source<T>::set_frequency,
+            pmt::mp(-1024.0),
+            pmt::mp(1024.0),
+            pmt::mp(0.0),
+            "",
+            "Frequency",
+            RPC_PRIVLVL_MIN,
+            DISPNULL)));
+#endif /* GR_CTRLPORT */
+}
+
+
 template class sig_source<std::int8_t>;
 template class sig_source<std::int16_t>;
 template class sig_source<std::int32_t>;

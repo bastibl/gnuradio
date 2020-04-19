@@ -69,6 +69,7 @@ public:
     void set_amplitude(double ampl);
     void set_offset(T offset);
     void set_phase(float phase);
+    void setup_rpc();
 };
 
 } /* namespace analog */

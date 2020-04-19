@@ -101,6 +101,7 @@ public:
      * \param phase phase of the signal
      */
     virtual void set_phase(float phase) = 0;
+    virtual void setup_rpc() = 0;
 };
 
 typedef sig_source<std::int8_t> sig_source_b;
