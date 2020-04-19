@@ -79,7 +79,7 @@ const unsigned int
 template <class rpcserver_base, class rpcserver_booter_thrift>
 const unsigned int
     thrift_application_base<rpcserver_base,
-                            rpcserver_booter_thrift>::d_default_thrift_port(0U);
+                            rpcserver_booter_thrift>::d_default_thrift_port(65001U);
 
 template <class rpcserver_base, class rpcserver_booter_thrift>
 const unsigned int
