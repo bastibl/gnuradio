@@ -88,7 +88,7 @@ boost::mutex& planner::mutex()
 static std::string wisdom_filename()
 {
     static fs::path path;
-    path = fs::path(gr::appdata_path()) / ".gr_fftw_wisdom";
+    path = fs::path(gr::userconf_path()) / "gr_fftw_wisdom";
     return path.string();
 }
 

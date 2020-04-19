@@ -20,6 +20,7 @@
  */
 
 #include <gnuradio/sys_paths.h>
+#include <gnuradio/logger.h>
 #include <cstdio>  //P_tmpdir (maybe)
 #include <cstdlib> //getenv
 
@@ -73,8 +74,23 @@ std::string __userconf_path()
 
 const char* userconf_path()
 {
+#ifdef ANDROID
+    static std::string s;
+    const char* path = getenv("EXTERNAL_STORAGE");
+    if (path) {
+        GR_LOG_DEBUG("prefs", "found external storage directory in env");
+        boost::filesystem::path p(path);
+        p = p / "gnuradio";
+        s = p.string();
+        return s.c_str();
+    } else {
+        GR_LOG_DEBUG("prefs", "NOT found external storage directory in env");
+        return "/sdcard/gnuradio";
+    }
+#else
     static std::string p(__userconf_path());
     return p.c_str();
+#endif
 }
 
 } /* namespace gr */
